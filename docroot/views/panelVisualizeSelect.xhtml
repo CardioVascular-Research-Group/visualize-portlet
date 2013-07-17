@@ -1,0 +1,125 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<f:event type="preRenderView" listener="#{visualizeBacking.init}" />
+
+	<h:panelGroup id="mainGroup" layout="block" styleClass="backgroundofContent">
+		<p:layout id="layoutVisualizeInclude" styleClass="visualizeLayout" style="height:70%;">
+			<p:layoutUnit id="mainUnit" position="center" styleClass="visualizeLayoutUnit">
+				<h:form id="formVisualize">
+					<p:fieldset legend="Choose Files That Meet Your Criteria">
+						<h:panelGroup id="analyzeTreeHolder" layout="block" styleClass="selectFieldset">
+
+							<p:tree id="docTree" 
+								dynamic="true"
+								selection="#{visualizeBacking.fileTree.selectedNodes}"
+								selectionMode="multiple"
+								value="#{visualizeBacking.fileTree.treeRoot}" 
+								var="node">
+								<p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
+									<h:outputText value="#{node}"/>
+								</p:treeNode>
+							</p:tree>
+							
+							<p:commandButton id="btnDisplay"
+								value="Click to Display Files"
+								styleClass="displayButton"
+								update="availableStudy"
+								actionListener="#{visualizeBacking.displaySelectedMultiple}"
+								icon="ui-icon-disk"/>
+
+						</h:panelGroup>			
+						
+						<p:dataTable id="availableStudy"
+							var="studyHolder"
+							styleClass="visualizeDataTable"
+							sortMode="multiple"
+							rowKey="#{studyHolder.subjectID}"
+							value="#{visualizeBacking.studyEntryList}"
+							selection="#{visualizeBacking.selectedStudyObject}"
+							selectionMode="single" 
+							paginator="true" 
+							rows="10"
+							resizableColumns="true"
+							paginatorPosition="bottom">
+
+							<p:ajax event="rowSelect" listener="#{visualizeBacking.onRowSelect}"/>
+
+							<f:facet name="header">
+								<f:verbatim>Select One ECG Record to View Leads</f:verbatim>
+							</f:facet>
+
+							<p:column headerText="Subject ID" width="278">
+								<h:outputText value="#{studyHolder.subjectID}"/>
+							</p:column>
+
+							<p:column headerText="File Format" width="279">
+								<h:outputText value="#{studyHolder.datatype}"/>
+							</p:column>
+
+							<p:column headerText="Recording Date" width="279">
+								<h:outputText value="#{studyHolder.dateOfRecording}"/>
+							</p:column>
+
+							<f:facet name="footer">
+							
+								<p:commandButton id="New_div" 
+									value="View ECG"
+									actionListener="#{visualizeBacking.viewLeads}"
+									ajax="true"
+									icon="ui-icon-search"
+									title="View a graph of the selected ECG and its annotations"
+									update=":visualizeViews"/>
+
+								<p:dialog id="multiDialog"
+									header="Files Selected"
+									widgetVar="multiCheckDialog" 
+									height="100" 
+									showEffect="fade">
+								
+									<p:dataList id="displayMulti"
+										value="#{visualizeBacking.selectedStudyObject}"
+										var="studyHolder">
+										<f:verbatim><br /></f:verbatim>
+										<h:outputText value="#{studyHolder.datatype}"/>
+										<h:outputText value="#{studyHolder.recordDetails}"/>
+										<h:outputText value="#{studyHolder.recordName}"/>
+										<h:outputText value="#{studyHolder.subjectID}"/>
+									</p:dataList>
+
+									<p:commandButton style="float:left;" icon="ui-icon-close" id="ViewButton" oncomplete="multiCheckDialog.hide();"/>
+								</p:dialog>
+							</f:facet>
+
+							<p:dialog id="objDlg"
+								header="Object Detail" 
+								widgetVar="objDialog"
+								resizable="false"  
+								showEffect="fade"
+								hideEffect="explode" 
+								modal="true">
+
+								<f:facet name="header">
+									<h:outputText value="Object Detail"/>
+								</f:facet>
+
+								<h:panelGrid id="displayObject" 
+									columns="2" 
+									cellpadding="4"
+									style="margin:0 auto;">
+									<h:outputText value="#{studyHolder.datatype}"/>
+									<h:outputText value="#{studyHolder.recordName}"/>
+								</h:panelGrid>
+							</p:dialog>
+							
+						</p:dataTable>						
+				
+					</p:fieldset>
+				</h:form>
+			</p:layoutUnit>
+		</p:layout>
+	</h:panelGroup>
+</ui:composition>

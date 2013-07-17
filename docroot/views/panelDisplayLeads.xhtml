@@ -1,0 +1,122 @@
+<ui:composition lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:panelGroup layout="block" styleClass="backgroundofContent">
+		<p:layout id="viewLayout" style=" min-height:710px; height:720px; top:20px">
+			<p:layoutUnit id="ecgPrintLayout" position="center"	styleClass="displayleadLayout">
+				<!-- START TEMP FOR TESTING ONLY the JavaScript display none; -->
+				<h:outputScript>
+			        length=length
+			        <!--  b2=bZ.length  -->
+				</h:outputScript>
+				<!--  START to carry the Java import of ECG data by calling the methed onload -->
+				<h:form>
+					<!-- Button Used to create the Ajax Display = None -->
+					<h:commandButton value="submit" onclick="WAVEFORM_showGraphs()"	style="display:none;">
+						<f:ajax />
+					</h:commandButton>
+				</h:form>
+
+				<!-- END TEMP FOR TESTING ONLY the JavaScript  -->
+				<!-- Sends a call to the server to retreve the data for dygraphic to render -->
+				<!-- START DEV: Show uploaded data string hidden fore texting -->
+				<div id="show12LeadData" class="showDataDiv">
+				</div>
+				<!-- END DEV: Show uploaded data string hidden fore texting -->
+
+				<f:verbatim>
+					<script>
+						var OmniFaces=OmniFaces;
+						var dataFull;
+						//var isSingleLead=false; // determines which graph refresh function to call after a pan or zoom.
+						var WF_minTime, WF_maxTime;
+						function show12LeadData(minTime, maxTime) {
+							//alert("running show12LeadData() in include_viewContentLayout.xhtml minTime:" + minTime );
+		
+							WF_minTime = minTime;
+							WF_maxTime = maxTime;
+							//data = ""; // clear data variable.
+							var data12lead = OmniFaces.Ajax.data;
+							var $show12LeadData = $("#show12LeadData"); // A) Used to Show the data arrive on the screen 
+							$.each(data12lead, function(key, value) {
+								//* used to see the data arrive into the View 
+								$("&lt;div&gt;").text(key + "=" + JSON.stringify(value)).appendTo($show12LeadData); // A) JSON.stringify(value)).appendTo($show12LeadData); A Used to Show the data arrive on the screen 
+								// SeTting the ValUe to "data" the Variable that fills the Graph
+								dataFull = WAVEFORM_parseCSV(value);
+								//* Turning on the Dygrahs Display
+							});
+							WAVEFORM_showGraphs();
+							WAVEFORM_zoomGraphX(minTime, maxTime); // Changes the dataWindow on all 12 leads.
+							// WAVEFORM_backfillDataArray(dataFull);
+							WAVEFORM_replaceDataArray(dataFull);
+						}
+		
+						// This function is kept on the .xhtml page, because it contains code specific to this layout. 
+		                var WAVEFORM_showGraphs = function(){
+		                    //alert("running WAVEFORM_showGraphs() in include_12Lead_DIV.xhtml data.length:" + data.length);
+		                    populate12Graphs(2500, dataFull); 
+		                    makeCalibrationMarks(4);
+		                }
+		            </script>
+				</f:verbatim>
+
+				<!-- HIDDEN FIELDS TO SEND THE LEAD NAME TO BACKING BEAN START Send Lead Name TO Backing Bean -->
+				<h:panelGroup id="HiddenLeadNameStuff" layout="block"
+					style="display:none; position:relitive;
+				 background-color:333; height:50px; width:100px; 
+				 left:100px;">
+					<!-- START Send Lead Name TO Backing Bean -->
+					<script>
+						function setLeadNameOneSelection() {
+							// Lead Name send to the input to submit to the backing bean
+							$(".leadNamesendDOM2Graph").text(leadName);
+							$(".leadNameDOM2Graph").val(leadName);
+	
+							// Lead Num send to the input to submit to the backing bean
+							$(".leadNumsendDOM2Graph").text(leadNum);
+							$(".leadNumDOM2Graph").val(leadNum);
+							//setLeadName();
+						}
+					</script>
+					<!-- HIDDEN FIELDS to capture -->
+					<h:form id="formLeadName">
+						<h:outputText id="leadNameGraph" class="leadNamesendDOM2Graph"
+							value="#{annotationBacking.leadName}" style="display:none" />
+						<h:inputText id="leadNamesendGraph" class="leadNameDOM2Graph"
+							value="#{annotationBacking.leadName}" style="display:none">
+							<p:ajax update="leadNameGraph" event="keyup" />
+						</h:inputText>
+
+						<h:outputText id="leadNumGraph" class="leadNumsendDOM2Graph"
+							value="#{annotationBacking.leadnum}" style="display:none;" />
+						<h:inputText id="leadNumsendGraph" class="leadNumDOM2Graph"
+							value="#{annotationBacking.leadnum}" style="display:none;">
+							<p:ajax update="leadNumGraph" event="keyup" />
+						</h:inputText>
+					</h:form>
+					<!-- END Send Lead Name TO Backing Bean -->
+				</h:panelGroup>
+
+				<h:panelGroup id="navDivFormat" layout="block">
+					<ui:include src="include_12Lead_DIV.xhtml" />
+				</h:panelGroup>
+			</p:layoutUnit>
+
+			<p:layoutUnit position="east" resizable="true" size="225"
+				minSize="75" maxSize="250">
+				<p:lightBox id="singleLeadIFrame" 
+					iframe="true"
+					widgetVar="lightbox_widget_lead_Annotation" 
+					width="1024px"
+					height="600px">
+					<h:outputLink value="leads/singleLead.xhtml" />
+				</p:lightBox>
+
+				<ui:include src="include/include_ViewChangeButtons.xhtml" />
+			</p:layoutUnit>
+		</p:layout>
+	</h:panelGroup>
+</ui:composition>

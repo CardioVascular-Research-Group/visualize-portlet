@@ -1,0 +1,92 @@
+<ui:composition lang="en"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:o="http://omnifaces.org/ui"
+    xmlns:of="http://omnifaces.org/functions"
+>
+	<Style>
+		#helpButton {float:right;}
+	</Style>
+	<p:commandButton id="printButton" value="Print" type="button" alt="Print" icon="ui-icon-print">
+		<p:printer target="ecgPrintLayout" />
+	</p:commandButton>
+	
+	<p:commandButton id="New_div" 
+							value="View ECG List"
+							actionListener="#{visualizeBacking.viewSelectTree}"
+							ajax="true"
+							icon="ui-icon-search"
+							title="View the ECG selection tree."
+							update=":visualizeViews"/>
+							
+	<p:commandButton id="helpButton" value="Help" type="button" alt="Help" icon="ui-icon-help" onclick="removeiFrame()" />
+
+	<h:selectOneListbox id="layoutSelectDropdown" size="1" onchange="include_ViewChangeButton_ChangeLayout(this);">
+		<f:selectItem itemLabel="Traditional" itemValue="1"/>
+		<f:selectItem itemLabel="3 column" itemValue="4"/>
+		<f:selectItem itemLabel="GE" itemValue="0"/>
+		<f:selectItem itemLabel="Trad. Proportional" itemValue="2"/>
+		<f:selectItem itemLabel="Trad. rotated" itemValue="3"/>
+		<f:selectItem itemLabel="3 Lead 3 Column" itemValue="5"/>
+		<f:selectItem itemLabel="3 Lead 1 Column" itemValue="6"/>
+	</h:selectOneListbox>
+	
+	<p:panel id="dragPanelPhenotype"  header="Phenotype" styleClass="dragPanelPhenotype clearfix hoverShadow">
+		<h:form id="formPhenotype">
+			<p:dataTable widgetVar="handlepnlDataTbl" scrollable="true"
+			    resizableColumns="true" scrollHeight="100" id="availableStudy"
+			    var="item" value="#{phenotypeList.phenotypeArrayList}">
+				
+				<p:column filterOptions="true" headerText="Phenotype" width="60">
+				    <h:outputText value="#{item.name}" />
+				</p:column>
+				
+				<p:column headerText="Value" width="40">
+				    <h:outputText value="#{item.value}" />
+				</p:column>
+				
+				<p:column headerText="Units" width="20">
+				    <h:outputText value="#{item.unit}" />
+				</p:column>
+				
+			</p:dataTable>
+		</h:form>
+	</p:panel>
+	<p:draggable for="dragPanelPhenotype" handle=".ui-panel-titlebar" />
+	<p:resizable for="dragPanelPhenotype" handles="e,w,n,se,sw,ne,nw" />
+
+		<ui:insert name="panZoomInsert">
+			<ui:include src="includePanZoom.xhtml" />
+		</ui:insert>
+
+	
+	<p:panel id="dragPanelComments" header="Comments" styleClass="dragPanelComments clearfix hoverShadow">
+		<h:form id="leadCommentForm">
+			<p:dataList value="#{commentListBacking.annotationList}" id="leadExistingComments" var="leadComment" itemType="circle">
+				#{leadComment}
+			</p:dataList>
+		
+			<p:inputTextarea id="leadCommentInput" value="#{commentListBacking.enteredText}" size="100px">
+				<p:ajax event="keyup" />
+			</p:inputTextarea>
+			<p:commandButton id="leadCommentSubmit" value="Submit"
+				actionListener="#{commentListBacking.saveComment}"
+				update="leadExistingComments" />
+		</h:form>
+	</p:panel>
+	<p:draggable for="dragPanelComments" handle=".ui-panel-titlebar" />
+	<p:resizable for="dragPanelComments" handles="e,w,n,s,se,sw,ne,nw" />
+	
+	<script>
+		var include_ViewChangeButton_ChangeLayout = function(droplist){
+			//var droplist = document.getElementById("layoutSelectDropdown");
+			var x=droplist.selectedIndex;
+			var optionList=droplist.options;
+			//alert("Index:" + optionList[x].index + " Text: '" + optionList[x].text + "' value:" + optionList[x].value);
+			changeViewMultiLeadFormat(optionList[x].value);
+		}
+	</script>
+</ui:composition>
