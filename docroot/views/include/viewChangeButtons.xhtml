@@ -4,17 +4,17 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:p="http://primefaces.org/ui">
-<!--   xmlns:o="http://omnifaces.org/ui"
-    xmlns:of="http://omnifaces.org/functions"-->
-
-	<Style>
+    
+<!-- 	<Style>
 		#helpButton {float:right;}
-	</Style>
+	</Style>  -->
+	<h:form id="changeButtons">
+	
 	<p:commandButton id="printButton" value="Print" type="button" alt="Print" icon="ui-icon-print">
 		<p:printer target="ecgPrintLayout" />
 	</p:commandButton>
 	
-	<p:commandButton id="New_div" 
+	<p:commandButton id="returnToList" 
 							value="View ECG List"
 							actionListener="#{visualizeBacking.viewSelectTree}"
 							ajax="true"
@@ -33,7 +33,7 @@
 		<f:selectItem itemLabel="3 Lead 3 Column" itemValue="5"/>
 		<f:selectItem itemLabel="3 Lead 1 Column" itemValue="6"/>
 	</h:selectOneListbox>
-	
+	</h:form>
 	<p:panel id="dragPanelPhenotype"  header="Phenotype" styleClass="dragPanelPhenotype clearfix hoverShadow">
 		<h:form id="formPhenotype">
 			<p:dataTable widgetVar="handlepnlDataTbl" scrollable="true"
@@ -89,4 +89,5 @@
 			changeViewMultiLeadFormat(optionList[x].value);
 		}
 	</script>
+	
 </ui:composition>

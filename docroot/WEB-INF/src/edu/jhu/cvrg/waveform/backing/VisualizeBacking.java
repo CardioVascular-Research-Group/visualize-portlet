@@ -26,13 +26,15 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ComponentSystemEvent;
 
-import org.omnifaces.util.Ajax;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+//import org.omnifaces.util.Ajax;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 
@@ -57,26 +59,31 @@ public class VisualizeBacking implements Serializable {
 	private ArrayList<StudyEntry> studyEntryList;
 	private boolean geVisible = true;
 	private FileTree fileTree;
-	private boolean graphVisible;
+	private boolean graphVisible = false, graphMultipleVisible;
 	private int iCurrentVisualizationOffset=0; // 12 lead displays always start at zero seconds (0 ms).
 	private int iVisualizationWidthMS = 2500;
 	private int iDurationMilliSeconds = 2500; // 2.5 second of data is needed for rhythm strip(s) at the bottom of the page. 
 	private int iGraphWidthPixels = 2500; //width of the longest graph which will use this data. Sets the maximum amount of data compression allowable.
 	private String[] saGraphTitle= {"I","II","III","aVR","aVL","aVF","V1","V2","V3","V4","V5","V6","VX","VY","VZ"};
+	private JSONObject dataJson;
 
 	private User userModel;
-
+	
 	@PostConstruct
 	public void init(ComponentSystemEvent event) {
 		userModel = ResourceUtility.getCurrentUser();
-		fileTree = new FileTree();
-		fileTree.initialize(userModel.getScreenName());
+		if(!isGraphVisible()) {
+			fileTree = new FileTree();
+			fileTree.initialize(userModel.getScreenName());
+		}
 	}
     
     public void viewLeads(ActionEvent event){
-    	this.graphVisible = true;
-    	System.out.println("graphVisible = " + graphVisible);
-//    	generic12leadOnloadCallback();
+    	setGraphVisible(true);
+    	System.out.println("graphVisible = " + isGraphVisible());
+    	setGraphMultipleVisible(true);
+    	System.out.println("graphMultipleVisible = " + isGraphMultipleVisible());
+    	generic12leadOnloadCallback();
     }
 
     public void viewSelectTree(ActionEvent event){
@@ -85,21 +92,26 @@ public class VisualizeBacking implements Serializable {
     }
 
 	public void displaySelectedMultiple(ActionEvent event) {
+		System.out.println("-VisualizeBacking.displaySelectedMultiple() ");
 		selectedNodes = fileTree.getSelectedFileNodes();
 		setStudyEntryList(selectedNodes);
+		System.out.println("-VisualizeBacking.displaySelectedMultiple() DONE");
 	}
 
 	public void onRowSelect(SelectEvent event) {
-		selectedStudyObject = ((StudyEntry) event.getObject());
+		//selectedStudyObject = ((StudyEntry) event.getObject());
 		System.out.println(" onRowSelect() selectedStudyObject " + selectedStudyObject.toString()  );
 		FacesMessage msg = new FacesMessage("Selected Row", ((StudyEntry) event.getObject()).getStudy());
 		FacesContext.getCurrentInstance().addMessage(null, msg);
+		System.out.println(" onRowSelect() selectedStudyObject DONE");
 	}
 
 	public void onRowUnselect(UnselectEvent event) {
+		System.out.println(" onRowUnSelect() selectedStudyObject " + selectedStudyObject.toString()  );
 		StudyEntry studyentry = ((StudyEntry) event.getObject());
 		FacesMessage msg = new FacesMessage("Unselected Row",studyentry.getStudy());
 		FacesContext.getCurrentInstance().addMessage(null, msg);
+		System.out.println(" onRowUnSelect() selectedStudyObject DONE");
 	}
 	
 	public void hideGe(ActionEvent e){
@@ -189,8 +201,12 @@ public class VisualizeBacking implements Serializable {
 	 */
 	public void generic12leadOnloadCallback() {
 		System.out.println("Entering function generic12leadOnCallback");
-//		if(selectedStudyObject != null){
-			AnnotationUtility annUtil = new AnnotationUtility();
+		if(selectedStudyObject != null){
+			AnnotationUtility annUtil = new AnnotationUtility(com.liferay.util.portlet.PortletProps.get("dbUser"),
+					com.liferay.util.portlet.PortletProps.get("dbPassword"), 
+					com.liferay.util.portlet.PortletProps.get("dbURI"),	
+					com.liferay.util.portlet.PortletProps.get("dbDriver"), 
+					com.liferay.util.portlet.PortletProps.get("dbMainDatabase"));
 			int iaAnnCount[][] = annUtil.getAnnotationCountPerLead(userModel.getScreenName(), 
 					selectedStudyObject.getStudy(),
 					selectedStudyObject.getSubjectID(),
@@ -198,6 +214,8 @@ public class VisualizeBacking implements Serializable {
 	
 			setGraphTitle(iaAnnCount);
 			g12leadPanZeroSec();
+		}
+		System.out.println("Exiting function generic12leadOnCallback");
 //		}else{
 //		    FacesContext msgs = FacesContext.getCurrentInstance();  
 //		    msgs.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Study not found.", "The selected study was not found or else no study was selected."));
@@ -214,6 +232,7 @@ public class VisualizeBacking implements Serializable {
 			saGraphTitle[iaACnt[0]-1] = sName + " (" +  iaACnt[1] + " annotations)";
 		}		
 	}
+	
 	public void g12leadPanZeroSec() {
 		System.out.println("Entering function g12leadPanZeroSec");
 		iCurrentVisualizationOffset = 0;	
@@ -291,12 +310,39 @@ public class VisualizeBacking implements Serializable {
 		    System.out.println(" get12leadOnloadCallback WARNING: The WebService failed! ");
 	    } else { 
 			String dataForJavaScript = VisData.getECGDataSingleString();
-//			System.out.println(" get12leadOnloadCallback INFO:  dataForJavaScript.length: [" + dataForJavaScript.length() + "]");
-			Ajax.data("ECG", dataForJavaScript);
-			Map<String, Object> data = new HashMap<String, Object>();
-			Ajax.data(data);
-			Ajax.oncomplete("show12LeadData(" + iCurrentVisualizationOffset + "," + (iCurrentVisualizationOffset + iVisualizationWidthMS) + ")");
+			dataForJavaScript = dataForJavaScript.replace("\n", "\\n");
+			System.out.println(" get12leadOnloadCallback INFO:  dataForJavaScript.length: [" + dataForJavaScript.length() + "]");
+//			Ajax.data("ECG", dataForJavaScript);
+			try {
+				dataJson = new JSONObject();
+				dataJson.put("ECG", dataForJavaScript);
+			//data.put("ECG", dataForJavaScript);
+				dataJson.put("minTime", new Integer(iCurrentVisualizationOffset).toString());
+				dataJson.put("maxTime", new Integer(iCurrentVisualizationOffset + iVisualizationWidthMS).toString());			
+//			Ajax.data(data);
+//			Ajax.oncomplete("show12LeadData(" + iCurrentVisualizationOffset + "," + (iCurrentVisualizationOffset + iVisualizationWidthMS) + ")");
+				//System.out.println(data);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	    }
+	}
+
+	public boolean isGraphMultipleVisible() {
+		return graphMultipleVisible;
+	}
+
+	public void setGraphMultipleVisible(boolean graphMultipleVisible) {
+		this.graphMultipleVisible = graphMultipleVisible;
+	}
+
+	public JSONObject getData() {
+		return dataJson;
+	}
+
+	public void setData(JSONObject dataJson) {
+		this.dataJson = dataJson;
 	}
 
 }
