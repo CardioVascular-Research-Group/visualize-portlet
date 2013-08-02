@@ -33,8 +33,12 @@
 	<!-- START 12 lead container -->
 	<h:panelGrid layout="block" id="Container_12LeadDivOutside" columns="3">
 		<h:panelGrid layout="block" id="Container_12LeadDiv" columns="5">
+			<h:panelGroup layout="block" id="LabelCal0" styleClass="labelCal"></h:panelGroup>
+			<h:panelGroup layout="block" id="LabelDiv0" styleClass="label"></h:panelGroup>
+			<h:panelGroup layout="block" id="LabelDiv3" styleClass="label"></h:panelGroup>
+			<h:panelGroup layout="block" id="LabelDiv6" styleClass="label"></h:panelGroup>
+			<h:panelGroup layout="block" id="LabelDiv9" styleClass="label"></h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerCal0" styleClass="calContainer">
-				<h:panelGroup layout="block" id="LabelCal0" styleClass="labelCal"></h:panelGroup>
 				<h:outputText value="200 mS" id="TitleCal0" styleClass="titleCal"/>
 				<h:panelGrid columns="2">
 					<h:outputText value="1mV" 	 id="yLabel0" styleClass="ylabelCal"/>
@@ -44,7 +48,6 @@
 			<h:panelGroup layout="block" id="ContainerDiv0" styleClass="ecgContainer">
 				<h:panelGrid columns="2">
 					<h:outputText value="I" id="TitleDiv0" styleClass="title"/>
-					<h:panelGroup layout="block" id="LabelDiv0" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 				<h:panelGrid columns="3">
 					<h:inputHidden id="voltCenterInput0" value="50" immediate="true"/>
@@ -54,7 +57,6 @@
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv3" styleClass="ecgContainer">
 				<h:outputText value="aVR" id="TitleDiv3" styleClass="title"/>
-				<h:panelGroup layout="block" id="LabelDiv3" styleClass="label"></h:panelGroup>
 				<h:panelGrid columns="3">
 					<h:inputHidden id="voltCenterInput3" value="50" immediate="true"/>
 					<p:slider for="voltCenterInput3" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('3',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
@@ -63,7 +65,6 @@
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv6" styleClass="ecgContainer">
 				<h:outputText value="V1" id="TitleDiv6" styleClass="title"/>
-				<h:panelGroup layout="block" id="LabelDiv6" styleClass="label"></h:panelGroup>
 				<h:panelGrid columns="3">
 					<h:inputHidden id="voltCenterInput6" value="50" immediate="true"/>
 					<p:slider for="voltCenterInput6" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('6',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
@@ -72,16 +73,19 @@
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv9" styleClass="ecgContainer">
 				<h:outputText value="V4" id="TitleDiv9" styleClass="title"/>
-				<h:panelGroup layout="block" id="LabelDiv9" styleClass="label"></h:panelGroup>
 				<h:panelGrid columns="3">
 					<h:inputHidden id="voltCenterInput9" value="50" immediate="true"/>
 					<p:slider for="voltCenterInput9" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('9',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
 					<h:panelGroup layout="block" id="Div9" styleClass="graph"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
+			<h:panelGroup layout="block" id="LabelCal1" styleClass="labelCal"></h:panelGroup>
+			<h:panelGroup layout="block" id="LabelDiv1" styleClass="label"></h:panelGroup>
+			<h:panelGroup layout="block" id="LabelDiv4" styleClass="label"></h:panelGroup>
+			<h:panelGroup layout="block" id="LabelDiv7" styleClass="label"></h:panelGroup>
+			<h:panelGroup layout="block" id="LabelDiv10" styleClass="label"></h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerCal1" styleClass="calContainer">
 				<h:outputText value="200 mS" id="TitleCal1" styleClass="titleCal"/>
-				<h:panelGroup layout="block" id="LabelCal1" styleClass="labelCal"></h:panelGroup>
 				<h:panelGrid columns="2">
 					<h:outputText value="1mV" id="yLabel1" styleClass="ylabelCal"/>
 					<h:panelGroup layout="block" id="DivCal1"   styleClass="graphCal"></h:panelGroup>
@@ -89,7 +93,6 @@
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv1" styleClass="ecgContainer">
 				<h:outputText value="II" id="TitleDiv1" styleClass="title"/>
-				<h:panelGroup layout="block" id="LabelDiv1" styleClass="label"></h:panelGroup>
 				<h:panelGrid columns="3">
 					<h:inputHidden id="voltCenterInput1" value="50" immediate="true"/>
 					<p:slider for="voltCenterInput1" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('1',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
@@ -98,7 +101,6 @@
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv4" styleClass="ecgContainer">
 				<h:outputText value="aVL" id="TitleDiv4" styleClass="title"/>
-				<h:panelGroup layout="block" id="LabelDiv4" styleClass="label"></h:panelGroup>
 				<h:panelGrid columns="3">
 					<h:inputHidden id="voltCenterInput4" value="50" immediate="true"/>
 					<p:slider for="voltCenterInput4" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('4',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
@@ -107,7 +109,6 @@
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv7" styleClass="ecgContainer">
 				<h:outputText value="V2" id="TitleDiv7" styleClass="title"/>
-				<h:panelGroup layout="block" id="LabelDiv7" styleClass="label"></h:panelGroup>
 				<h:panelGrid columns="3">
 					<h:inputHidden id="voltCenterInput7" value="50" immediate="true"/>
 					<p:slider for="voltCenterInput7" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('7',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
@@ -116,16 +117,19 @@
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv10" styleClass="ecgContainer">
 				<h:outputText value="V5" id="TitleDiv10" styleClass="title"/>
-				<h:panelGroup layout="block" id="LabelDiv10" styleClass="label"></h:panelGroup>
 				<h:panelGrid columns="3">
 					<h:inputHidden id="voltCenterInput10" value="50" immediate="true"/>
 					<p:slider for="voltCenterInput10" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('10',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
 					<h:panelGroup layout="block" id="Div10" styleClass="graph"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
+			<h:panelGroup layout="block" id="LabelCal2" styleClass="labelCal"></h:panelGroup>
+			<h:panelGroup layout="block" id="LabelDiv2" styleClass="label"></h:panelGroup>
+			<h:panelGroup layout="block" id="LabelDiv5" styleClass="label"></h:panelGroup>
+			<h:panelGroup layout="block" id="LabelDiv8" styleClass="label"></h:panelGroup>
+			<h:panelGroup layout="block" id="LabelDiv11" styleClass="label"></h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerCal2" styleClass="calContainer">
 				<h:outputText value="200 mS" id="TitleCal2" styleClass="titleCal"/>
-				<h:panelGroup layout="block" id="LabelCal2" styleClass="labelCal"></h:panelGroup>
 				<h:panelGrid columns="2">
 					<h:outputText value="1mV" id="yLabel2" styleClass="ylabelCal"/>
 					<h:panelGroup layout="block" id="DivCal2"   styleClass="graphCal"></h:panelGroup>
@@ -133,7 +137,6 @@
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv2" styleClass="ecgContainer">
 				<h:outputText value="III" id="TitleDiv2" styleClass="title"/>
-				<h:panelGroup layout="block" id="LabelDiv2" styleClass="label"></h:panelGroup>
 				<h:panelGrid columns="3">
 					<h:inputHidden id="voltCenterInput2" value="50" immediate="true"/>
 					<p:slider for="voltCenterInput2" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('2',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
@@ -142,7 +145,6 @@
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv5" styleClass="ecgContainer">
 				<h:outputText value="aVF" id="TitleDiv5" styleClass="title"/>
-				<h:panelGroup layout="block" id="LabelDiv5" styleClass="label"></h:panelGroup>
 				<h:panelGrid columns="3">
 					<h:inputHidden id="voltCenterInput5" value="50" immediate="true"/>
 					<p:slider for="voltCenterInput5" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('5',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
@@ -151,7 +153,6 @@
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv8" styleClass="ecgContainer">
 				<h:outputText value="V3" id="TitleDiv8" styleClass="title"/>
-				<h:panelGroup layout="block" id="LabelDiv8" styleClass="label"></h:panelGroup>
 				<h:panelGrid columns="3">
 					<h:inputHidden id="voltCenterInput8" value="50" immediate="true"/>
 					<p:slider for="voltCenterInput8" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('8',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
@@ -160,7 +161,6 @@
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv11" styleClass="ecgContainer">
 				<h:outputText value="V6" id="TitleDiv11" styleClass="title"/>
-				<h:panelGroup layout="block" id="LabelDiv11" styleClass="label"></h:panelGroup>
 				<h:panelGrid columns="3">
 					<h:inputHidden id="voltCenterInput11" value="50" immediate="true"/>
 					<p:slider for="voltCenterInput11" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('11',true,'#{facesContext.externalContext.encodeNamespace('')}')" />

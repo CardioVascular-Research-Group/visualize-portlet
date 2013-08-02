@@ -7,12 +7,11 @@
     
 <!-- 	<Style>
 		#helpButton {float:right;}
-	</Style>  -->
-	<h:form id="changeButtons">
+	</Style>  
 	
 	<p:commandButton id="printButton" value="Print" type="button" alt="Print" icon="ui-icon-print">
 		<p:printer target="ecgPrintLayout" />
-	</p:commandButton>
+	</p:commandButton> -->
 	
 	<p:commandButton id="returnToList" 
 							value="View ECG List"
@@ -33,7 +32,7 @@
 		<f:selectItem itemLabel="3 Lead 3 Column" itemValue="5"/>
 		<f:selectItem itemLabel="3 Lead 1 Column" itemValue="6"/>
 	</h:selectOneListbox>
-	</h:form>
+	
 	<p:panel id="dragPanelPhenotype"  header="Phenotype" styleClass="dragPanelPhenotype clearfix hoverShadow">
 		<h:form id="formPhenotype">
 			<p:dataTable widgetVar="handlepnlDataTbl" scrollable="true"
