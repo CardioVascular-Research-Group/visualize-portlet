@@ -6,22 +6,22 @@
     xmlns:p="http://primefaces.org/ui">
 
 	<style>
-	span.ylabelCal{
-    left:-5px;
-    top:50px;
-    font-size:8pt;
-    
-    /* Safari */
-    -webkit-transform: rotate(-90deg);
-    /* Firefox */
-    -moz-transform: rotate(-90deg);
-    /* IE */
-    -ms-transform: rotate(-90deg);
-    /* Opera */
-    -o-transform: rotate(-90deg);
-    /* Internet Explorer
-    filter: progid : DXImageTransform.Microsoft.BasicImage ( rotation = 3 );
-     */
+	.ylabelCal{
+	    left:-5px;
+	    top:50%;
+	    font-size:8pt;
+	    
+	    /* Safari */
+	    -webkit-transform: rotate(-90deg);
+	    /* Firefox */
+	    -moz-transform: rotate(-90deg);
+	    /* IE */
+	    -ms-transform: rotate(-90deg);
+	    /* Opera */
+	    -o-transform: rotate(-90deg);
+	    /* Internet Explorer
+	    filter: progid : DXImageTransform.Microsoft.BasicImage ( rotation = 3 );
+	     */
 	}
 	
 	</style>
@@ -31,145 +31,177 @@
 	</h:panelGroup> 
 
 	<!-- START 12 lead container -->
-	<h:panelGrid layout="block" id="Container_12LeadDivOutside" columns="3">
-		<h:panelGrid layout="block" id="Container_12LeadDiv" columns="5">
+	<h:inputHidden id="voltCenterInput0" 	value="50" immediate="true"/>
+	<h:inputHidden id="voltCenterInput3" 	value="50" immediate="true"/>
+	<h:inputHidden id="voltCenterInput6" 	value="50" immediate="true"/>
+	<h:inputHidden id="voltCenterInput9" 	value="50" immediate="true"/>
+	<h:inputHidden id="voltCenterInput1" 	value="50" immediate="true"/>
+	<h:inputHidden id="voltCenterInput4" 	value="50" immediate="true"/>
+	<h:inputHidden id="voltCenterInput7" 	value="50" immediate="true"/>
+	<h:inputHidden id="voltCenterInput10" 	value="50" immediate="true"/>
+	<h:inputHidden id="voltCenterInput2" 	value="50" immediate="true"/>
+	<h:inputHidden id="voltCenterInput5" 	value="50" immediate="true"/>
+	<h:inputHidden id="voltCenterInput8" 	value="50" immediate="true"/>
+	<h:inputHidden id="voltCenterInput11" 	value="50" immediate="true"/>
+	<h:inputHidden id="voltCenterInputALL" 	value="50" immediate="true"/>
+	
+	<h:panelGrid layout="block" id="Container_12LeadDivOutside" columns="3" styleClass="Container_12LeadDivOutside">
+		<h:panelGrid layout="block" id="Container_12LeadDiv" columns="5" styleClass="Container_12LeadDiv">
 			<h:panelGroup layout="block" id="ContainerCal0" styleClass="calContainer">
 				<h:outputText value="200 mS" id="TitleCal0" styleClass="titleCal"/>
 				<h:panelGrid columns="2">
 					<h:outputText value="1mV" 	 id="yLabel0" styleClass="ylabelCal"/>
-					<h:panelGroup layout="block" id="DivCal0" styleClass="graphCal"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDivCal0" styleClass="graphCal"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="LabelCal0" styleClass="labelCal" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv0" styleClass="ecgContainer">
 				<h:panelGrid columns="2">
-					<h:outputText value="I" id="TitleDiv0" styleClass="title"/>
-				</h:panelGrid>
-				<h:panelGrid columns="3">
-					<h:inputHidden id="voltCenterInput0" value="50" immediate="true"/>
-					<p:slider for="voltCenterInput0" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('0',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
-					<h:panelGroup layout="block" id="Div0" class="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:outputText value="I" id="TitleDiv0" styleClass="title"/>					
+					<p:slider for="voltCenterInput0" styleClass="voltSlider" type="vertical" 
+						onSlideEnd="panVoltage('0',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
+					<h:panelGroup layout="block" id="graphDiv0" class="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="labelDiv0" styleClass="label" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv3" styleClass="ecgContainer">
-				<h:outputText value="aVR" id="TitleDiv3" styleClass="title"/>
-				<h:panelGrid columns="3">
-					<h:inputHidden id="voltCenterInput3" value="50" immediate="true"/>
+				<h:panelGrid columns="2">
+					<h:outputText value=""/>
+					<h:outputText value="aVR" id="TitleDiv3" styleClass="title"/>
 					<p:slider for="voltCenterInput3" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('3',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
-					<h:panelGroup layout="block" id="Div3" styleClass="graph"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDiv3" styleClass="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="labelDiv3" styleClass="label" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv6" styleClass="ecgContainer">
-				<h:outputText value="V1" id="TitleDiv6" styleClass="title"/>
-				<h:panelGrid columns="3">
-					<h:inputHidden id="voltCenterInput6" value="50" immediate="true"/>
+				<h:panelGrid columns="2">
+					<h:outputText value=""/>
+					<h:outputText value="V1" id="TitleDiv6" styleClass="title"/>
 					<p:slider for="voltCenterInput6" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('6',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
-					<h:panelGroup layout="block" id="Div6" styleClass="graph"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDiv6" styleClass="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="labelDiv6" styleClass="label" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv9" styleClass="ecgContainer">
-				<h:outputText value="V4" id="TitleDiv9" styleClass="title"/>
-				<h:panelGrid columns="3">
-					<h:inputHidden id="voltCenterInput9" value="50" immediate="true"/>
+				<h:panelGrid columns="2">
+					<h:outputText value=""/>
+					<h:outputText value="V4" id="TitleDiv9" styleClass="title"/>
 					<p:slider for="voltCenterInput9" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('9',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
-					<h:panelGroup layout="block" id="Div9" styleClass="graph"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDiv9" styleClass="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="labelDiv9" styleClass="label" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
-			<h:panelGroup layout="block" id="LabelCal0" styleClass="labelCal" style="text-align:center"></h:panelGroup>
-			<h:panelGroup layout="block" id="LabelDiv0" styleClass="label" style="text-align:center"></h:panelGroup>
-			<h:panelGroup layout="block" id="LabelDiv3" styleClass="label" style="text-align:center"></h:panelGroup>
-			<h:panelGroup layout="block" id="LabelDiv6" styleClass="label" style="text-align:center"></h:panelGroup>
-			<h:panelGroup layout="block" id="LabelDiv9" styleClass="label" style="text-align:center"></h:panelGroup>
+
+
 			<h:panelGroup layout="block" id="ContainerCal1" styleClass="calContainer">
 				<h:outputText value="200 mS" id="TitleCal1" styleClass="titleCal"/>
 				<h:panelGrid columns="2">
 					<h:outputText value="1mV" id="yLabel1" styleClass="ylabelCal"/>
-					<h:panelGroup layout="block" id="DivCal1"   styleClass="graphCal"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDivCal1"   styleClass="graphCal"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="LabelCal1" styleClass="labelCal" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv1" styleClass="ecgContainer">
-				<h:outputText value="II" id="TitleDiv1" styleClass="title"/>
-				<h:panelGrid columns="3">
-					<h:inputHidden id="voltCenterInput1" value="50" immediate="true"/>
+				<h:panelGrid columns="2">
+					<h:outputText value=""/>
+					<h:outputText value="II" id="TitleDiv1" styleClass="title"/>
 					<p:slider for="voltCenterInput1" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('1',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
-					<h:panelGroup layout="block" id="Div1" styleClass="graph"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDiv1" styleClass="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="labelDiv1" styleClass="label" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv4" styleClass="ecgContainer">
-				<h:outputText value="aVL" id="TitleDiv4" styleClass="title"/>
-				<h:panelGrid columns="3">
-					<h:inputHidden id="voltCenterInput4" value="50" immediate="true"/>
+				<h:panelGrid columns="2">
+					<h:outputText value=""/>
+					<h:outputText value="aVL" id="TitleDiv4" styleClass="title"/>
 					<p:slider for="voltCenterInput4" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('4',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
-					<h:panelGroup layout="block" id="Div4" styleClass="graph"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDiv4" styleClass="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="labelDiv4" styleClass="label" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv7" styleClass="ecgContainer">
-				<h:outputText value="V2" id="TitleDiv7" styleClass="title"/>
-				<h:panelGrid columns="3">
-					<h:inputHidden id="voltCenterInput7" value="50" immediate="true"/>
+				<h:panelGrid columns="2">
+					<h:outputText value=""/>
+					<h:outputText value="V2" id="TitleDiv7" styleClass="title"/>
 					<p:slider for="voltCenterInput7" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('7',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
-					<h:panelGroup layout="block" id="Div7" styleClass="graph"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDiv7" styleClass="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="labelDiv7" styleClass="label" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv10" styleClass="ecgContainer">
-				<h:outputText value="V5" id="TitleDiv10" styleClass="title"/>
-				<h:panelGrid columns="3">
-					<h:inputHidden id="voltCenterInput10" value="50" immediate="true"/>
+				<h:panelGrid columns="2">
+					<h:outputText value=""/>
+					<h:outputText value="V5" id="TitleDiv10" styleClass="title"/>
 					<p:slider for="voltCenterInput10" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('10',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
-					<h:panelGroup layout="block" id="Div10" styleClass="graph"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDiv10" styleClass="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="labelDiv10" styleClass="label" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
-			<h:panelGroup layout="block" id="LabelCal1" styleClass="labelCal" style="text-align:center"></h:panelGroup>
-			<h:panelGroup layout="block" id="LabelDiv1" styleClass="label" style="text-align:center"></h:panelGroup>
-			<h:panelGroup layout="block" id="LabelDiv4" styleClass="label" style="text-align:center"></h:panelGroup>
-			<h:panelGroup layout="block" id="LabelDiv7" styleClass="label" style="text-align:center"></h:panelGroup>
-			<h:panelGroup layout="block" id="LabelDiv10" styleClass="label" style="text-align:center"></h:panelGroup>
+
 			<h:panelGroup layout="block" id="ContainerCal2" styleClass="calContainer">
 				<h:outputText value="200 mS" id="TitleCal2" styleClass="titleCal"/>
 				<h:panelGrid columns="2">
 					<h:outputText value="1mV" id="yLabel2" styleClass="ylabelCal"/>
-					<h:panelGroup layout="block" id="DivCal2"   styleClass="graphCal"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDivCal2"   styleClass="graphCal"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="LabelCal2" styleClass="labelCal" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv2" styleClass="ecgContainer">
-				<h:outputText value="III" id="TitleDiv2" styleClass="title"/>
-				<h:panelGrid columns="3">
-					<h:inputHidden id="voltCenterInput2" value="50" immediate="true"/>
+				<h:panelGrid columns="2">
+					<h:outputText value=""/>
+					<h:outputText value="III" id="TitleDiv2" styleClass="title"/>
 					<p:slider for="voltCenterInput2" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('2',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
-					<h:panelGroup layout="block" id="Div2" styleClass="graph"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDiv2" styleClass="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="labelDiv2" styleClass="label" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv5" styleClass="ecgContainer">
-				<h:outputText value="aVF" id="TitleDiv5" styleClass="title"/>
-				<h:panelGrid columns="3">
-					<h:inputHidden id="voltCenterInput5" value="50" immediate="true"/>
+				<h:panelGrid columns="2">
+					<h:outputText value=""/>
+					<h:outputText value="aVF" id="TitleDiv5" styleClass="title"/>
 					<p:slider for="voltCenterInput5" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('5',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
-					<h:panelGroup layout="block" id="Div5" styleClass="graph"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDiv5" styleClass="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="labelDiv5" styleClass="label" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv8" styleClass="ecgContainer">
-				<h:outputText value="V3" id="TitleDiv8" styleClass="title"/>
-				<h:panelGrid columns="3">
-					<h:inputHidden id="voltCenterInput8" value="50" immediate="true"/>
+				<h:panelGrid columns="2">
+					<h:outputText value=""/>
+					<h:outputText value="V3" id="TitleDiv8" styleClass="title"/>
 					<p:slider for="voltCenterInput8" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('8',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
-					<h:panelGroup layout="block" id="Div8" styleClass="graph"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDiv8" styleClass="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="labelDiv8" styleClass="label" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv11" styleClass="ecgContainer">
-				<h:outputText value="V6" id="TitleDiv11" styleClass="title"/>
-				<h:panelGrid columns="3">
-					<h:inputHidden id="voltCenterInput11" value="50" immediate="true"/>
+				<h:panelGrid columns="2">
+					<h:outputText value=""/>
+					<h:outputText value="V6" id="TitleDiv11" styleClass="title"/>
 					<p:slider for="voltCenterInput11" styleClass="voltSlider" type="vertical" onSlideEnd="panVoltage('11',true,'#{facesContext.externalContext.encodeNamespace('')}')" />
-					<h:panelGroup layout="block" id="Div11" styleClass="graph"></h:panelGroup>
+					<h:panelGroup layout="block" id="graphDiv11" styleClass="graph"></h:panelGroup>
+					<h:outputText value=""/>
+					<h:panelGroup layout="block" id="labelDiv11" styleClass="label" style="text-align:center"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
-			<h:panelGroup layout="block" id="LabelCal2" styleClass="labelCal" style="text-align:center"></h:panelGroup>
-			<h:panelGroup layout="block" id="LabelDiv2" styleClass="label" style="text-align:center"></h:panelGroup>
-			<h:panelGroup layout="block" id="LabelDiv5" styleClass="label" style="text-align:center"></h:panelGroup>
-			<h:panelGroup layout="block" id="LabelDiv8" styleClass="label" style="text-align:center"></h:panelGroup>
-			<h:panelGroup layout="block" id="LabelDiv11" styleClass="label" style="text-align:center"></h:panelGroup>
 		</h:panelGrid>
-		<h:inputHidden id="voltCenterInputALL" value="50" immediate="true"/>
-		<p:slider for="voltCenterInputALL" id="voltCenterALL" styleClass="voltCenterALL" type="vertical" onSlideEnd="panVoltage('ALL',false,'#{facesContext.externalContext.encodeNamespace('')}')" />
+
+		<p:slider for="voltCenterInputALL" id="voltCenterALL" styleClass="voltCenterAllLead" style="height:500px" type="vertical" 
+			onSlideEnd="panVoltage('ALL',false,'#{facesContext.externalContext.encodeNamespace('')}')" />
 	</h:panelGrid>
 	<!--  END 12 Lead Container -->
 </ui:composition>

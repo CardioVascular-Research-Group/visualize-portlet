@@ -31,8 +31,7 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 	 // V5  // 
 	 // V6  // 
 
-	/** Event handler for when the mouse is over a graph. 
-	 * Out of date version.
+    /** Event handler for when the mouse is over any graph. 
 	 * this callback gets called every time a new point is highlighted.
 	 * 
 	 * http://dygraphs.com/options.html#Callbacks
@@ -42,57 +41,7 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 	 * @param pts - points: an array of highlighted points: [ {name: 'series', yval: y-value}, … ]
 	 * @returns
 	 */
-	var CVRG_highlightCallback = function(e, x, pts) {
-//		alert("e, x,   pts[i].name = "+ e + ", " + x +", " + pts[0].name);
-		for (var i = 0; i < pts.length; i++) {
-			//var y = pts[i].canvasy;
-			//lines[i].style.display = "";
-			//lines[i].style.top = y + "px";
-//			if (i == 0){
-				var ptsName = pts[i].name;// + "_div";
-				alert("ptsName = "+ ptsName);
-//				var lineIDList = "";
-				for(var xL=0;xL < xLines.length;xL++){	
-					var xLine1 = xLines[xL];
-					var xLineId = xLine1.id;
-//					lineIDList = lineIDList + xLineId + ", ";
-//					var xLinePId = xLine1.parentNode.id;
-					if(xLineId == ptsName){
-//						xLine1.style.display = "none";
-					}else{  
-//						xLine1.style.left = pts[i].canvasx + "px";
-					}
-				}
-				var x=pts[i].canvasx + "px";
-				
-				xLines[0].style.left   = x;
-				xLines[1].style.left   = x;
-				xLines[2].style.left   = x;
-				xLines[3].style.left   = x;
-				xLines[4].style.left   = x;
-				xLines[5].style.left   = x;
-				xLines[6].style.left   = x;
-				xLines[7].style.left   = x;
-				xLines[8].style.left   = x;
-				xLines[9].style.left   = x;
-				xLines[10].style.left   = x;
-				xLines[11].style.left   = x;
-		}
-		if(ptsName != "I" )   xLines[0].style.display = ""; else xLines[0].style.display = "none";
-		if(ptsName != "II" )  xLines[1].style.display = ""; else xLines[1].style.display = "none";
-		if(ptsName != "III" ) xLines[2].style.display = ""; else xLines[2].style.display = "none";
-		if(ptsName != "aVR" ) xLines[3].style.display = ""; else xLines[3].style.display = "none";
-		if(ptsName != "aVL" ) xLines[4].style.display = ""; else xLines[4].style.display = "none";
-		if(ptsName != "aVF" ) xLines[5].style.display = ""; else xLines[5].style.display = "none";
-		if(ptsName != "V1" )  xLines[6].style.display = ""; else xLines[6].style.display = "none";
-		if(ptsName != "V2" )  xLines[7].style.display = ""; else xLines[7].style.display = "none";
-		if(ptsName != "V3" )  xLines[8].style.display = ""; else xLines[8].style.display = "none";
-		if(ptsName != "V4" )  xLines[9].style.display = ""; else xLines[9].style.display = "none";
-		if(ptsName != "V5" )  xLines[10].style.display = ""; else xLines[10].style.display = "none";
-		if(ptsName != "V6" )  xLines[11].style.display = ""; else xLines[11].style.display = "none";
-	};
-
-	var CVRG_highlightCallbackAll = function(e, x, points){
+    var CVRG_highlightCallbackAll = function(e, x, points){
 //		CVRG_highlightCallbackCommon(pts, 1);
 		for (var i = 0; i < points.length; i++) {
 			ptsName = points[i].name;
@@ -102,133 +51,24 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 				var xLineID = xLineTemp.id; // should be the same as array index "xL"
 				
 				xLineTemp.style.left = x;
-				if(ptsName == "I" )   lineID = namespaceGlobal + ":line0";
-				if(ptsName == "II" )  lineID = namespaceGlobal + ":line1";
-				if(ptsName == "III" ) lineID = namespaceGlobal + ":line2";
-				if(ptsName == "aVR" ) lineID = namespaceGlobal + ":line3";
-				if(ptsName == "aVL" ) lineID = namespaceGlobal + ":line4";
-				if(ptsName == "aVF" ) lineID = namespaceGlobal + ":line5";
-				if(ptsName == "V1" )  lineID = namespaceGlobal + ":line6";
-				if(ptsName == "V2" )  lineID = namespaceGlobal + ":line7";
-				if(ptsName == "V3" )  lineID = namespaceGlobal + ":line8";
-				if(ptsName == "V4" )  lineID = namespaceGlobal + ":line9";
-				if(ptsName == "V5" )  lineID = namespaceGlobal + ":line10";
-				if(ptsName == "V6" )  lineID = namespaceGlobal + ":line11";
+				for(var lab=0;lab<labels.length;lab++){
+					if(ptsName == labels[lab]){
+						lineID = namespaceGlobal + ":line" +  (lab+1);
+					}
+				}
 
 				if(xLineID == lineID){
-					xLineTemp.style.display = "none";
-				}else{  
 					xLineTemp.style.display = "";
+//					xLineTemp.style.display = "none";
+				}else{  
+					xLineTemp.style.display = "none";
+//					xLineTemp.style.display = "";
 				}
 
 			}
 		}
 	};
-	
 
-
-//	var CVRG_highlightCallback0 = function(e, x, points){
-////		CVRG_highlightCallbackCommon(pts, 1);
-//		leadName = "line0";
-//		for (var i = 0; i < points.length; i++) {
-//			leadNameOld = points[i].name;// + "_div";
-//			var x=points[i].canvasx + "px";
-//			for(var xL=0;xL < xLines.length;xL++){	
-//				var xLineTemp = xLines[xL];
-//				var xLineID = xLineTemp.id; // should be the same as array index "xL"
-//				
-//				xLineTemp.style.left = x;
-//				if(xLineID == leadName){
-//					xLineTemp.style.display = "none";
-//				}else{  
-//					xLineTemp.style.display = "";
-//				}
-//			}
-//		}
-//	};
-//	
-//	var CVRG_hlCB1 = function(e, x, pts){
-////		CVRG_highlightCallbackCommon(pts, "line1");
-//		leadName = "line1";
-//		for (var i = 0; i < points.length; i++) {
-//			leadNameOld = points[i].name;// + "_div";
-//			var x=points[i].canvasx + "px";
-//			for(var xL=0;xL < xLines.length;xL++){	
-//				var xLineTemp = xLines[xL];
-//				var xLineID = xLineTemp.id; // should be the same as array index "xL"
-//				
-//				xLineTemp.style.left = x;
-//				if(xLineID == leadName){
-//					xLineTemp.style.display = "none";
-//				}else{  
-//					xLineTemp.style.display = "";
-//				}
-//			}
-//		}
-//	};
-//	var CVRG_highlightCallback2 = function(e, x, pts){
-//		CVRG_highlightCallbackCommon(pts, "line2");
-//	};
-//	var CVRG_highlightCallback3 = function(e, x, pts){
-//		CVRG_highlightCallbackCommon(pts, "line3");
-//	};
-//	var CVRG_highlightCallback4 = function(e, x, pts){
-//		CVRG_highlightCallbackCommon(pts, "line4");
-//	};
-//	var CVRG_highlightCallback5 = function(e, x, pts){
-//		CVRG_highlightCallbackCommon(pts, "line5");
-//	};
-//	var CVRG_highlightCallback6 = function(e, x, pts){
-//		CVRG_highlightCallbackCommon(pts, "line6");
-//	};
-//	var CVRG_highlightCallback7 = function(e, x, pts){
-//		CVRG_highlightCallbackCommon(pts, "line7");
-//	};
-//	var CVRG_highlightCallback8 = function(e, x, pts){
-//		CVRG_highlightCallbackCommon(pts, "line8");
-//	};
-//	var CVRG_highlightCallback9 = function(e, x, pts){
-//		CVRG_highlightCallbackCommon(pts, "line9");
-//	};
-//	var CVRG_highlightCallback10 = function(e, x, pts){
-//		CVRG_highlightCallbackCommon(pts, "line10");
-//	};
-//	var CVRG_highlightCallback11 = function(e, x, pts){
-//		CVRG_highlightCallbackCommon(pts, "line11");
-//	};
-
-	
-//	/** Event handler for when the mouse is over a graph. 
-//	 * Out of date version.
-//	 * this callback gets called every time a new point is highlighted.
-//	 * 
-//	 * http://dygraphs.com/options.html#Callbacks
-//	 * 
-//	 * @param e - event: the JavaScript mousemove event
-//	 * @param x - the x-coordinate of the highlighted points
-//	 * @param pts - points: an array of highlighted points: [ {name: 'series', yval: y-value}, … ]
-//	 * @returns
-//	 */
-//	function CVRG_highlightCallbackCommon(points, leadName) {
-//		alert("points: " + points);
-////		alert("e, x,   pts[i].name = "+ e + ", " + x +", " + pts[0].name);
-//		for (var i = 0; i < points.length; i++) {
-//				leadName = points[i].name;// + "_div";
-//				var x=points[i].canvasx + "px";
-//				for(var xL=0;xL < xLines.length;xL++){	
-//					var xLineTemp = xLines[xL];
-//					var xLineID = xLineTemp.id; // should be the same as array index "xL"
-//					
-//					xLineTemp.style.left = x;
-//					if(xLineID == leadName){
-//						xLineTemp.style.display = "";
-//					}else{  
-//						xLineTemp.style.display = "none";
-//					}
-//				}
-//				
-//		}
-//	};
 
 	var CVRG_unhighlightCallback = function(e) {
 		for (var xL = 0; xL < xLines.length; xL++) {
@@ -322,15 +162,16 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 		return gRythm;
 	};
 
-	var createXLine = function(leadID, namespace){
+	var createXLine = function(lineIdName){
 		var xlineX = document.createElement("div");
-		xlineX.id = namespace + ":line" + leadID;
-		xlineX.style.display = "none";
+		xlineX.id = lineIdName;
+		xlineX.style.display = ""; // "none";
 		xlineX.style.width = "1px";
 		xlineX.style.height = "100%";
 		xlineX.style.top = "0px";
-		xlineX.style.backgroundColor = "black";
-		xlineX.style.position = "absolute";
+		xlineX.style.left = "0px";
+		xlineX.style.backgroundColor = "green";
+		xlineX.style.position = "relative";
 
 		return xlineX;
 	};
@@ -340,6 +181,7 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 		StartmSec = dataFull[1][0];  // Starting time in the data, e.g. first point to display.
 		var fields = [];
 		var divTag = "";
+		var labelDivName ="";
 		//data = new Array(dataFull.length);
 		data = [];
 		for(samp=0; samp < dataFull.length ;samp+=10){
@@ -357,93 +199,27 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 		//var highlightCB = CVRG_hlCB1;
 		for(col=0;col<labels.length; col++){
 //		for(col=0;col<3; col++){
-			var xLine = createXLine(col, namespace);
+			lineIdName   = namespace + ":line" + col;
+			graphDivName = namespace + ":graphDiv" + col;
+			labelDivName = namespace + ":labelDiv" + col;
+			
+			var xLine = createXLine(lineIdName);
 			blockRedraw=true;
-			switch(col){
-			case 0:
-				divTag = namespace + ":Div0";
-				graphSet.push(getGraphCommon(labels[col+1],col, CVRG_clickCallback0, namespace));
-				document.getElementById(divTag).appendChild(xLine);
-				xLines.push(xLine);
-				break;
-			case 1:
-				divTag = namespace + ":Div1";
-				graphSet.push(getGraphCommon(labels[col+1],col, CVRG_clickCallback1, namespace));
-				document.getElementById(divTag).appendChild(xLine);
-				xLines.push(xLine);
-				break;
-			case 2:
-				divTag = namespace + ":Div2";
-				graphSet.push(getGraphCommon(labels[col+1],col, CVRG_clickCallback2, namespace));
-				document.getElementById(divTag).appendChild(xLine);
-				xLines.push(xLine);
-				break;
-			case 3:
-				divTag = namespace + ":Div3";
-				graphSet.push(getGraphCommon(labels[col+1],col, CVRG_clickCallback3, namespace));
-				document.getElementById(divTag).appendChild(xLine);
-				xLines.push(xLine);
-				break;
-			case 4:
-				divTag = namespace + ":Div4";
-				graphSet.push(getGraphCommon(labels[col+1],col, CVRG_clickCallback4, namespace));
-				document.getElementById(divTag).appendChild(xLine);
-				xLines.push(xLine);
-				break;
-			case 5:
-				divTag = namespace + ":Div5";
-				graphSet.push(getGraphCommon(labels[col+1],col, CVRG_clickCallback5, namespace));
-				document.getElementById(divTag).appendChild(xLine);
-				xLines.push(xLine);
-				break;
-			case 6:
-				divTag = namespace + ":Div6";
-				graphSet.push(getGraphCommon(labels[col+1],col, CVRG_clickCallback6, namespace));
-				document.getElementById(divTag).appendChild(xLine);
-				xLines.push(xLine);
-				break;
-			case 7:
-				divTag = namespace + ":Div7";
-				graphSet.push(getGraphCommon(labels[col+1],col, CVRG_clickCallback7, namespace));
-				document.getElementById(divTag).appendChild(xLine);
-				xLines.push(xLine);
-				break;
-			case 8:
-				divTag = namespace + ":Div8";
-				graphSet.push(getGraphCommon(labels[col+1],col, CVRG_clickCallback8, namespace));
-				document.getElementById(divTag).appendChild(xLine);
-				xLines.push(xLine);
-				break;
-			case 9:
-				divTag = namespace + ":Div9";
-				graphSet.push(getGraphCommon(labels[col+1],col, CVRG_clickCallback9, namespace));
-				document.getElementById(divTag).appendChild(xLine);
-				xLines.push(xLine);
-				break;
-			case 10:
-				divTag = namespace + ":Div10";
-				graphSet.push(getGraphCommon(labels[col+1],col, CVRG_clickCallback10, namespace));
-				document.getElementById(divTag).appendChild(xLine);
-				xLines.push(xLine);
-				break;
-			case 11:
-				divTag = namespace + ":Div11";
-				graphSet.push(getGraphCommon(labels[col+1],col, CVRG_clickCallback11, namespace));
-				document.getElementById(divTag).appendChild(xLine);
-				xLines.push(xLine);
-				break;
-			};
+			
+			graphSet.push(getGraphCommon(labels[col+1],col, document.getElementById("CVRG_clickCallback"+ col), graphDivName, labelDivName));
+			document.getElementById(graphDivName).appendChild(xLine);
+			xLines.push(xLine);
 		}
 	};
 
-	var getGraphCommon  = function (lead, column, clickCB, namespace){
-		var graphDivName = namespace + ":Div" + column;
+	var getGraphCommon  = function (lead, column, clickCB, graphDivName, labelDivName){
+		//var graphDivName = namespace + ":Div" + column;
 		var graphDiv = document.getElementById(graphDivName);
-		var labelDivName = namespace + ":LabelDiv" + column;
+		//		var labelDivName = namespace + ":LabelDiv" + column;
 		var labelDiv = document.getElementById(labelDivName);
 
 		var vis = Array(12);
-		for(i=0;i<12;i++){
+		for(var i=0;i<12;i++){
 			vis[i] = ((i)==column);
 		}
 		
@@ -580,47 +356,6 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 		}
 	};
 	
-	
-//	var show12LeadData2 = function(passedMinTime, passedMaxTime) {
-//		WF_minTime = passedMinTime;
-//		WF_maxTime = passedMaxTime;
-//		//data = ""; // clear data variable.
-//		var data12lead = OmniFaces.Ajax.data;
-//		var $show12LeadData = $("#show12LeadData"); // A) Used to Show the data arrive on the screen 
-//		$.each(data12lead, function(key, value) {
-//			//* used to see the data arrive into the View 
-//			$("&lt;div&gt;").text(key + "=" + JSON.stringify(value)).appendTo($show12LeadData); // A) JSON.stringify(value)).appendTo($show12LeadData); A Used to Show the data arrive on the screen 
-//			// SeTting the ValUe to "data" the Variable that fills the Graph
-////			data = value;
-//			//* Turning on the Dygrahs Display
-//		});
-//		
-//		data = WAVEFORM_parseCSV(value);
-//		
-//		WAVEFORM_showGraphs();
-//		WAVEFORM_zoomGraphX(minTime, maxTime); // Changes the dataWindow on all 12 leads.
-//	};
-//		// set local variables
-//		minTime = passedMinTime;
-//		maxTime = passedMaxTime;
-//	
-//		parent.data = ""; // clear data variable.
-//		var data12lead = OmniFaces.Ajax.data;
-//	
-//		var $show12LeadData = $("#show12LeadData"); // A) Used to Show the data arrive on the screen 
-//		$.each(data12lead, function(key, value) {
-//			//* used to see the data arrive into the View
-//			$("&lt;div&gt;").text(key + "=" + JSON.stringify(value)).appendTo(
-//					$show12LeadData); // A) JSON.stringify(value)).appendTo($show12LeadData); A Used to Show the data arrive on the screen 
-//			// SeTting the ValUe to "data" the Variable that fills the Graph
-//			parent.data = value;
-//			//* Turning on the Dygrahs Display
-//		});
-//		self.location.reload();
-//		CVRG_zoomGraphX(minTime, maxTime);
-//	};
-
-
 	 var zoomTime = function() {
 		// the screen size in uses
 		var zoomCoefficient = (2500 / 100);

@@ -106,8 +106,8 @@
 			);
 			
 //			var leadCount = ecg_graph.rawData_[0].length-1;
-//			CVRG_InitHorizontalLines(leadCount, "ecg_div");
-//			CVRG_InitVerticalLines("ecg_div");
+			CVRG_InitHorizontalLines(leadCount, "ecg_div");
+			CVRG_InitVerticalLines("ecg_div");
 		}
 	};
 	

@@ -146,11 +146,11 @@ var CVRG_highlightCallback = function(e, pts, yOffset, xOffset) {
 
 var CVRG_unhighlightCrosshairs = function(iLeadCount) {
 	for (var i = 0; i < iLeadCount; i++) {
-		ylinesLeft[i].style.display = "none";
-		ylinesRight[i].style.display = "none";
+//		ylinesLeft[i].style.display = "none";
+//		ylinesRight[i].style.display = "none";
 	}
-	xlineTop.style.display = "none";
-	xlineBottom.style.display = "none";
+//	xlineTop.style.display = "none";
+//	xlineBottom.style.display = "none";
 };
 
 var CVRG_unhighlightCallback = function(e, iLeadCount) {
