@@ -53,7 +53,7 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 				xLineTemp.style.left = x;
 				for(var lab=0;lab<labels.length;lab++){
 					if(ptsName == labels[lab]){
-						lineID = namespaceGlobal + ":line" +  (lab+1);
+						lineID = namespaceGlobal + ":line" +  (lab-1);
 					}
 				}
 
