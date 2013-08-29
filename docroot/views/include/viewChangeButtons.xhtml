@@ -1,0 +1,39 @@
+<ui:composition lang="en"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    
+
+	<p:commandButton id="returnToList" 
+							value="View ECG List"
+							action="#{visualizeGraphBacking.viewSelectionTree}"
+							ajax="true"
+							icon="ui-icon-seek-first"
+							title="View the ECG selection tree."/>
+							
+	<p:commandButton id="singleLead" 
+							value="View Single"
+							action="#{visualizeGraphBacking.viewSingleGraph}"
+							icon="ui-icon-seek-end"
+							title="View Single Lead"/>
+							
+
+	
+		<ui:insert name="panZoomInsert">
+			<ui:include src="includePanZoom.xhtml" />
+		</ui:insert>
+
+
+	<script>
+		var include_ViewChangeButton_ChangeLayout = function(droplist){
+			//var droplist = document.getElementById("layoutSelectDropdown");
+			var x=droplist.selectedIndex;
+			var optionList=droplist.options;
+			//alert("Index:" + optionList[x].index + " Text: '" + optionList[x].text + "' value:" + optionList[x].value);
+			changeViewMultiLeadFormat(optionList[x].value);
+		}
+	</script>
+	
+</ui:composition>

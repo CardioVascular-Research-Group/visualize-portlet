@@ -6,8 +6,18 @@
 		<portlet-name>visualize</portlet-name>
 		<icon>/icon.png</icon>
 		<instanceable>false</instanceable>
-		<ajaxable>false</ajaxable>
-		<header-portlet-css>/css/main.css</header-portlet-css>
+		<ajaxable>true</ajaxable>
+		<header-portlet-css>/css/12_lead.css</header-portlet-css>
+		<header-portlet-javascript>/js/jquery-1.9.1.min.js</header-portlet-javascript>
+		<header-portlet-javascript>/js/dygraph-combined.js</header-portlet-javascript>
+		<header-portlet-javascript>/js/clickCallbacks.js</header-portlet-javascript>
+		<header-portlet-javascript>/js/12Lead3.js</header-portlet-javascript>
+		<header-portlet-javascript>/js/annotation.js</header-portlet-javascript>
+		<footer-portlet-javascript>/js/formatting.js</footer-portlet-javascript>
+		<footer-portlet-javascript>/js/interval_new.js</footer-portlet-javascript>
+		<footer-portlet-javascript>/js/ontologyTreeAPI.js</footer-portlet-javascript>
+		<footer-portlet-javascript>/js/crosshair.js</footer-portlet-javascript>
+<!--		<footer-portlet-javascript>/js/singleLead.js</footer-portlet-javascript>   -->
 		<css-class-wrapper>visualize-portlet</css-class-wrapper>
 	</portlet>
 	<role-mapper>

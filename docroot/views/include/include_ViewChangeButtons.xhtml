@@ -3,10 +3,10 @@
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:p="http://primefaces.org/ui"
-    xmlns:o="http://omnifaces.org/ui"
-    xmlns:of="http://omnifaces.org/functions"
->
+    xmlns:p="http://primefaces.org/ui">
+<!--   xmlns:o="http://omnifaces.org/ui"
+    xmlns:of="http://omnifaces.org/functions"-->
+
 	<Style>
 		#helpButton {float:right;}
 	</Style>
@@ -14,7 +14,7 @@
 		<p:printer target="ecgPrintLayout" />
 	</p:commandButton>
 	
-	<p:commandButton id="New_div" 
+	<p:commandButton id="btnViewECG" 
 							value="View ECG List"
 							actionListener="#{visualizeBacking.viewSelectTree}"
 							ajax="true"

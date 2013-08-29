@@ -3,6 +3,9 @@ package edu.jhu.cvrg.waveform.model;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+
 /*
 Copyright 2013 Johns Hopkins University Institute for Computational Medicine
 
