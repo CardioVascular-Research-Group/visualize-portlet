@@ -1,13 +1,13 @@
 /**************************
 Functions used by 12Lead_D.html and 12Lead_GE.html
 revision 0.1 : April 6, 2011 - initial version Michael Shipway
-
+Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 *************************/
 	var namespaceGlobal = "";
 	var data = [];
 	var graphSet = [];
 	var graphCalSet = [];
-	var xLines = [];
+	var xLineSet = [];
 	var blockRedraw = false;
 	var initialized = false;
 	var leadDurationMS = 1200;
@@ -15,7 +15,29 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
     var displayMaxV = +2000;
     var StartmSec = 0; // Starting time in the data, e.g. first point to display.
     var bInvertVoltageSlider=true; // quick fix to invert the values from the slider.
+
+    var graphDivCalPrefix 	= "graphDivCal";
+	var labelCalPrefix 		= "labelCal";
+	var graphDivPrefix 		= "graphDiv";
+	var labelDivPrefix 		= "labelDiv";
+	var verticalXHairPrefix = "lineDiv";
 	
+//	var callbackSet = [];
+//
+//	callbackSet[0] = CVRG_clickCallback0;
+//	callbackSet[1] = CVRG_clickCallback1;
+//	callbackSet[2] = CVRG_clickCallback2;
+//	callbackSet[3] = CVRG_clickCallback3;
+//	callbackSet[4] = CVRG_clickCallback4;
+//	callbackSet[5] = CVRG_clickCallback5;
+//	callbackSet[6] = CVRG_clickCallback6;
+//	callbackSet[7] = CVRG_clickCallback7;
+//	callbackSet[8] = CVRG_clickCallback8;
+//	callbackSet[9] = CVRG_clickCallback9;
+//	callbackSet[10] = CVRG_clickCallback10;
+//	callbackSet[11] = CVRG_clickCallback11;
+
+
 //	var lines = [];
 
 	 // I  // 
@@ -45,34 +67,38 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 //		CVRG_highlightCallbackCommon(pts, 1);
 		for (var i = 0; i < points.length; i++) {
 			ptsName = points[i].name;
-			var x=(points[i].canvasx) + "px";
-			for(var xL=0;xL < xLines.length;xL++){	
-				var xLineTemp = xLines[xL];
+			var x=Math.floor(points[i].canvasx) + "px";
+			for(var xL=0;xL < xLineSet.length;xL++){	
+				var xLineTemp = xLineSet[xL];
 				var xLineID = xLineTemp.id; // should be the same as array index "xL"
 				
 				xLineTemp.style.left = x;
-				for(var lab=0;lab<labels.length;lab++){
-					if(ptsName == labels[lab]){
-						lineID = namespaceGlobal + ":line" +  (lab-1);
+				//xLineTemp.style.top = "-150px";
+				for(var lab=0;lab<labelFull.length;lab++){
+					if(ptsName == labelFull[lab]){
+						lineID = namespaceGlobal + ":" + verticalXHairPrefix +  (lab-1);
 					}
 				}
 
+				// don't show the line on the graph the mouse is over.
 				if(xLineID == lineID){
-					xLineTemp.style.display = "";
-//					xLineTemp.style.display = "none";
-				}else{  
-					xLineTemp.style.display = "none";
+			
 //					xLineTemp.style.display = "";
+//					xLineTemp.style.display = "none";
+					xLineTemp.style.width = "0px";
+				}else{  
+//					xLineTemp.style.display = "none";
+//					xLineTemp.style.display = "";
+					xLineTemp.style.width = "3px";
 				}
-
 			}
 		}
 	};
 
 
 	var CVRG_unhighlightCallback = function(e) {
-		for (var xL = 0; xL < xLines.length; xL++) {
-			xLines[xL].style.display = "none";
+		for (var xL = 0; xL < xLineSet.length; xL++) {
+			xLineSet[xL].style.display = "none";
 		}
 	};
 
@@ -121,7 +147,7 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 	}; 
 
 // TODO Debug the above Mike and Scott 04/30	
-
+/*
 	var makeRhythmStrip = function(name, vis, namespace){
 		var graphDivName = namespace + ":" + name + "_Div";
 		var graphDiv = document.getElementById(graphDivName);
@@ -161,34 +187,55 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 		);
 		return gRythm;
 	};
+*/
 
 	var createXLine = function(lineIdName){
 		var xlineX = document.createElement("div");
 		xlineX.id = lineIdName;
+		xlineX.styleClass="crossHairVert";
 		xlineX.style.display = ""; // "none";
 		xlineX.style.width = "1px";
 		xlineX.style.height = "100%";
-		xlineX.style.top = "0px";
+		xlineX.style.top = "-150px";
 		xlineX.style.left = "0px";
-		xlineX.style.backgroundColor = "green";
+		xlineX.style.backgroundColor = "purple";
 		xlineX.style.position = "relative";
 
 		return xlineX;
 	};
 
-	var populate12Graphs = function(graphDurationMS, dataFull, namespace){
+	
+	/** Creates and populates all the data graphs(one lead per) and all the calibration graphs.
+	 * 
+	 */
+	var populateGraphsCalibrations = function(graphDurationMS, graphWidthPx, graphHeightPx, 
+											dataFull, namespace, calibrationCount){
 		namespaceGlobal = namespace;
+		
+		populate12Graphs(graphDurationMS, graphWidthPx, graphHeightPx, 
+						dataFull, namespaceGlobal);
+		
+		var graphDivName = namespaceGlobal + ":" + graphDivCalPrefix;
+		var labelDivName = namespaceGlobal + ":" + labelCalPrefix;
+        makeCalibrationMarks(calibrationCount, graphHeightPx, graphDivName, labelDivName);
+	};
+	
+	
+	var populate12Graphs = function(graphDurationMS, graphWidthPx, graphHeightPx, 
+									dataFull, namespace){
+		
 		StartmSec = dataFull[1][0];  // Starting time in the data, e.g. first point to display.
 		var fields = [];
-		var divTag = "";
+		//var divTag = "";
 		var labelDivName ="";
 		//data = new Array(dataFull.length);
-		data = [];
-		for(samp=0; samp < dataFull.length ;samp+=10){
-			fields = dataFull[samp];
-			data.push(fields);
-//			data[samp] = fields;
-		}
+		data = dataFull;
+//		data = [];
+//		for(var samp=0; samp < dataFull.length ;samp+=10){
+//			fields = dataFull[samp];
+//			data.push(fields);
+////			data[samp] = fields;
+//		}
 
 		leadDurationMS = graphDurationMS;
 		graphSet = null;
@@ -197,22 +244,31 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 //		var header = data.substring(0,headerEnd);
 //		var columnNames = header.split(",");
 		//var highlightCB = CVRG_hlCB1;
-		for(col=0;col<labels.length; col++){
-//		for(col=0;col<3; col++){
-			lineIdName   = namespace + ":line" + col;
-			graphDivName = namespace + ":graphDiv" + col;
-			labelDivName = namespace + ":labelDiv" + col;
+		
+		// labelFull.length is one greater than the number of data columns 
+		// because it includes the Timestamp column label "msec"
+		for(var col=0;col<(labelFull.length-1); col++){ 
+			lineIdName   = namespace + ":" + verticalXHairPrefix + col;
+			graphDivName = namespace + ":" + graphDivPrefix + col;
+			labelDivName = namespace + ":" + labelDivPrefix + col;
 			
-			var xLine = createXLine(lineIdName);
+			var xLine = createXLine(lineIdName); // document.getElementById(lineIdName); // 
 			blockRedraw=true;
-			
-			graphSet.push(getGraphCommon(labels[col+1],col, document.getElementById("CVRG_clickCallback"+ col), graphDivName, labelDivName));
+			var cback = eval("CVRG_clickCallback"+ col);
+			graphSet.push(getGraphCommon(labelFull[col+1],
+										col, 
+										cback, 
+										graphDivName, 
+										labelDivName,
+										graphWidthPx, graphHeightPx));
 			document.getElementById(graphDivName).appendChild(xLine);
-			xLines.push(xLine);
+//			xLineSet.push(xLine);
+			xLineSet[col] = xLine;
 		}
 	};
 
-	var getGraphCommon  = function (lead, column, clickCB, graphDivName, labelDivName){
+	var getGraphCommon  = function (lead, column, clickCB, graphDivName, labelDivName,
+									graphWidthPx, graphHeightPx){
 		//var graphDivName = namespace + ":Div" + column;
 		var graphDiv = document.getElementById(graphDivName);
 		//		var labelDivName = namespace + ":LabelDiv" + column;
@@ -234,7 +290,7 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 				visibility: vis,
 				dateWindow: [ 0, leadDurationMS],
 				valueRange: [displayMinV, displayMaxV],
-				labels: labels,
+				labels: labelFull,
 				labelsDiv: labelDiv,
 				axes: { 
 					x: { 
@@ -253,12 +309,13 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 				rollPeriod: 0,
 				showRoller: false,
 				errorBars: false,
+				stepPlot: true,
 				padding: {left: 0, right: 0, top: 0, bottom: 0},
 				axisLabelFontSize: 0,
 				gridLineColor: '#FF0000'
 			}
 		);
-		graph.resize(250,150);
+		graph.resize(graphWidthPx, graphHeightPx);
 		return graph;
 	};
 
@@ -283,14 +340,12 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 		} );
 	};
 	
-	var makeCalibrationMarks = function(markCount, namespace){
-		graphCalSet=[];
+	var makeCalibrationMarks = function(markCount, graphHeightPx, graphDivName, labelDivName){
+		//graphCalSet=[];
 		for (var i = 0; i < markCount; i++) {
 			blockRedraw=true;
-			var graphDivName = namespace + ":DivCal" + i;
-			var graphDiv = document.getElementById(graphDivName);
-			var labelDivName = namespace + ":LabelCal" + i;
-			var labelDiv = document.getElementById(labelDivName);
+			var graphDiv = document.getElementById(graphDivName + i);
+			var labelDiv = document.getElementById(labelDivName + i);
 			var calibrationData = "mS,\n" +
 			"0,0\n" +
 			"100,0\n" +
@@ -299,7 +354,7 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 			"300,0\n" +
 			"400,0\n";
 			
-			var graph = new Dygraph(
+			var graphCal = new Dygraph(
 				graphDiv,
 				calibrationData,
 				{
@@ -331,8 +386,8 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 					drawCallback: CVRG_drawCallback				
 				}
 			);
-			graph.resize(40,150);
-			graphCalSet.push(graph);
+			graphCal.resize(40, graphHeightPx);
+			graphCalSet[i] = graphCal;
 		}
 	};
 	
@@ -380,7 +435,7 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 		if(bInvertVoltageSlider){
 			voltCenterValue = -voltCenterValue;
 		}
-		var minVolt = displayMinV+(bInvertVoltageSlider);
+		var minVolt = displayMinV+(voltCenterValue);
 		var maxVolt = displayMaxV+(voltCenterValue);
 		
 		blockRedraw=bPanSingle;
@@ -405,9 +460,10 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 		});
     };
     
-    var labels ="";
+    var dataFull = "";
+    var labelFull ="";
     /** Derived from the Dygraph method "Dygraph.prototype.parseCSV_(data)"
-     * Also populates the "labels[]" array with the headers from the ecg CSV file.
+     * Also populates the "labelFull[]" array with the headers from the ecg CSV file.
      * The following is the documentation for Dygraphs:
      * @private
      * Parses a string in a special csv format.  We expect a csv file where each
@@ -426,7 +482,9 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
      * 3. [ low value, center value, high value ]
      */
     var WAVEFORM_parseCSV = function(data, namespace) {
-    	var ret = [];
+//    	var ret = [];
+    	//dataFull = ""; // clear data variable.
+    	dataFull = []; // clear data variable.
     	var lines = data.split("\n");
     	var statusPrefix = "Loading ECG data ";
     	var statusSuffix = " 0% complete";
@@ -434,10 +492,10 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
     	var delim = ',';
     	var start = 0;
     	start = 1;
-    	labels = lines[0].split(delim);  // NOTE: _not_ user_attrs_.
-    	var line_no = 0;
+    	labelFull = lines[0].split(delim);  // NOTE: _not_ user_attrs_.
+//    	var line_no = 0;
 
-    	var expectedCols = labels.length;
+    	var expectedCols = labelFull.length;
     	var outOfOrder = false;
     	for (var i = start; i < lines.length; i++) {
     		var line = lines[i];
@@ -454,7 +512,7 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
     		for (var j = 1; j < inFields.length; j++) {
     			fields[j] = parseFloat(inFields[j]);
     		}
-    		if (ret.length > 0 && fields[0] < ret[ret.length - 1][0]) {
+    		if (dataFull.length > 0 && fields[0] < dataFull[dataFull.length - 1][0]) {
     			outOfOrder = true;
     		}
 
@@ -464,7 +522,7 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
     					") " + line);
     		}
 
-    		ret.push(fields);
+    		dataFull.push(fields);
     		statusSuffix = ((i*100)/lines.length) + "% complete";
 //    		var instructionName = namespace + ":instruction";
 //        	var instruction = document.getElementById(instructionName);
@@ -473,13 +531,13 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 
     	if (outOfOrder) {
     		this.warn("CSV is out of order; order it correctly to speed loading.");
-    		ret.sort(function(a,b) { return a[0] - b[0]; });
+    		dataFull.sort(function(a,b) { return a[0] - b[0]; });
     	}
 //    	var instructionName = namespace + ":instruction";
 //    	var instruction = document.getElementById(instructionName);
 //    	instruction.innerHTML = "Done";
 
-    	return ret;
+    	return dataFull;
     };
     
 	

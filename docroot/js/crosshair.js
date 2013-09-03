@@ -13,14 +13,14 @@ var xlineTop, xlineBottom; //, xlineB;
 var CVRG_InitHorizontalLines = function(iLeadCount, divID, namespace){
 	for (var i = 0; i < iLeadCount; i++) {
 		var divFullID = namespace + ":" + divID;
-		alert("divFullID =" + divFullID);
+		//alert("divFullID =" + divFullID);
 //		initialize horizontal ylinesLeft
 		var lineL = document.createElement("div");
 		lineL.style.display = "none";
 		lineL.style.width = "20px";
 		lineL.style.height = "1px";
 		lineL.style.left = "25px";
-		lineL.style.backgroundColor = "red";
+		lineL.style.backgroundColor = "black";
 		lineL.style.position = "absolute";
 		document.getElementById(divFullID).appendChild(lineL);
 		ylinesLeft.push(lineL);
@@ -31,7 +31,7 @@ var CVRG_InitHorizontalLines = function(iLeadCount, divID, namespace){
 		lineR.style.width = "20px";
 		lineR.style.height = "1px";
 		lineR.style.right = "25px";
-		lineR.style.backgroundColor = "red";
+		lineR.style.backgroundColor = "black";
 		lineR.style.position = "absolute";
 		document.getElementById(divFullID).appendChild(lineR);
 		ylinesRight.push(lineR);
@@ -57,7 +57,7 @@ var CVRG_InitVerticalLines = function(divID, namespace){
 	xlineTop.style.width = "1px";
 	xlineTop.style.height = "50%";
 	xlineTop.style.top = "0px";
-	xlineTop.style.backgroundColor = "red";
+	xlineTop.style.backgroundColor = "black";
 	xlineTop.style.position = "absolute";
 	document.getElementById(divFullID).appendChild(xlineTop);
 
@@ -66,7 +66,7 @@ var CVRG_InitVerticalLines = function(divID, namespace){
 	xlineBottom.style.width = "1px";
 	xlineBottom.style.height = "50%";
 	xlineBottom.style.bottom = "700px";
-	xlineBottom.style.backgroundColor = "red";
+	xlineBottom.style.backgroundColor = "black";
 	xlineBottom.style.position = "absolute";
 	document.getElementById(divFullID).appendChild(xlineBottom);
 };
