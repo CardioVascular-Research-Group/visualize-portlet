@@ -3,11 +3,11 @@ Functions used by singleLead.xhtml
 revision 0.1 : May 29, 2013 - initial version Michael Shipway
 
 *************************/
-var data = [];
-var labels = [];
+var dataSingle = [];
+var labelSingle = [];
 var drawECGCallCount = 0.0;
-var leadNum = parent.CVRG_getLeadNum();
-var leadName = parent.CVRG_getLeadName();
+//var leadNum = 1; // parent.CVRG_getLeadNum();
+//var leadName = "DUMMY I"; // parent.CVRG_getLeadName();
 var sSecondSuffix       = leadName;
 var timeLabelPrefix     = "Time (Sec) 2.5 * 10^0";
 var yLabel              = "Amplitude (μV)";
@@ -15,25 +15,53 @@ var minTime = parent.WF_minTime;
 var maxTime = parent.WF_maxTime;
 var displayMinV2 = parent.displayMinV;
 var displayMaxV2 = parent.displayMaxV;
+var singleLeadNamespace = "";
 CVRG_sSecondSuffix = sSecondSuffix;
 CVRG_timeLabelPrefix = timeLabelPrefix; 
 
 //CVRG_sSecondSuffix = sSecondSuffix;
 //CVRG_timeLabelPrefix = timeLabelPrefix; 
 
-	var WAVEFORM_getSingleLeadData = function(leadNum, dataFull, labelsFull){
+	var WAVEFORM_getSingleLeadData = function(leadNum2, dataFull2, labelsFull2){
 		var singleDataCol = [];
 		var fields = [];
 		
-		labels[0] = labelsFull[0];
-		labels[1] = labelsFull[leadNum+1];
+		labelSingle[0] = labelsFull2[0];
+		labelSingle[1] = labelsFull2[leadNum2+1];
+		labelSingle[2] = "";
 		
-		for(samp=0; samp < dataFull.length ;samp++){
+		var minTime = dataFull2[0][0];
+		
+		// force a 40msec gap at the start of the graph.
+		var point = [];
+		point[0] = minTime-440; // column zero is time in milliseconds 
+		point[1] = null;
+		point[2] = 1000; 
+
+	
+		for(var cal=0; cal<=300;cal++){
+			var point = [];
+			
+			// calibration mark is offset -400 msec from the start of data
+			point[0] = minTime+cal-400; // column zero is time in milliseconds 
+			point[1] = null;
+
+			if((cal >= 50) & (cal <= 250)){ // 200 msec wide plus, 1000uV high.
+				point[2] = 1000; // 1000 micro-Volts (uV).
+			}else{
+				point[2] = 0;
+			}
+
+			singleDataCol.push(point);
+		}
+		
+		for(var samp=0; samp < dataFull2.length ;samp++){
 			var point = [];
 		
-			fields = dataFull[samp];
+			fields = dataFull2[samp];
 			point[0] = fields[0]; // column zero is time in milliseconds
-			point[1] = fields[leadNum+1]; // add 1 because column zero is time
+			point[1] = fields[leadNum2+1]; // add 1 because column zero is time
+			point[2] = null;
 			singleDataCol.push(point);
 		}
 		return singleDataCol;
@@ -44,20 +72,21 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	 * 
 	 * @returns
 	 */	
-	var CVRG_drawECGgraphSingle = function(){
-		alert("running CVRG_drawECGgraphSingle()");
+	var CVRG_drawECGgraphSingle = function(divName, namespace){
+		singleLeadNamespace = namespace;
+		//alert("running CVRG_drawECGgraphSingle("+ singleLeadNamespace + ":" + divName +")");
 		if(drawECGCallCount == 0){
 			drawECGCallCount++;
 //			data = WAVEFORM_getSingleLeadData(parent.CVRG_getLeadNum(), parent.data, parent.labels);
-			data = WAVEFORM_getSingleLeadData(CVRG_getLeadNum(), dataFull, labels);
+			dataSingle = WAVEFORM_getSingleLeadData(CVRG_getLeadNum(), dataFull, labelFull);
 			ecg_graph = new Dygraph( 
-					document.getElementById("ecg_div"),
+					document.getElementById(singleLeadNamespace + ":" + divName),
 					//parent.dataFull, 
-					data,
+					dataSingle,
 					{
 						stepPlot: false,
-						labels: labels,
-						labelsDiv: document.getElementById('status_div'),
+						labels: labelSingle,
+						labelsDiv: document.getElementById(singleLeadNamespace + ':' + 'status_div'),
 						labelsDivStyles: { border: '1px solid black' },
 						labelsSeparateLines: false,
 						gridLineColor: '#FA8C8C',
@@ -83,8 +112,8 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 						zoomCallback:              CVRG_zoomCallback,
 						
 						highlightCallback: function(e, x, pts) {
-							var x = document.getElementById("ecg_div").xpos;
-							var y = document.getElementById("ecg_div").ypos;
+							var x = document.getElementById(singleLeadNamespace + ':' + divName).xpos;
+							var y = document.getElementById(singleLeadNamespace + ':' + divName).ypos;
 							var yOffset = 209;
 							var xOffset = 380;
 							//var yOffset = 0;
@@ -102,6 +131,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 			            showRangeSelector: true,
 			            rangeSelectorPlotStrokeColor: 'black',
 			            rangeSelectorPlotFillColor: 'lightblue',
+			            connectSeparatedPoints: true,
 						//dateWindow: [0,2500], // Start and End times in milliseconds
 						interactionModel : {  // custom interation model definition parameter (Implemented in interval.js)
 							'mousedown' : CVRG_mousedown2,
@@ -113,7 +143,12 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 				}
 			);
 		}
+		var newWidth = 700; 
+		var newHeight= 400;
+		ecg_graph.resize(newWidth, newHeight);
 		CVRG_setLabels(displayMinV2, displayMaxV2, yLabel);
+		CVRG_InitHorizontalLines(1, divName, singleLeadNamespace);
+		CVRG_InitVerticalLines(divName, namespace);
 	};
 
 	//CVRG_drawECGgraphSingle(); // update from Mike Shipway at 050213
@@ -151,9 +186,9 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		var deltaV = (displayMaxV2-displayMinV2);
 		var voltCoeff = deltaV/100; // converts percentage scroll bar to Voltage scale
 		var dataCenter = deltaV/2 + displayMinV2;
-		var voltCenterOffset = (voltCenterInput.value)*voltCoeff;
-		var minVolt = ((voltMinInput.value-50)*voltCoeff);
-		var maxVolt = ((voltMaxInput.value-50)*voltCoeff);
+		var voltCenterOffset = (document.getElementById(singleLeadNamespace + ':' + 'voltCenterInput').value)*voltCoeff;
+		var minVolt = ((document.getElementById(singleLeadNamespace + ':' + 'voltMinInput').value-50)*voltCoeff);
+		var maxVolt = ((document.getElementById(singleLeadNamespace + ':' + 'voltMaxInput').value-50)*voltCoeff);
 
 		dataCenter += voltCenterOffset;
 		minVolt += dataCenter;

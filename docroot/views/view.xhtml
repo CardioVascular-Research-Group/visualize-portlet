@@ -12,16 +12,15 @@
    		<h:outputText styleClass="TitleLine" value="ICM Electrocardiograph Tool Kit: Visualize" />
    	</h:panelGroup>
    	
-   	<h:panelGroup id="visualizeViews" autoUpdate="true">
+   	<h:panelGroup id="visualizeViews" autoUpdate="true">	
+		<ui:fragment id="panelVisualizeSelect" autoUpdate="true" rendered="#{visualizeBacking.selectVisible}">
+	    	<ui:include src="panelVisualizeSelect.xhtml" />
+		</ui:fragment>
 	
-	<ui:fragment id="panelVisualizeSelect" autoUpdate="true" rendered="#{!visualizeBacking.graphVisible}">
-    	<ui:include src="panelVisualizeSelect.xhtml" />
-	</ui:fragment>
-
-	<ui:fragment id="panelGraph" autoUpdate="true" rendered="#{visualizeBacking.graphVisible}">
-    	<ui:include src="panelDisplayLeads.xhtml" />
-	</ui:fragment>
-	
+		<ui:fragment id="panel12Graph" autoUpdate="true" rendered="#{visualizeBacking.graphMultipleVisible}">
+	    	<ui:include src="panelDisplayLeads.xhtml" />
+		</ui:fragment>
+		
 	</h:panelGroup>
 	</h:body>
 </f:view>

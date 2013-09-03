@@ -4,31 +4,31 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
 
-	<f:event type="preRenderView" listener="#{visualizeBacking.init}" />
+	<f:event type="preRenderView" listener="#{visualizeBacking.initialize}" />
 	<style>
-	.visualizeLayout {
-	min-height:550px; 
-	top:20px
-	}
-	.visualizeLayoutUnit {
-	min-width:400px; 
-	min-height:525px; 
-	width:90%; 
-	background-color:#fdf6e3;
-	}
-	.selectFieldset {
-	position:relative;
-	float:left;
-	}
-	.displayButton {
-	position: relative; 
-	left:2px;
-	top:4px;
-	}
-	.visualizeDataTable {
-	width:900px;
-	float:right;
-	}
+		.visualizeLayout {
+		min-height:550px; 
+		top:20px
+		}
+		.visualizeLayoutUnit {
+		min-width:400px; 
+		min-height:525px; 
+		width:90%; 
+		background-color:#fdf6e3;
+		}
+		.selectFieldset {
+		position:relative;
+		float:left;
+		}
+		.displayButton {
+		position: relative; 
+		left:2px;
+		top:4px;
+		}
+		.visualizeDataTable {
+		width:900px;
+		float:right;
+		}
 	</style>
 
 	<h:panelGroup id="mainGroup" layout="block" styleClass="backgroundofContent">
@@ -91,7 +91,7 @@
 
 							<f:facet name="footer">
 							
-								<p:commandButton id="New_div" 
+								<p:commandButton id="btnView12LeadECG" 
 									value="View ECG"
 									actionListener="#{visualizeBacking.viewLeads}"
 									ajax="true"

@@ -231,19 +231,26 @@
 	 * @param dygraph = the dygraph object
 	 */ 
 	var CVRG_xValueFormatter2 = function(val, opts, series_name, dygraph){
-		return CVRG_xValueFormatter(val); // calling the function written for the older dygraphs library.
+		if(val < WF_minTime){
+			var calTime = (val + 400.0) + (WF_minTime/1);// so the calibration pulse will have it's own zero time reference.
+			var temp = "Calibration Pulse " + calTime + "mSec"; 
+			return temp;
+		}else{
+			return WAVEFORM3_xValueFormatter(val); // calling the function written for the older dygraphs library.
+		}
 	};
-	    
+
+	
     /** Function to provide a custom display format the X value for mouseover. 
 	 * @param x - time in milliseconds.
 	 * 
 	 * @returns - time in HH:MM:SS.sss format.
 	 */
-	var CVRG_xValueFormatter = function(x) {
-		return x;
-//		var result = "";		
-//		result = formatMsecToExponent(x);
-//		return "[Time (seconds)]: Lead : microVolts</BR>[" + result + "]";
+	var WAVEFORM3_xValueFormatter = function(x) {
+//		return x;
+		var result = "";		
+		result = formatMsecToExponent(x);
+		return "Time (seconds):" + result + " ";
 	};
 	
 	/** controls the display of numbers on the axes (i.e. tick marks).

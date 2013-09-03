@@ -3,6 +3,10 @@ package edu.jhu.cvrg.waveform.model;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
+
 /*
 Copyright 2013 Johns Hopkins University Institute for Computational Medicine
 
@@ -25,7 +29,8 @@ limitations under the License.
  * list display.  This is a prototype class that will be expanded on in the future. 
  *
  */
-
+@ManagedBean(name = "studyEntry")
+@ViewScoped
 public class StudyEntry implements Serializable{
 	
 	private static final long serialVersionUID = 186114464199110323L;
@@ -280,6 +285,16 @@ public class StudyEntry implements Serializable{
 	
 	public double getSamplingRate () {
 		return samplingRate;
+	}
+	
+	/** Calculated ECG duration time in seconds.
+	 * 
+	 * @return
+	 */
+	public double getDurationSec(){
+		double seconds = this.numberOfPoints/this.samplingRate;
+		
+		return seconds;
 	}
 	
 	public int getLeadCount() {
