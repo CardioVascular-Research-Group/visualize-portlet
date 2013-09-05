@@ -137,7 +137,7 @@ public class AnnotationUtility extends XMLUtility {
 	}
 	
 	/** Gets the annotation from the metadata storage database and puts it into the AnnotationData bean.
-	 */
+	 */ 
 	private AnnotationData[] getAnnotationNode(String sUserID, String sStudyID, String sSubjectID, String sLeadName, int iLeadIndex, String sRecordName, boolean isPhenotype, boolean isComment){
 		
 		AnnotationData[] theAnnotations = new AnnotationData[0];
