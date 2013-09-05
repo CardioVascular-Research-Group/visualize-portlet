@@ -137,10 +137,6 @@ public class AnnotationUtility extends XMLUtility {
 	}
 	
 	/** Gets the annotation from the metadata storage database and puts it into the AnnotationData bean.
-	 *  Calls the database insert routine.
-	 * 
-	 * @param annData -  the bean containing all the necessary data about the annotation
-	 * @return - success/fail for the data storage.
 	 */
 	private AnnotationData[] getAnnotationNode(String sUserID, String sStudyID, String sSubjectID, String sLeadName, int iLeadIndex, String sRecordName, boolean isPhenotype, boolean isComment){
 		
@@ -157,10 +153,12 @@ public class AnnotationUtility extends XMLUtility {
 				sReturnClause  = annotationBuilder.returnCommentAnnotation();
 			}
 			else {
-				sReturnClause  = annotationBuilder.returnLeadAnnotation(sLeadName);
+//				sReturnClause  = annotationBuilder.returnLeadAnnotation(sLeadName);
+				sReturnClause  = annotationBuilder.returnLeadAnnotation(String.valueOf(iLeadIndex+1));  // The code uses a zero based lead index, but the database uses a one based index.
 			}
 
 			String sQuery = sLetClause + sForCollection + sWhereClause + sOrderByClause + sReturnClause;
+			System.out.println("AnnotationUtility.getAnnotationNode(), sQuery:\"" + sQuery + "\"");
 			// The EnumCollection enumeration will tell the execute method which collection to use
 			ResourceSet resultSet = executeQuery(sQuery);
 			ResourceIterator iter = resultSet.getIterator();
@@ -168,12 +166,13 @@ public class AnnotationUtility extends XMLUtility {
 			
 			long resultSizeLong = resultSet.getSize();
 			
-			// While a long can be converted to an int, if the size of it is bigger than what an int can hold it will be
+			// While a long can be converted to an int, if the size of it is bigger than what an int can hold it will be++++++++
 			// a serious problem
 		    if (resultSizeLong < Integer.MIN_VALUE || resultSizeLong > Integer.MAX_VALUE) {
 		        throw new IllegalArgumentException
 		            (resultSizeLong + " cannot be cast to int without changing its value.");
 		    }
+		    System.out.println("AnnotationUtility.getAnnotationNode(), resultSizeLong:\"" + resultSizeLong + "\"");
 		    
 		    int resultSizeInt = (int)resultSizeLong;
 			
