@@ -6,6 +6,8 @@ revision 0.1 : 9/7/2012 - initial version Michael Shipway
 
 var ylinesLeft = [];
 var ylinesRight = [];
+var yPadding = 32;
+var xPadding = 28;
 //var leadCount = 2;
 var xlineTop, xlineBottom; //, xlineB;
 
@@ -19,8 +21,9 @@ var CVRG_InitHorizontalLines = function(iLeadCount, divID, namespace){
 		lineL.style.display = "none";
 		lineL.style.width = "20px";
 		lineL.style.height = "1px";
-		lineL.style.left = "25px";
-		lineL.style.backgroundColor = "black";
+//		lineL.style.left = "25px";
+		lineL.style.left = (yPadding + 25) + "px";
+		lineL.style.backgroundColor = "red";
 		lineL.style.position = "absolute";
 		document.getElementById(divFullID).appendChild(lineL);
 		ylinesLeft.push(lineL);
@@ -30,8 +33,9 @@ var CVRG_InitHorizontalLines = function(iLeadCount, divID, namespace){
 		lineR.style.display = "none";
 		lineR.style.width = "20px";
 		lineR.style.height = "1px";
-		lineR.style.right = "25px";
-		lineR.style.backgroundColor = "black";
+//		lineR.style.right = "25px";
+		lineR.style.right = "0px";
+		lineR.style.backgroundColor = "magenta";
 		lineR.style.position = "absolute";
 		document.getElementById(divFullID).appendChild(lineR);
 		ylinesRight.push(lineR);
@@ -57,7 +61,7 @@ var CVRG_InitVerticalLines = function(divID, namespace){
 	xlineTop.style.width = "1px";
 	xlineTop.style.height = "50%";
 	xlineTop.style.top = "0px";
-	xlineTop.style.backgroundColor = "black";
+	xlineTop.style.backgroundColor = "blue";
 	xlineTop.style.position = "absolute";
 	document.getElementById(divFullID).appendChild(xlineTop);
 
@@ -83,26 +87,33 @@ var CVRG_InitVerticalLines = function(divID, namespace){
 var CVRG_highlightCallback = function(e, pts, yOffset, xOffset) {
 	var y=0, x=0, lineGap=10;
 	var parentCanvas = e.currentTarget;
+//	var canvasHeight = parentCanvas.height;
+//	var canvasWidth = parentCanvas.width;
 	var canvasHeight = parentCanvas.height;
 	var canvasWidth = parentCanvas.width;
+
 	var rangeSelect = parentCanvas.nextElementSibling;
 	var rangeHeight = rangeSelect.height;
 	var rangeWidth = rangeSelect.width;
 	var graphHeight = canvasHeight-rangeHeight-20; // minus twenty to account for padding
 	
 	for (var i = 0; i < pts.length; i++) {
-		y = pts[i].canvasy;
-		x = pts[i].canvasx;
+//		y = pts[i].canvasy;
+//		x = pts[i].canvasx;
+		y = pts[i].canvasy+yPadding;
+		x = pts[i].canvasx+xPadding;
 		
 		//red
 		ylinesLeft[i].style.display = "";
 		ylinesLeft[i].style.top = y + "px";
 		ylinesLeft[i].style.width = (x-lineGap-25) + "px";
+//		ylinesLeft[i].style.width = (x-lineGap) + "px";
+		
 
 		//magenta
 		ylinesRight[i].style.display = "";
 		ylinesRight[i].style.top = y + "px";
-		ylinesRight[i].style.left = (x+lineGap) + "px";
+		ylinesRight[i].style.left = (x+lineGap+25) + "px";
 		ylinesRight[i].style.width = (canvasWidth-lineGap-x) + "px";
 
 		if (i == 0){
