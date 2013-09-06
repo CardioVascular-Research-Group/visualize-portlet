@@ -80,13 +80,13 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 //			data = WAVEFORM_getSingleLeadData(parent.CVRG_getLeadNum(), parent.data, parent.labels);
 			dataSingle = WAVEFORM_getSingleLeadData(CVRG_getLeadNum(), dataFull, labelFull);
 			ecg_graph = new Dygraph( 
-					document.getElementById(singleLeadNamespace + ":" + divName),
+					WAVEFORM_getElementById(divName),
 					//parent.dataFull, 
 					dataSingle,
 					{
 						stepPlot: false,
 						labels: labelSingle,
-						labelsDiv: document.getElementById(singleLeadNamespace + ':' + 'status_div'),
+						labelsDiv: WAVEFORM_getElementById('status_div'),
 						labelsDivStyles: { border: '1px solid black' },
 						labelsSeparateLines: false,
 						gridLineColor: '#FA8C8C',
@@ -107,13 +107,13 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 						annotationDblClickHandler: CVRG_annotationDblClickHandler, 
 						annotationMouseOverHandler:CVRG_annotationMouseOverHandler, 
 						annotationMouseOutHandler: CVRG_annotationMouseOutHandler, 
-						drawCallback:              CVRG_drawCallback, 
+						drawCallback:              CVRG_drawCallbackSingle, 
 						pointClickCallback:        CVRG_pointClickCallbackSingle,
 						zoomCallback:              CVRG_zoomCallback,
 						
 						highlightCallback: function(e, x, pts) {
-							var x = document.getElementById(singleLeadNamespace + ':' + divName).xpos;
-							var y = document.getElementById(singleLeadNamespace + ':' + divName).ypos;
+							var x = WAVEFORM_getElementById(divName).xpos;
+							var y = WAVEFORM_getElementById(divName).ypos;
 							var yOffset = 209;
 							var xOffset = 380;
 							//var yOffset = 0;
@@ -186,9 +186,9 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		var deltaV = (displayMaxV2-displayMinV2);
 		var voltCoeff = deltaV/100; // converts percentage scroll bar to Voltage scale
 		var dataCenter = deltaV/2 + displayMinV2;
-		var voltCenterOffset = (document.getElementById(singleLeadNamespace + ':' + 'voltCenterInput').value)*voltCoeff;
-		var minVolt = ((document.getElementById(singleLeadNamespace + ':' + 'voltMinInput').value-50)*voltCoeff);
-		var maxVolt = ((document.getElementById(singleLeadNamespace + ':' + 'voltMaxInput').value-50)*voltCoeff);
+		var voltCenterOffset = (WAVEFORM_getElementById('voltCenterInput').value)*voltCoeff;
+		var minVolt = ((WAVEFORM_getElementById('voltMinInput').value-50)*voltCoeff);
+		var maxVolt = ((WAVEFORM_getElementById('voltMaxInput').value-50)*voltCoeff);
 
 		dataCenter += voltCenterOffset;
 		minVolt += dataCenter;
@@ -263,4 +263,44 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		voltCenterInput.value = 0;
 	};
 
-	
+	// Adds the annotation's details to the list.  Also generates a unique ID for each annotation so that Javascript can bold/unbold. 
+	var CVRG_drawCallbackSingle = function(ecg_graph) {
+		//var leadCount = ecg_graph.rawData_[0].length-1;
+		//CVRG_InitHorizontalLines(leadCount, "ecg_div");
+		//CVRG_InitVerticalLines("ecg_div", namespace);
+
+		
+		var ann = ecg_graph.annotations(); 
+
+
+		var html = "";
+		for (var i = 0; i < ann.length; i++) {
+			var name = nameAnnotation(ann[i]); // formats the summary of a single annotation for display.
+			html += "<span id='" + name + "' title='" + ann[i].fullAnnotation  + "'>";
+			html += "<a href='javascript:CVRG_CenterGraph(" + ann[i].x + "," + ann[i].y + ");'>"; // center graph on click
+			html += "["   + ann[i].shortText       + "]";    // text to show in the flag
+			html += "</a>";    // end of hyperlink
+			html += " "   + ann[i].text            + ""; // will appear when mouse hovers over flag
+			// html += "<i>" + ann[i].fullAnnotation  + "</i>"; // CVRG extra data, not used by dygraphs
+			html += "</span><br/>";
+		}
+		WAVEFORM_getElementById("list_div").innerHTML = html;
+		
+		var bDots=false;
+		if(CVRG_MsPerPixel < 0.1){
+			bDots = true;
+		}
+		ecg_graph.updateOptions({
+			drawPoints: bDots
+		});
+
+	};
+
+	/** Prepends the namespace from the portlet environment to the element's ID, then returns the element thus found.
+	 *  @param  elementID
+	 *  
+	 *  @returns - the DOM element
+	 */
+	var WAVEFORM_getElementById = function(elementID){
+		return document.getElementById(singleLeadNamespace + ":" + elementID);
+	}
