@@ -74,8 +74,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 				
 				xLineTemp.style.left = x;
 				//xLineTemp.style.top = "-150px";
-				for(var lab=0;lab<labels.length;lab++){
-					if(ptsName == labels[lab]){
+				for(var lab=0;lab<labelFull.length;lab++){
+					if(ptsName == labelFull[lab]){
 						lineID = namespaceGlobal + ":" + verticalXHairPrefix +  (lab-1);
 					}
 				}
@@ -205,20 +205,25 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	};
 
 	
+	/** Creates and populates all the data graphs(one lead per) and all the calibration graphs.
+	 * 
+	 */
 	var populateGraphsCalibrations = function(graphDurationMS, graphWidthPx, graphHeightPx, 
 											dataFull, namespace, calibrationCount){
-		populate12Graphs(graphDurationMS, graphWidthPx, graphHeightPx, 
-						dataFull, namespace);
+		namespaceGlobal = namespace;
 		
-		var graphDivName = namespace + ":" + graphDivCalPrefix;
-		var labelDivName = namespace + ":" + labelCalPrefix;
+		populate12Graphs(graphDurationMS, graphWidthPx, graphHeightPx, 
+						dataFull, namespaceGlobal);
+		
+		var graphDivName = namespaceGlobal + ":" + graphDivCalPrefix;
+		var labelDivName = namespaceGlobal + ":" + labelCalPrefix;
         makeCalibrationMarks(calibrationCount, graphHeightPx, graphDivName, labelDivName);
 	};
 	
 	
 	var populate12Graphs = function(graphDurationMS, graphWidthPx, graphHeightPx, 
 									dataFull, namespace){
-		namespaceGlobal = namespace;
+		
 		StartmSec = dataFull[1][0];  // Starting time in the data, e.g. first point to display.
 		var fields = [];
 		//var divTag = "";
@@ -240,9 +245,9 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 //		var columnNames = header.split(",");
 		//var highlightCB = CVRG_hlCB1;
 		
-		// labels.length is one greater than the number of data columns 
+		// labelFull.length is one greater than the number of data columns 
 		// because it includes the Timestamp column label "msec"
-		for(var col=0;col<(labels.length-1); col++){ 
+		for(var col=0;col<(labelFull.length-1); col++){ 
 			lineIdName   = namespace + ":" + verticalXHairPrefix + col;
 			graphDivName = namespace + ":" + graphDivPrefix + col;
 			labelDivName = namespace + ":" + labelDivPrefix + col;
@@ -250,7 +255,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 			var xLine = createXLine(lineIdName); // document.getElementById(lineIdName); // 
 			blockRedraw=true;
 			var cback = eval("CVRG_clickCallback"+ col);
-			graphSet.push(getGraphCommon(labels[col+1],
+			graphSet.push(getGraphCommon(labelFull[col+1],
 										col, 
 										cback, 
 										graphDivName, 
@@ -285,7 +290,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 				visibility: vis,
 				dateWindow: [ 0, leadDurationMS],
 				valueRange: [displayMinV, displayMaxV],
-				labels: labels,
+				labels: labelFull,
 				labelsDiv: labelDiv,
 				axes: { 
 					x: { 
@@ -455,9 +460,10 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		});
     };
     
-    var labels ="";
+    var dataFull = "";
+    var labelFull ="";
     /** Derived from the Dygraph method "Dygraph.prototype.parseCSV_(data)"
-     * Also populates the "labels[]" array with the headers from the ecg CSV file.
+     * Also populates the "labelFull[]" array with the headers from the ecg CSV file.
      * The following is the documentation for Dygraphs:
      * @private
      * Parses a string in a special csv format.  We expect a csv file where each
@@ -476,7 +482,9 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
      * 3. [ low value, center value, high value ]
      */
     var WAVEFORM_parseCSV = function(data, namespace) {
-    	var ret = [];
+//    	var ret = [];
+    	//dataFull = ""; // clear data variable.
+    	dataFull = []; // clear data variable.
     	var lines = data.split("\n");
     	var statusPrefix = "Loading ECG data ";
     	var statusSuffix = " 0% complete";
@@ -484,10 +492,10 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
     	var delim = ',';
     	var start = 0;
     	start = 1;
-    	labels = lines[0].split(delim);  // NOTE: _not_ user_attrs_.
-    	var line_no = 0;
+    	labelFull = lines[0].split(delim);  // NOTE: _not_ user_attrs_.
+//    	var line_no = 0;
 
-    	var expectedCols = labels.length;
+    	var expectedCols = labelFull.length;
     	var outOfOrder = false;
     	for (var i = start; i < lines.length; i++) {
     		var line = lines[i];
@@ -504,7 +512,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
     		for (var j = 1; j < inFields.length; j++) {
     			fields[j] = parseFloat(inFields[j]);
     		}
-    		if (ret.length > 0 && fields[0] < ret[ret.length - 1][0]) {
+    		if (dataFull.length > 0 && fields[0] < dataFull[dataFull.length - 1][0]) {
     			outOfOrder = true;
     		}
 
@@ -514,7 +522,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
     					") " + line);
     		}
 
-    		ret.push(fields);
+    		dataFull.push(fields);
     		statusSuffix = ((i*100)/lines.length) + "% complete";
 //    		var instructionName = namespace + ":instruction";
 //        	var instruction = document.getElementById(instructionName);
@@ -523,13 +531,13 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 
     	if (outOfOrder) {
     		this.warn("CSV is out of order; order it correctly to speed loading.");
-    		ret.sort(function(a,b) { return a[0] - b[0]; });
+    		dataFull.sort(function(a,b) { return a[0] - b[0]; });
     	}
 //    	var instructionName = namespace + ":instruction";
 //    	var instruction = document.getElementById(instructionName);
 //    	instruction.innerHTML = "Done";
 
-    	return ret;
+    	return dataFull;
     };
     
 	

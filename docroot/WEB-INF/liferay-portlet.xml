@@ -17,7 +17,7 @@
 		<footer-portlet-javascript>/js/interval_new.js</footer-portlet-javascript>
 		<footer-portlet-javascript>/js/ontologyTreeAPI.js</footer-portlet-javascript>
 		<footer-portlet-javascript>/js/crosshair.js</footer-portlet-javascript>
-<!--		<footer-portlet-javascript>/js/singleLead.js</footer-portlet-javascript>   -->
+		<footer-portlet-javascript>/js/singleLead.js</footer-portlet-javascript> 
 		<css-class-wrapper>visualize-portlet</css-class-wrapper>
 	</portlet>
 	<role-mapper>

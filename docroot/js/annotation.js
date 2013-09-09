@@ -549,7 +549,7 @@
 	};
 //-------------------------
 	var CVRG_resetAnnotations = function(){
-	// alert("Received resetAnnotations command - Mike Shipway - Scott Alger 011713 ");
+	alert("Received CVRG_resetAnnotations() command - Mike Shipway");
 		//var annnotations = [];
 		tempAnnotations=[];
 		CVRG_last_ann = 0;
@@ -558,14 +558,14 @@
 	
 
 	var CVRG_addAnnotationHeight = function(series, x, y, flagLabel, ontologyId, fullAnnotation, height){
-		// alert("Received addAnnotation command series: " + series + " x: " + x  + " y: " + y  + " flagLabel: " + flagLabel + " ontologyId: " + ontologyId + " fullAnnotation: " + fullAnnotation);
+//		alert("Received CVRG_addAnnotationHeight() command series: " + series + " x: " + x  + " y: " + y  + " flagLabel: " + flagLabel + " ontologyId: " + ontologyId + " fullAnnotation: " + fullAnnotation + " height:" + height);
 		//var anns = ecg_graph.annotations();
 		//alert("ecg_graph:" + ecg_graph + " CVRG_last_ann: " + CVRG_last_ann + " anns.length: " + anns.length);
 		//alert("before: " + anns);
 		var ann = {
 			series: series,  // series, // lead name
 			x: x, // milliseconds
-			y: y, // millivolts,  CVRG extra data, not used by dygraphs, displayed when mousing over annotation list.
+			y: y, // microvolts,  CVRG extra data, not used by dygraphs, displayed when mousing over annotation list.
 			shortText: flagLabel, // text to show in the flag
 			text: ontologyId, // will appear when mouse hovers over flag
 			fullAnnotation: fullAnnotation, // CVRG extra data, not used by dygraphs, displayed when mousing over annotation list.
@@ -587,7 +587,7 @@
 	// Marking the Middle of The Interval Annotation
 	
 	var CVRG_addAnnotationInterval = function(series, x, y, flagLabel, ontologyId, fullAnnotation, height, width){
-		// alert("Received addAnnotation command series: " + series + " x: " + x  + " y: " + y  + " flagLabel: " + flagLabel + " ontologyId: " + ontologyId + " fullAnnotation: " + fullAnnotation);
+//		alert("Received addAnnotation command series: " + series + " x: " + x  + " y: " + y  + " flagLabel: " + flagLabel + " ontologyId: " + ontologyId + " fullAnnotation: " + fullAnnotation);
 		//var anns = ecg_graph.annotations();
 		//alert("ecg_graph:" + ecg_graph + " CVRG_last_ann: " + CVRG_last_ann + " anns.length: " + anns.length);
 		//alert("before: " + anns);
@@ -604,7 +604,7 @@
 	
 		//anns.push(ann);
 		tempAnnotations.push(ann);
-		// alert(tempAnnotations.length + ") series: |" + tempAnnotations[tempAnnotations.length-1].series + "| text: |" + tempAnnotations[tempAnnotations.length-1].text + "|");
+		alert(tempAnnotations.length + ") series: |" + tempAnnotations[tempAnnotations.length-1].series + "| text: |" + tempAnnotations[tempAnnotations.length-1].text + "|");
 		
 //		alert(anns.length + ") series: |" + anns[anns.length-1].series + "| text: |" + anns[anns.length-1].text + "|");
 		// ecg_graph.setAnnotations(anns);
@@ -646,7 +646,7 @@
 	
 	// show the associated annotations  01 17 13 MS SA
 	var CVRG_showAnnotations = function() {
-		
+		alert("CVRG_showAnnotations()");
 		ecg_graph.setAnnotations(tempAnnotations);
 		
 	//	alert("Setting 1 Scott Alger 1/17/13");

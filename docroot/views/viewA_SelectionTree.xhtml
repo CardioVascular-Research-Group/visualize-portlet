@@ -64,6 +64,7 @@
 	
 							</h:panelGroup>			
 							
+							<!-- 900px wide -->
 							<p:dataTable id="availableStudy"
 								var="studyHolder"
 								styleClass="visualizeDataTable"
@@ -73,9 +74,12 @@
 								selection="#{visualizeBacking.selectedStudyObject}"
 								selectionMode="single" 
 								paginator="true" 
-								rows="10"
+								rows="5"
 								resizableColumns="true"
-								paginatorPosition="bottom">
+								paginatorAlwaysVisible="false"
+								paginatorPosition="top"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="5,10,15,20">
 	
 							<!-- <p:ajax event="rowSelect" listener="#{visualizeBacking.onRowSelect}"/> -->
 								
@@ -83,24 +87,28 @@
 									<f:verbatim>Select One ECG Record to View Leads</f:verbatim>
 								</f:facet>
 	
-								<p:column headerText="Subject ID" width="280">
+								<p:column headerText="Subject ID" width="150">
 									<h:outputText value="#{studyHolder.subjectID}"/>
 								</p:column>
 	
-								<p:column headerText="Lead Count" width="60">
-									<h:outputText value="#{studyHolder.leadCount}"/>
+								<p:column headerText="Lead Count" width="70" >
+									<h:outputText value="#{studyHolder.leadCount}" style="text-align:right"/>
 								</p:column>
 	
-								<p:column headerText="Sampling Rate" width="90">
-									<h:outputText value="#{studyHolder.samplingRate}Hz"/>
+								<p:column headerText="Sampling Rate" width="100">
+									<h:outputText value="#{studyHolder.samplingRate}Hz" style="text-align:right"/>
 								</p:column>
 	
-								<p:column headerText="File Format" width="150">
+								<p:column headerText="Duration(Sec)" width="120">
+									<h:outputText value="#{studyHolder.durationSec}" style="text-align:right"/>
+								</p:column>
+
+								<p:column headerText="File Format" width="100">
 									<h:outputText value="#{studyHolder.datatype}"/>
 								</p:column>
 	
-								<p:column headerText="Recording Date" width="250">
-									<h:outputText value="#{studyHolder.dateOfRecording}"/>
+								<p:column headerText="Recording Date" width="150">
+									<h:outputText value="#{studyHolder.dateOfRecording}" style="text-align:right"/>
 								</p:column>
 	
 								<f:facet name="footer">

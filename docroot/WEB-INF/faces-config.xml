@@ -9,26 +9,4 @@
 	<lifecycle>
 		<phase-listener>com.liferay.faces.util.lifecycle.DebugPhaseListener</phase-listener>
 	</lifecycle>
-	
-<!-- 	<navigation-rule> -->
-<!--    		<from-view-id>viewA_SelectionTree.xhtml</from-view-id> -->
-<!--    			<navigation-case> -->
-<!--       			<from-action>#{visualizeBacking.graphSelectedECG}</from-action> -->
-<!--       			<from-outcome>view12</from-outcome> -->
-<!--       			<to-view-id>viewB_Display12Leads.xhtml</to-view-id> -->
-<!--    			</navigation-case> -->
-<!--    			<navigation-case> -->
-<!--       			<from-action>#{visualizeBacking.graphSelectedECG}</from-action> -->
-<!--       				<from-outcome>view3</from-outcome> -->
-<!--       				<to-view-id>viewC_Display3Leads.xhtml</to-view-id> -->
-<!--    			</navigation-case> -->
-<!-- 			</navigation-rule> -->
-<!-- 				<navigation-rule> -->
-<!--    					<from-view-id>viewC_Display3Leads.xhtml</from-view-id> -->
-<!--    					<navigation-case> -->
-<!--       					<from-action>#{visualizeBacking.graphSelectedECG}</from-action> -->
-<!--       					<from-outcome>selection</from-outcome> -->
-<!--       					<to-view-id>viewA_SelectionTree.xhtml</to-view-id> -->
-<!--    				</navigation-case> -->
-<!-- 	</navigation-rule> -->
 </faces-config>

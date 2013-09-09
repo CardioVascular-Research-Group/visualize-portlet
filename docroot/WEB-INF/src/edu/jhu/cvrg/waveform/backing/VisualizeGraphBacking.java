@@ -114,7 +114,7 @@ public class VisualizeGraphBacking implements Serializable {
     public String viewSingleGraph(){
     	System.out.println("+++ VisualizeGraphBacking.java, viewSingleGraph() +++ ");
     	setVisibleFragment(2); // show 12 lead graph page fragment.
-		return "singleLeadFragment.xhtml";
+		return "viewD_SingleLead";
     }
 
     /** Switches to the 12 lead graph panel.
@@ -138,7 +138,7 @@ public class VisualizeGraphBacking implements Serializable {
     	System.out.println("+++ VisualizeGraphBacking.java, view12LeadsGraph() +++ ");
     	System.out.println("+ graphVisible = " + isGraphVisible());
     	System.out.println("+ graphMultipleVisible = " + isGraphMultipleVisible());
-    	setVisibleFragment(2); // show 12 lead graph page fragment.
+//    	setVisibleFragment(2); // show 12 lead graph page fragment.
     	generic12leadOnloadCallback();
 		return "viewB_Display12Leads.xhtml";
     }

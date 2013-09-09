@@ -1,4 +1,6 @@
 /**
+ * Requires that 12Lead3.js be included earlier.
+ * 
  * Called when the canvas of graph is clicked to dynamically call PrimeFaces
  * LightBox. Type:function to find the iframe and the widget name that spans
  * the Primefaces JSF lightBox
@@ -35,11 +37,35 @@ var CVRG_getLeadName = function() {
 /** Code common to all graph click callbacks **/
 var CVRG_clickCallCommon = function(leadNumber){
 	leadNum = leadNumber;
-	leadName =  labels[leadNumber+1];
+	leadName =  labelFull[leadNumber+1];
+	
 	alert("Graph of lead #:" + leadNumber + " clicked.");
+//	onclick="jQuery('#form:hdnBtn').click();";
+	
+	//***********
+//	document.getElementById("Frm1" + ":vendbtn").click();
+	document.getElementById(namespaceGlobal + ":hiddenForm:singleLeadFrom12").click();
+};
+
+// if you want to make the button invisible you can do this
+
+//<h:form id="Frm1">
+//	<t:commandButton id="vendbtn" value="" action="#{poDetail.loadVendorAddresses}" immediate="true" style="visibility:hidden;" />
+//</h:form> 
+//
+//
+//
+//function prepareRegister() {
+//	document.getElementById("hiddenForm:singleLeadFrom12").click();
+//	}
+//	Here is my simple hidden form:
+//	<h:form id="hiddenForm" style="display: none;">
+//	<h:commandButton id="gotoRegButton" actionListener="#{participant.createSetup}" />
+//	</h:form> 
+//		
 //	setLeadNameOneSelection();
 	//lightbox_widget_lead_Annotation.show('singleLead.xhtml');
-};
+//};
 
 /**
  * Called when the canvas of graph #0 (lead I) is clicked. Type: function(e, x,
