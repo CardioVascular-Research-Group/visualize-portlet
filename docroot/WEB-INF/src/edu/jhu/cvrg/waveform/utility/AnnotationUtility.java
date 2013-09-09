@@ -478,7 +478,7 @@ public class AnnotationUtility extends XMLUtility {
 		
 		return node;
 	}
-	/** Creates a new AnnotationData object with many of the values filled in with values from userModel and StudyEntry.<BR>
+	/** Creates a new AnnotationData object 
 	 * Required values that need to be filled in are:<BR>
 	 * <BR>
 	 * created by (x) - the source of this annotation (whether it came from an algorithm or was entered manually)<BR>
@@ -496,16 +496,11 @@ public class AnnotationUtility extends XMLUtility {
 	 * @return
 	 */
 	public AnnotationData createAnnotationData(){
-//		FacesContext context = FacesContext.getCurrentInstance();
-//		UserModel userBean = (UserModel) context.getApplication().evaluateExpressionGet(context, "#{userModel}", UserModel.class);
-//		StudyEntry studyEntry = (StudyEntry) context.getApplication().evaluateExpressionGet(context, "#{StudyEntry}", StudyEntry.class);
+
 		AnnotationData annotationToInsert = new AnnotationData();
 		String ms = String.valueOf(java.lang.System.currentTimeMillis());  // used for GUID
 		
 		annotationToInsert.setUniqueID(ms);
-//		annotationToInsert.setUserID(userBean.getUsername());
-//		annotationToInsert.setSubjectID(studyEntry.getSubjectID());
-//		annotationToInsert.setDatasetName(studyEntry.getRecordName());
 		annotationToInsert.setConceptRestURL("");
 		annotationToInsert.setOnsetLabel("Onset");
 		annotationToInsert.setOnsetRestURL("");
