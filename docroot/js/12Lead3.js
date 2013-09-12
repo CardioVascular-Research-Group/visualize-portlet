@@ -165,12 +165,12 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 					x: { 
 						valueFormatter: CVRG_xValueFormatter2,
 						axisLabelFormatter: CVRG_xAxisLabelFormatter2,
-						ticker: CVRG_xTicker 
+						ticker: CVRG_xTickerMultiLead 
 					}, 
 					y: { 
 						valueFormatter: CVRG_yValueFormatter2,
 						axisLabelFormatter: CVRG_yAxisLabelFormatter2, 
-						ticker: CVRG_yTicker 
+						ticker: CVRG_yTickerMultiLead 
 					} 
 				},
 				xAxisLabelWidth:0,
@@ -254,10 +254,9 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 			
 			var xLine = createXLine(lineIdName); // document.getElementById(lineIdName); // 
 			blockRedraw=true;
-			var cback = eval("CVRG_clickCallback"+ col);
+//			var cback = eval("CVRG_clickCallback"+ col);
 			graphSet.push(getGraphCommon(labelFull[col+1],
 										col, 
-										cback, 
 										graphDivName, 
 										labelDivName,
 										graphWidthPx, graphHeightPx));
@@ -267,7 +266,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		}
 	};
 
-	var getGraphCommon  = function (lead, column, clickCB, graphDivName, labelDivName,
+	var getGraphCommon  = function (lead, leadNumber, graphDivName, labelDivName,
 									graphWidthPx, graphHeightPx){
 		//var graphDivName = namespace + ":Div" + column;
 		var graphDiv = document.getElementById(graphDivName);
@@ -276,14 +275,16 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 
 		var vis = Array(12);
 		for(var i=0;i<12;i++){
-			vis[i] = ((i)==column);
+			vis[i] = ((i)==leadNumber);
 		}
 		
 		var graph = new Dygraph(
 			graphDiv,
 			data,
 			{
-				clickCallback: clickCB,
+				clickCallback: function(e, x, points){
+					CVRG_clickCallCommon(leadNumber);
+				},
 				highlightCallback: CVRG_highlightCallbackAll,
 				unhighlightCallback: CVRG_unhighlightCallback,
 				drawCallback: CVRG_drawCallback,				
@@ -296,12 +297,12 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 					x: { 
 						valueFormatter: CVRG_xValueFormatter2,
 						axisLabelFormatter: CVRG_xAxisLabelFormatter2,
-						ticker: CVRG_xTicker 
+						ticker: CVRG_xTickerMultiLead 
 					}, 
 					y: { 
 						valueFormatter: CVRG_yValueFormatter2,
 						axisLabelFormatter: CVRG_yAxisLabelFormatter2, 
-						ticker: CVRG_yTicker 
+						ticker: CVRG_yTickerMultiLead 
 					} 
 				},
 				xAxisLabelWidth:0,
@@ -368,12 +369,12 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 						x: { 
 							valueFormatter: CVRG_xValueFormatter2,
 							axisLabelFormatter: CVRG_xAxisLabelFormatter2,
-							ticker: CVRG_xTicker 
+							ticker: CVRG_xTickerMultiLead 
 						}, 
 						y: { 
 							valueFormatter: CVRG_yValueFormatter3,
 							axisLabelFormatter: CVRG_yAxisLabelFormatter2, 
-							ticker: CVRG_yTicker 
+							ticker: CVRG_yTickerMultiLead 
 						} 
 					},
 					xAxisLabelWidth:0,

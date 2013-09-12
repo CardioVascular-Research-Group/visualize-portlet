@@ -285,11 +285,11 @@ public class AnnotationBacking implements Serializable {
 				Arrays.sort(RetrievedAnnotations);
 
 				String series = getLeadName();
-				double x = 928;
-				double y = 653;
-				String flagLabel = "1";
-				String ontologyId = "Amplitude";
-				String fullAnnotation = "getFullAnnotation";
+				long x = 0;
+				double y = -999;
+				String flagLabel; //e.g. = "1";
+				String ontologyId; //e.g. = "Amplitude";
+				String fullAnnotation;//
 
 
 				HashMap<Double, Integer> duplicates = new HashMap<Double, Integer>();
@@ -297,8 +297,8 @@ public class AnnotationBacking implements Serializable {
 				for( int i = 0; i < RetrievedAnnotations.length; i++ ){
 					//Test JAVA data for CVRG_addAnnotation RSA 0117		
 					// series = RetrievedAnnotations[i].getLeadName(1);
-					x = RetrievedAnnotations[i].getMilliSecondStart();     // t or x cordinate 
-					y = RetrievedAnnotations[i].getMicroVoltStart();       // y cordinate 
+					x = (long) RetrievedAnnotations[i].getMilliSecondStart();     // time or "X" coordinate 
+					y = RetrievedAnnotations[i].getMicroVoltStart();       //voltage or "Y" coordinate, not needed for dygraph annotation flag, but might be used by our code later.
 					flagLabel = String.valueOf(i+1);   // label of Annotation
 					ontologyId = RetrievedAnnotations[i].getConceptLabel();
 					fullAnnotation = "fullAnnotation needs to be setup in UserControloler and RetrieveAnnotation";
@@ -336,11 +336,9 @@ public class AnnotationBacking implements Serializable {
 						double secondY = RetrievedAnnotations[i].getMicroVoltEnd();
 
 						//TODO: corrected for Display at low resolution. RSA 04/15 works for 1000 samples per second.
-
 						int centerX = (int) (( x + secondX ) / 2); 
 						centerX = centerX / 10;
 						centerX = centerX * 10;
-
 
 						int YcenterY = (int) (( x + secondX ) / 2); 
 						double centerArea = ( secondX - x );
@@ -351,31 +349,25 @@ public class AnnotationBacking implements Serializable {
 
 						// START add annotaion from JAVA to JavaScript Dygraph 
 						context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  x + "', '" +  y + "','" +   flagLabelFirst + "','" + ontologyId + "','" + fullAnnotation + "',' " + finalHeight + "','" + width + "')");
-
-
 						System.out.println( "centerX" +  centerX);
 
 						//  Sets the center flag
-
 						context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  centerX + "', '" +  YcenterY + "','" +  flagLabelCenter  + "','" + ontologyId + "','" + fullAnnotation + "',' " + finalHeight + "','" + widthInterval + "')");
-
 						System.out.println( "secondX" + secondX);
 
 						// END X
 						context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  secondX + "', '" +  secondY + "','" +   flagLabelLast + "','" + ontologyId + "','" + fullAnnotation + "',' " + finalHeight + "','" + width + "')");
 
-
 						// sets the highlight
 						context.execute("CVRG_setHightLightLocation('" +  x + "','" +  toCenterWithArea + "', '" +  secondX + "')");
-
-
 					}
 
 					//add facesmessage
 					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Success", "Success"));
 				}
 
-				context.execute("CVRG_showAnnotations()");
+//				context.execute("CVRG_showAnnotations()");
+				context.execute("WAVEFORM_ShowAnnotationSingle()");
 			}
 		}
 

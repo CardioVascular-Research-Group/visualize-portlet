@@ -32,12 +32,11 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		
 		var minTime = dataFull2[0][0];
 		
-		// force a 40msec gap at the start of the graph.
-		var point = [];
-		point[0] = minTime-440; // column zero is time in milliseconds 
-		point[1] = null;
-		point[2] = 1000; 
-
+//		var point = [];
+//		point[0] = labelsFull2[0];
+//		point[1] = labelsFull2[leadNum2+1];
+//		point[2] = ""; 
+//		singleDataCol.push(point);
 	
 		for(var cal=0; cal<=300;cal++){
 			var point = [];
@@ -68,39 +67,40 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	};
 
 
+//	WAVEFORM_getElementById(divName),
+//	WAVEFORM_getIdwNamespace(divName),
+	//parent.dataFull, 
 	/** Single Lead Dygraph Display Mike Shipway 6/4/2013.
 	 * 
 	 * @returns
 	 */	
 	var CVRG_drawECGgraphSingle = function(divName, namespace){
 		singleLeadNamespace = namespace;
-		//alert("running CVRG_drawECGgraphSingle("+ singleLeadNamespace + ":" + divName +")");
+//		alert("running CVRG_drawECGgraphSingle("+ singleLeadNamespace + ":" + divName +")");
 		if(drawECGCallCount == 0){
 			drawECGCallCount++;
-//			data = WAVEFORM_getSingleLeadData(parent.CVRG_getLeadNum(), parent.data, parent.labels);
 			dataSingle = WAVEFORM_getSingleLeadData(CVRG_getLeadNum(), dataFull, labelFull);
 			ecg_graph = new Dygraph( 
-					WAVEFORM_getElementById(divName),
-					//parent.dataFull, 
+					document.getElementById(singleLeadNamespace + ":" + divName),
 					dataSingle,
 					{
 						stepPlot: false,
 						labels: labelSingle,
-						labelsDiv: WAVEFORM_getElementById('status_div'),
+						labelsDiv: document.getElementById(singleLeadNamespace + ":status_div"),
 						labelsDivStyles: { border: '1px solid black' },
 						labelsSeparateLines: false,
 						gridLineColor: '#FA8C8C',
 						labelsKMB: true,
 						axes: { 
 							x: { 
-								valueFormatter: CVRG_xValueFormatter2,
-								axisLabelFormatter: CVRG_xAxisLabelFormatter2,
-								ticker: CVRG_xTicker 
+								valueFormatter: CVRG_xValueFormatter2, //format the text that appears when you hover on the chart
+								axisLabelFormatter: CVRG_xAxisLabelFormatter2, // format the numbers on the axes (i.e. tick marks)
+								ticker: CVRG_xTickerSingle // Draws grid lines and draws numbers on the axis
 							}, 
 							y: { 
-								valueFormatter: CVRG_yValueFormatter2,
-								axisLabelFormatter: CVRG_yAxisLabelFormatter2, 
-								ticker: CVRG_yTicker 
+								valueFormatter: CVRG_yValueFormatter2, //format the text that appears when you hover on the chart
+								axisLabelFormatter: CVRG_yAxisLabelFormatter2, // format the numbers on the axes (i.e. tick marks)
+								ticker: CVRG_yTickerSingle  // Draws grid lines and draws numbers on the axis
 							} 
 						},
 						annotationClickHandler:    CVRG_annotationClickHandler, 
@@ -109,38 +109,29 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 						annotationMouseOutHandler: CVRG_annotationMouseOutHandler, 
 						drawCallback:              CVRG_drawCallbackSingle, 
 						pointClickCallback:        CVRG_pointClickCallbackSingle,
-						zoomCallback:              CVRG_zoomCallback,
-						
-						highlightCallback: function(e, x, pts) {
-							var x = WAVEFORM_getElementById(divName).xpos;
-							var y = WAVEFORM_getElementById(divName).ypos;
-							var yOffset = 209;
-							var xOffset = 380;
-							//var yOffset = 0;
-							//var xOffset = 0;
-							CVRG_highlightCallback(e, pts, yOffset, xOffset);
-						},
+						zoomCallback:              WAVEFORM_zoomCallbackSingle,
+//						
+						highlightCallback: CVRG_highlightCallbackSingle,
 						unhighlightCallback: function(e){
-							CVRG_unhighlightCallback(e, ecg_graph.rawData_[0].length-1);
+							CVRG_unhighlightCrosshairs(1);
 						},
-//						visibility: [true, false, false, false, false, false, false, false, false, false, false, false, ],
 						highlightCircleSize: 5,
 						strokeWidth: 1,
+//						
 						drawPoints: false,
 						padding: {left: 1, right: 1, top: 5, bottom: 5},
 			            showRangeSelector: true,
 			            rangeSelectorPlotStrokeColor: 'black',
 			            rangeSelectorPlotFillColor: 'lightblue',
-			            connectSeparatedPoints: true,
+			            connectSeparatedPoints: false,
+			            drawGapEdgePoints: true,
 						//dateWindow: [0,2500], // Start and End times in milliseconds
 						interactionModel : {  // custom interation model definition parameter (Implemented in interval.js)
 							'mousedown' : CVRG_mousedown2,
 							'mousemove' : CVRG_mousemove2,
 							'mouseup' : CVRG_mouseup2
-
-				      }
-						
-				}
+						}
+					}
 			);
 		}
 		var newWidth = 700; 
@@ -151,16 +142,22 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		CVRG_InitVerticalLines(divName, namespace);
 	};
 
-	//CVRG_drawECGgraphSingle(); // update from Mike Shipway at 050213
+	var WAVEFORM_ShowAnnotationSingle = function() {
+		ecg_graph.setAnnotations(tempAnnotations);
+	};
+
+	/** CVRG_pointClickCallbackSingle(); 
 	//event -  the event object for the click 
-	// p  - a point on one of the graphs that was clicked.
+	// p  - a point on one of the graphs that was clicked. 
+	**/
 	var CVRG_pointClickCallbackSingle = function(event, p) {
 		CVRG_unhighlightCrosshairs(1);
 		// Check if the point is already annotated.
 		if (p.annotation){
 			alert("CVRG Message: " + p.name + " already has an annotation at: " + p.xval + " seconds.");
 		}
-		annotationBar.show();  // Scott Alger Primefaces dropdown menu SA 1/17/2013
+		alert("CVRG Message: Point on " + p.name + " clicked at: " + p.xval + " seconds, open annotation popup.");
+//		annotationBar.show();  // Scott Alger Primefaces dropdown menu SA 1/17/2013
 		num++;
 	};
 	
@@ -169,7 +166,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		// the screen size in uses
 		var zoomCoefficient = (2500 / 100);
 		var startPositionLeft = 0;
-		CVRG_zoomGraphX( timeMinInput.value*zoomCoefficient+startPositionLeft , timeMaxInput.value*zoomCoefficient+startPositionLeft  )
+		CVRG_zoomGraphX( timeMinInput.value*zoomCoefficient+startPositionLeft , timeMaxInput.value*zoomCoefficient+startPositionLeft  );
 	};
 	
     function zoomVoltageOld() {
@@ -177,7 +174,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
         // the screen size in uses
         var voltCoeff = (displayMaxV2-displayMinV2)/100; // converts percentage scroll bar to Voltage scale
     
-        CVRG_zoomGraphY( (voltMinInput.value-50)*voltCoeff, (voltMaxInput.value-50)*voltCoeff)
+        CVRG_zoomGraphY( (voltMinInput.value-50)*voltCoeff, (voltMaxInput.value-50)*voltCoeff);
     };
     
     var zoomVoltage = function(){
@@ -205,7 +202,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
     	var dataMin = ecg_graph.getValue(0,col);
     	var dataMax = ecg_graph.getValue(0,col);
     	var val = 0;
-    	for(row=0;row<ecg_graph.numRows();row++){
+    	for(var row=0;row<ecg_graph.numRows();row++){
     		val = ecg_graph.getValue(row,col);
     		if(dataMax < val) dataMax = val;
     		if(dataMin > val) dataMin = val;
@@ -214,7 +211,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
     	
 		displayMinV2 = dataMin-(deltaV*.05); // leave a 5% space at the bottom
 		displayMaxV2 = dataMax+(deltaV*.05); // leave a 5% space at the top
-    	var dataCenter = deltaV/2 + displayMinV2;
+//    	var dataCenter = deltaV/2 + displayMinV2;
     	
 		ecg_graph.updateOptions({
 			valueRange: [displayMinV2, displayMaxV2]
@@ -234,6 +231,12 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
     	});
     };
     
+    
+    var setVoltageZoom = function(newDisplayMinV, newDisplayMaxV){
+		ecg_graph.updateOptions({
+			valueRange: [newDisplayMinV, newDisplayMaxV]
+		});
+    }
 	/**Overrides version in annotation.js 
 	 * A function to call when the zoom window is changed (either by zooming in or out). 
 	 * minDate and maxDate are milliseconds since epoch. 
@@ -286,13 +289,13 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		}
 		WAVEFORM_getElementById("list_div").innerHTML = html;
 		
-		var bDots=false;
-		if(CVRG_MsPerPixel < 0.1){
-			bDots = true;
-		}
-		ecg_graph.updateOptions({
-			drawPoints: bDots
-		});
+//		var bDots=false;
+//		if(CVRG_MsPerPixel < 0.1){
+//			bDots = true;
+//		}
+//		ecg_graph.updateOptions({
+//			drawPoints: bDots
+//		});
 
 	};
 
@@ -303,4 +306,25 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	 */
 	var WAVEFORM_getElementById = function(elementID){
 		return document.getElementById(singleLeadNamespace + ":" + elementID);
-	}
+	};
+	
+	var WAVEFORM_getIdwNamespace = function(elementID){
+		return singleLeadNamespace + ":" + elementID;
+	};
+	
+	/** A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch. yRanges is an array of [bottom, top] pairs, one for each y-axis.
+	 * 
+	 * @param minDate
+	 * @param maxDate
+	 * @param yRanges
+	 * @returns
+	 */
+	var WAVEFORM_zoomCallbackSingle = function (minDate, maxDate, yRanges) {
+		var bDots = CVRG_bShowDots();
+//		var newTimeLabel = CVRG_getnewTimeLabel();
+		ecg_graph.updateOptions({
+//			valueRange: [yRanges[0][0], yRanges[0][1]],
+//			xlabel: newTimeLabel,
+			drawPoints: bDots
+		});
+	};

@@ -428,25 +428,30 @@
 	};
 
 	var CVRG_annotationClickHandler = function(ann, point, dg, event) {
-		CVRG_annotationClickHandlerJSNI(point.xval, point.yval);
+//		CVRG_annotationClickHandlerJSNI(point.xval, point.yval);
+		alert("CVRG_annotationClickHandler() called.");
 		//eventDiv.innerHTML += "click: " + nameAnnotation(ann)  + "<br/>";
 	};
 	var CVRG_annotationDblClickHandler = function(ann, point, dg, event) {
-		CVRG_annotationDblClickHandlerJSNI(point.xval, point.yval);
+//		CVRG_annotationDblClickHandlerJSNI(point.xval, point.yval);
+		alert("CVRG_annotationDblClickHandler() called.");
+
 		//eventDiv.innerHTML += "dblclick: " + nameAnnotation(ann) + "<br/>";
     };
     
 
     //Sends a selected interval to the Java code for creating an annotation.
 	var CVRG_annotationIntervalSelected = function(mSecStart, mVoltStart, mSecEnd, mVoltEnd) {
-		CVRG_annotationIntervalSelectedJSNI(mSecStart, mVoltStart, mSecEnd, mVoltEnd);
+	//	CVRG_annotationIntervalSelectedJSNI(mSecStart, mVoltStart, mSecEnd, mVoltEnd);
+		alert("CVRG_annotationIntervalSelected() called.");
+
 		//eventDiv.innerHTML += "click: " + nameAnnotation(ann)  + "<br/>";
 	};
     
     
 	// Highlight the annotation in the list when the square is moused over.
 	var CVRG_annotationMouseOverHandler = function(ann, point, dg, event) {
-		CVRG_annotationMouseOverHandlerJSNI(nameAnnotation(ann), point.xval, point.yval);
+//		CVRG_annotationMouseOverHandlerJSNI(nameAnnotation(ann), point.xval, point.yval);
 		document.getElementById(nameAnnotation(ann)).style.fontWeight = 'bold';
 		saveBg = ann.div.style.backgroundColor;
 		ann.div.style.backgroundColor = '#ddd';
@@ -469,8 +474,11 @@
 			alert("CVRG Message: " + p.name + " already has an annotation at: " + p.xval + " seconds.");
 //			return;
 		}	
-		CVRG_pointClickHandlerJSNI(p.xval, p.yval);
+
+		//CVRG_pointClickHandlerJSNI(p.xval, p.yval);
 		// If not, add one.
+		alert("CVRG Message: " + p.name + " Add an annotation at: " + p.xval + " seconds.");
+		
 //		CVRG_addAnnotation (p.name, p.xval, p.yval, num, "Fake Annotation at: " + p.xval + ", " + p.yval, "fake fullAnnotation")
 //		ecg_graph.setAnnotations(tempAnnotations);
 //		var ann = {
@@ -549,7 +557,7 @@
 	};
 //-------------------------
 	var CVRG_resetAnnotations = function(){
-	alert("Received CVRG_resetAnnotations() command - Mike Shipway");
+		// alert("Received CVRG_resetAnnotations() command - Mike Shipway");
 		//var annnotations = [];
 		tempAnnotations=[];
 		CVRG_last_ann = 0;
@@ -645,13 +653,13 @@
 	};
 	
 	// show the associated annotations  01 17 13 MS SA
-	var CVRG_showAnnotations = function() {
-		alert("CVRG_showAnnotations()");
-		ecg_graph.setAnnotations(tempAnnotations);
-		
-	//	alert("Setting 1 Scott Alger 1/17/13");
-		
-	};
+//	var CVRG_showAnnotations = function() {
+//		alert("CVRG_showAnnotations(), tempAnnotations:" + tempAnnotations);
+//		ecg_graph.setAnnotations(tempAnnotations);
+//		
+//	//	alert("Setting 1 Scott Alger 1/17/13");
+//		
+//	};
 
 	//------------------------ formatting --------------------
     
@@ -880,15 +888,15 @@
 	 * @return "tick list" {Array.<Object>} Array of {label, value} tuples.
 	 * @public
 	 */
-	var CVRG_xTicker = function(minTms, maxTms, pixels, axis_props, self, forced_vals) {
-		var pixelsPerTick = 60; // axis_props('x:pixelsPerLabel');
-		return CVRG_TickerCommon(minTms, maxTms, pixels, axis_props, self, forced_vals, pixelsPerTick, 200, 40);
-	};
-	
-	var CVRG_yTicker = function(minV, maxV, pixels, axis_props, self, forced_vals) {
-		var pixelsPerTick = 30; // axis_props('y:pixelsPerLabel');
-		return CVRG_TickerCommon(minV, maxV, pixels, axis_props, self, forced_vals, pixelsPerTick, 500, 100);
-	};	
+//	var CVRG_xTicker = function(minTms, maxTms, pixels, axis_props, self, forced_vals) {
+//		var pixelsPerTick = 60; // axis_props('x:pixelsPerLabel');
+//		return CVRG_TickerCommon(minTms, maxTms, pixels, axis_props, self, forced_vals, pixelsPerTick, 200, 40);
+//	};
+//	
+//	var CVRG_yTicker = function(minV, maxV, pixels, axis_props, self, forced_vals) {
+//		var pixelsPerTick = 30; // axis_props('y:pixelsPerLabel');
+//		return CVRG_TickerCommon(minV, maxV, pixels, axis_props, self, forced_vals, pixelsPerTick, 500, 100);
+//	};	
 
 //	var CVRG_xTicker = function(minTms, maxTms, pixels, axis_props, self, forced_vals) {
 //		return CVRG_TickerCommon(minTms, maxTms, pixels, axis_props, self, forced_vals);
@@ -911,120 +919,120 @@
 	 * @public
 	 */
 	
-	var CVRG_TickerCommon_OLD = function(minV, maxV, pixels, axis_props, self, forced_vals, pixelsPerTick) {
-		var msecWidth = maxV-minV; // values spanned by the graph area (voltage or time).
-		var msecLargeTime=200; // time span between the dark grid lines 1/5 second (5 millimeter)on paper ECG, equal to 5 small time blocks
-		var msecSmallTime=40;  // time span between the light grid lines 1/25 second (1 mm) on paper ECG
-		var pixLargeTime = (pixels*msecLargeTime)/msecWidth; // pixels spanned by the dark grid lines (1/5 second)
-		var msPerPixel = msecWidth/pixels; // milliseconds between one pixel and then next
-		var pixSmallTime = (pixels*msecSmallTime)/msecWidth; // pixels spanned by the light grid lines (1/25 second)
-		var pixMinSmallTime = 1;  // small time blocks must be at least this many pixels wide.
-		
-//		var bLabelsKMB = attr("labelsKMB");
-		var ticks = [];
-		
-		CVRG_setTimeExponent(minV,self);
-		CVRG_setMsPerPixel(msPerPixel, self);
-		
-		if (forced_vals) {
-			for (var i = 0; i < forced_vals.length; i++) {
-				ticks.push({v: forced_vals[i]});
-			}
-		} else {
-			// ticks.length won't be 0 if the log scale function finds values to insert.
-			if (ticks.length == 0) {
-				// Basic idea:
-				// Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
-				// Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
-				// The first spacing greater than pixelsPerYLabel is what we use.
-				var mults = [1, 2, 5];
-				var scale, low_val, high_val, nTicks;
-				
-				if (pixLargeTime < pixelsPerTick){	
-					// default tick spacing
-					for (var i = -10; i < 50; i++) {
-						var base_scale = Math.pow(10, i);
-						for (var j = 0; j < mults.length; j++) {
-							scale = base_scale * mults[j];
-							low_val = Math.floor(minV / scale) * scale;
-							high_val = Math.ceil(maxV / scale) * scale;
-							nTicks = Math.abs(high_val - low_val) / scale;
-							var spacing = self.height_ / nTicks;
-							// wish I could break out of both loops at once...
-							if (spacing > pixelsPerTick) break;
-						}
-						if (spacing > pixelsPerTick) break;
-					}
-					for (var i = 0; i < nTicks; i++) {
-						var tickV = low_val + i * scale;
-						ticks.push( {v: tickV} );
-					}
-
-				}else{
-					// draw thick and thin grid line as are seen in paper ECGs.
-					if(pixSmallTime >= pixMinSmallTime){
-						scale = 40;
-					}else {
-						scale = 200;
-					}
-					low_val = Math.floor(minV / scale) * scale;				
-					high_val = Math.ceil(maxV / scale) * scale;
-					nTicks = Math.abs(high_val - low_val) / scale;
-
-					spacing = self.height_ / nTicks;
-					
-					// Construct the set of ticks.
-					for (var i = 0; i < nTicks; i++) {
-						var tickV = low_val + i * scale;
-						var sec = Math.floor(tickV/1000); // integer seconds portion of tick time
-						var msSubSec= tickV-(sec*1000); // milliseconds portion of tick time
-						
-						// dark grid lines are made up of a label on the value plus an unlabeled "darkening line" one pixel to either side.
-						if(msSubSec==0){ // dark grid lines on whole seconds
-							ticks.push( {label: "", v: tickV-msPerPixel} ); // don't label darking lines.
-							ticks.push( {v: tickV} ); //  use default label on whole seconds
-							ticks.push( {label: "", v: tickV+msPerPixel} ); // don't label darking lines.
-						}else{
-							if(msSubSec%200 > 1){// light grid lines on 25ths of a second, if between 5ths of a second lines.
-								if (pixSmallTime > pixelsPerTick){
-									ticks.push( {v: tickV} ); // use default label on fractional seconds
-//									if(tickV > 0){
-//										ticks.push( {label: msSubSec/1000.0, v: tickV} ); // only show the milliseconds
-//									}else{
-//										ticks.push( {label: (msSubSec-1000)/1000.0, v: tickV} ); // only show the milliseconds					
-//									}
-								}else{
-									ticks.push( {label: "", v: tickV} ); // don't label small squares, overrides default label.
-								}
-							}else{ // dark grid lines on whole 5ths of a second
-								ticks.push( {label: "", v: tickV-msPerPixel} );// don't label darking lines.
-								ticks.push( {v: tickV} ); // use default label on fractional seconds
-								ticks.push( {label: "", v: tickV+msPerPixel} );	// don't label darking lines.		
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// Get the formatter's name from properties.
-		var formatter = axis_props('axisLabelFormatter');
-
-		// Add default labels to the ticks which don't yet have labels defined.
-		for (var i = 0; i < ticks.length; i++) {
-			// create label if no text is found.
-			if (ticks[i].label !== undefined)
-				continue;  // Use current label.
-			else{
-				var tickV = ticks[i].v;
-				var label = formatter(tickV, self);
-				ticks[i].label = label;
-			}
-		}
-
-		return ticks;
-	};
-	
+//	var CVRG_TickerCommon_OLD = function(minV, maxV, pixels, axis_props, self, forced_vals, pixelsPerTick) {
+//		var msecWidth = maxV-minV; // values spanned by the graph area (voltage or time).
+//		var msecLargeTime=200; // time span between the dark grid lines 1/5 second (5 millimeter)on paper ECG, equal to 5 small time blocks
+//		var msecSmallTime=40;  // time span between the light grid lines 1/25 second (1 mm) on paper ECG
+//		var pixLargeTime = (pixels*msecLargeTime)/msecWidth; // pixels spanned by the dark grid lines (1/5 second)
+//		var msPerPixel = msecWidth/pixels; // milliseconds between one pixel and then next
+//		var pixSmallTime = (pixels*msecSmallTime)/msecWidth; // pixels spanned by the light grid lines (1/25 second)
+//		var pixMinSmallTime = 1;  // small time blocks must be at least this many pixels wide.
+//		
+////		var bLabelsKMB = attr("labelsKMB");
+//		var ticks = [];
+//		
+//		CVRG_setTimeExponent(minV,self);
+//		CVRG_setMsPerPixel(msPerPixel, self);
+//		
+//		if (forced_vals) {
+//			for (var i = 0; i < forced_vals.length; i++) {
+//				ticks.push({v: forced_vals[i]});
+//			}
+//		} else {
+//			// ticks.length won't be 0 if the log scale function finds values to insert.
+//			if (ticks.length == 0) {
+//				// Basic idea:
+//				// Try labels every 1, 2, 5, 10, 20, 50, 100, etc.
+//				// Calculate the resulting tick spacing (i.e. this.height_ / nTicks).
+//				// The first spacing greater than pixelsPerYLabel is what we use.
+//				var mults = [1, 2, 5];
+//				var scale, low_val, high_val, nTicks;
+//				
+//				if (pixLargeTime < pixelsPerTick){	
+//					// default tick spacing
+//					for (var i = -10; i < 50; i++) {
+//						var base_scale = Math.pow(10, i);
+//						for (var j = 0; j < mults.length; j++) {
+//							scale = base_scale * mults[j];
+//							low_val = Math.floor(minV / scale) * scale;
+//							high_val = Math.ceil(maxV / scale) * scale;
+//							nTicks = Math.abs(high_val - low_val) / scale;
+//							var spacing = self.height_ / nTicks;
+//							// wish I could break out of both loops at once...
+//							if (spacing > pixelsPerTick) break;
+//						}
+//						if (spacing > pixelsPerTick) break;
+//					}
+//					for (var i = 0; i < nTicks; i++) {
+//						var tickV = low_val + i * scale;
+//						ticks.push( {v: tickV} );
+//					}
+//
+//				}else{
+//					// draw thick and thin grid line as are seen in paper ECGs.
+//					if(pixSmallTime >= pixMinSmallTime){
+//						scale = 40;
+//					}else {
+//						scale = 200;
+//					}
+//					low_val = Math.floor(minV / scale) * scale;				
+//					high_val = Math.ceil(maxV / scale) * scale;
+//					nTicks = Math.abs(high_val - low_val) / scale;
+//
+//					spacing = self.height_ / nTicks;
+//					
+//					// Construct the set of ticks.
+//					for (var i = 0; i < nTicks; i++) {
+//						var tickV = low_val + i * scale;
+//						var sec = Math.floor(tickV/1000); // integer seconds portion of tick time
+//						var msSubSec= tickV-(sec*1000); // milliseconds portion of tick time
+//						
+//						// dark grid lines are made up of a label on the value plus an unlabeled "darkening line" one pixel to either side.
+//						if(msSubSec==0){ // dark grid lines on whole seconds
+//							ticks.push( {label: "", v: tickV-msPerPixel} ); // don't label darking lines.
+//							ticks.push( {v: tickV} ); //  use default label on whole seconds
+//							ticks.push( {label: "", v: tickV+msPerPixel} ); // don't label darking lines.
+//						}else{
+//							if(msSubSec%200 > 1){// light grid lines on 25ths of a second, if between 5ths of a second lines.
+//								if (pixSmallTime > pixelsPerTick){
+//									ticks.push( {v: tickV} ); // use default label on fractional seconds
+////									if(tickV > 0){
+////										ticks.push( {label: msSubSec/1000.0, v: tickV} ); // only show the milliseconds
+////									}else{
+////										ticks.push( {label: (msSubSec-1000)/1000.0, v: tickV} ); // only show the milliseconds					
+////									}
+//								}else{
+//									ticks.push( {label: "", v: tickV} ); // don't label small squares, overrides default label.
+//								}
+//							}else{ // dark grid lines on whole 5ths of a second
+//								ticks.push( {label: "", v: tickV-msPerPixel} );// don't label darking lines.
+//								ticks.push( {v: tickV} ); // use default label on fractional seconds
+//								ticks.push( {label: "", v: tickV+msPerPixel} );	// don't label darking lines.		
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
+//
+//		// Get the formatter's name from properties.
+//		var formatter = axis_props('axisLabelFormatter');
+//
+//		// Add default labels to the ticks which don't yet have labels defined.
+//		for (var i = 0; i < ticks.length; i++) {
+//			// create label if no text is found.
+//			if (ticks[i].label !== undefined)
+//				continue;  // Use current label.
+//			else{
+//				var tickV = ticks[i].v;
+//				var label = formatter(tickV, self);
+//				ticks[i].label = label;
+//			}
+//		}
+//
+//		return ticks;
+//	};
+//	
 
 	/**
 	 * Add ticks when the x axis has numbers on it (instead of dates)
@@ -1434,9 +1442,9 @@
 			CVRG_zoomGraphX(minX, maxX);
 			CVRG_zoomGraphY(minY, maxY);
 		}else{
-//			alert("Annotation is at " + x + " milliseconds, which is outside of the currently loaded data range. (" + min + " - " + max + ")");
+			alert("Annotation is at " + x + " milliseconds, which is outside of the currently loaded data range. (" + min + " - " + max + ")");
 //			CVRG_annotationDblClickHandlerJSNI(x,y);
-			CVRG_centerDygraphJSNI(x,y);
+//			CVRG_centerDygraphJSNI(x,y);
 		}
 	};
 
@@ -1502,8 +1510,7 @@
 		var bDots=false;
 		var msPerSample = 1000/CVRG_sampleRate;
 		var pixelsPerSample = msPerSample/CVRG_MsPerPixel;
-//		if(CVRG_MsPerPixel < 0.1{
-		if(pixelsPerSample > 10){
+		if(pixelsPerSample > 5){
 			bDots = true;
 		}
 

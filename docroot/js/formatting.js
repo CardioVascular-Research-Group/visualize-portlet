@@ -49,24 +49,43 @@
 	 * @return "tick list" {Array.<Object>} Array of {label, value} tuples.
 	 * @public
 	 */
-	var CVRG_xTicker = function(minTms, maxTms, pixels, axis_props, self, forced_vals) {
+	var CVRG_xTickerMultiLead = function(minTms, maxTms, pixels, axis_props, self, forced_vals) {
 		var pixelsPerTick = 6; 
 		var msecLargeTime = 200; 
 		var msecSmallTime = 40;
 
-		return CVRG_TickerCommon(minTms, maxTms, pixels, axis_props, self, forced_vals, 
+		return CVRG_TickerCommonFormatting(minTms, maxTms, pixels, axis_props, self, forced_vals, 
 				pixelsPerTick, msecLargeTime, msecSmallTime);
 	};
 	
-	var CVRG_yTicker = function(minV, maxV, pixels, axis_props, self, forced_vals) {
+	var CVRG_yTickerMultiLead = function(minV, maxV, pixels, axis_props, self, forced_vals) {
 		var pixelsPerTick = 3;
 		var msecLargeTime = 500; 
 		var msecSmallTime = 100;
-		return CVRG_TickerCommon(minV, maxV, pixels, axis_props, self, forced_vals, 
+		return CVRG_TickerCommonFormatting(minV, maxV, pixels, axis_props, self, forced_vals, 
 				pixelsPerTick, msecLargeTime, msecSmallTime);
 	};	
 
+	var CVRG_xTickerSingle = function(minTms, maxTms, pixels, axis_props, self, forced_vals) {
+		var pixelsPerTick = 20; 
+		var msecLargeTime = 200; 
+		var msecSmallTime = 40;
 
+		return CVRG_TickerCommonFormatting(minTms, maxTms, pixels, axis_props, self, forced_vals, 
+				pixelsPerTick, msecLargeTime, msecSmallTime);
+	};
+	
+	var CVRG_yTickerSingle = function(minV, maxV, pixels, axis_props, self, forced_vals) {
+		var pixelsPerTick = 20;
+		var msecLargeTime = 500; 
+		var msecSmallTime = 100;
+		return CVRG_TickerCommonFormatting(minV, maxV, pixels, axis_props, self, forced_vals, 
+				pixelsPerTick, msecLargeTime, msecSmallTime);
+	};	
+
+	var CVRG_highlightCallbackSingle = function(e, x, pts) {
+		WAVEFORM3_highlightCrosshairs(e, pts, true);
+	};
 	/**
 	 * Add ticks when the x axis has numbers on it (instead of dates)
 	 * @param minV - minimum value of the window on this axis
@@ -81,7 +100,7 @@
 	 * @return - Array of {label, value} tuples.
 	 * @public
 	 */
-	var CVRG_TickerCommon = function(minV, maxV, pixels, axis_props, self, forced_vals, pixelsPerTick, msecLargeTime, msecSmallTime) {
+	var CVRG_TickerCommonFormatting = function(minV, maxV, pixels, axis_props, self, forced_vals, pixelsPerTick, msecLargeTime, msecSmallTime) {
 		var msecWidth = maxV-minV; // values spanned by the graph area (voltage or time).
 //		var msecLargeTime=200; // time span between the dark grid lines 1/5 second (5 millimeter)on paper ECG, equal to 5 small time blocks
 //		var msecSmallTime=40;  // time span between the light grid lines 1/25 second (1 mm) on paper ECG

@@ -68,6 +68,8 @@
 							var data = '#{visualizeGraphBacking.data}';
 							var dataJsonParse = JSON.parse(data);
 							show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
+							
+							
 						</script>
 
 						<!-- <h:outputText value="namespace=#{facesContext.externalContext.encodeNamespace('')}" /> -->
@@ -78,6 +80,10 @@
 	
  				<p:layoutUnit id="viewChangeButtons" position="east" resizable="true" size="150"
 					minSize="50" maxSize="550">
+					<h:form>
+						<p:remoteCommand name="viewSingleGraph2Param" 
+                 					action="#{visualizeGraphBacking.viewSingleGraph2}"/>
+                 	</h:form>
 					<h:form>
 						<p:commandButton id="returnToList" 
 										value="View ECG List"

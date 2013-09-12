@@ -103,7 +103,7 @@ public class VisualizeGraphBacking implements Serializable {
     public String viewSelectionTree(){
     	System.out.println("+++ VisualizeGraphBacking.java, viewSelectTree() +++ ");
 //    	setVisibleFragment(2); // show 12 lead graph page fragment.
-		return "viewA_SelectionTree.xhtml";
+		return "viewA_SelectionTree";
     }
     
     
@@ -113,7 +113,25 @@ public class VisualizeGraphBacking implements Serializable {
      */
     public String viewSingleGraph(){
     	System.out.println("+++ VisualizeGraphBacking.java, viewSingleGraph() +++ ");
-    	setVisibleFragment(2); // show 12 lead graph page fragment.
+//    	setVisibleFragment(2); // show 12 lead graph page fragment.
+		return "viewD_SingleLead";
+//		return "viewD_Test";
+    }
+
+    /** Switches to the selection tree and list view.
+     * Handles onclick event for the button "btnView12LeadECG" in the viewA_SelectionTree.xhtml view.
+     * 
+     */
+    public String viewSingleGraph2(){
+    	FacesContext context = FacesContext.getCurrentInstance();
+		Map map = context.getExternalContext().getRequestParameterMap();
+		String passedLeadName = (String) map.get("sLeadName");
+		int passedLeadNumber = Integer.parseInt((String) map.get("sLeadNumber"));
+		
+		visualizeSharedBacking.getSharedAnnotationBacking().setLeadName(passedLeadName);
+		visualizeSharedBacking.getSharedAnnotationBacking().setLeadnum(passedLeadNumber);
+//		visualizeSharedBacking.getSharedAnnotationBacking().showAnnotationForLead();
+    	System.out.println("+++ VisualizeGraphBacking.java, viewSingleGraph2() passedLeadName: " + passedLeadName + " passedLeadNumber: " + passedLeadNumber + " +++ ");
 		return "viewD_SingleLead";
     }
 

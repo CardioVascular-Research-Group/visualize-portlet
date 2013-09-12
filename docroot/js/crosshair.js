@@ -7,7 +7,7 @@ revision 0.1 : 9/7/2012 - initial version Michael Shipway
 var ylinesLeft = [];
 var ylinesRight = [];
 var yPadding = 32;
-var xPadding = 28;
+var xPadding = 30;
 //var leadCount = 2;
 var xlineTop, xlineBottom; //, xlineB;
 
@@ -23,7 +23,7 @@ var CVRG_InitHorizontalLines = function(iLeadCount, divID, namespace){
 		lineL.style.height = "1px";
 //		lineL.style.left = "25px";
 		lineL.style.left = (yPadding + 25) + "px";
-		lineL.style.backgroundColor = "red";
+		lineL.style.backgroundColor = "black";// red
 		lineL.style.position = "absolute";
 		document.getElementById(divFullID).appendChild(lineL);
 		ylinesLeft.push(lineL);
@@ -35,7 +35,7 @@ var CVRG_InitHorizontalLines = function(iLeadCount, divID, namespace){
 		lineR.style.height = "1px";
 //		lineR.style.right = "25px";
 		lineR.style.right = "0px";
-		lineR.style.backgroundColor = "magenta";
+		lineR.style.backgroundColor = "black";//magenta
 		lineR.style.position = "absolute";
 		document.getElementById(divFullID).appendChild(lineR);
 		ylinesRight.push(lineR);
@@ -60,17 +60,17 @@ var CVRG_InitVerticalLines = function(divID, namespace){
 	xlineTop.style.display = "none";
 	xlineTop.style.width = "1px";
 	xlineTop.style.height = "50%";
-	xlineTop.style.top = "0px";
-	xlineTop.style.backgroundColor = "blue";
+	xlineTop.style.top = yPadding + "px";
+	xlineTop.style.backgroundColor = "black"; // blue
 	xlineTop.style.position = "absolute";
 	document.getElementById(divFullID).appendChild(xlineTop);
 
 	xlineBottom = document.createElement("div");
 	xlineBottom.style.display = "none";
 	xlineBottom.style.width = "1px";
-	xlineBottom.style.height = "50%";
-	xlineBottom.style.bottom = "700px";
-	xlineBottom.style.backgroundColor = "black";
+	xlineBottom.style.height = "10px";
+//	xlineBottom.style.bottom = "700px";
+	xlineBottom.style.backgroundColor = "black"; // green
 	xlineBottom.style.position = "absolute";
 	document.getElementById(divFullID).appendChild(xlineBottom);
 };
@@ -84,8 +84,10 @@ var CVRG_InitVerticalLines = function(divID, namespace){
         xlineB.style.position = "absolute";
         document.getElementById("div_gB").appendChild(xlineB);
  */
-var CVRG_highlightCallback = function(e, pts, yOffset, xOffset) {
+//var CVRG_highlightCallback = function(e, pts, yOffset, xOffset) {
+var WAVEFORM3_highlightCrosshairs = function(e, pts, bJustFirst) {
 	var y=0, x=0, lineGap=10;
+	var pointLen = 0;
 	var parentCanvas = e.currentTarget;
 //	var canvasHeight = parentCanvas.height;
 //	var canvasWidth = parentCanvas.width;
@@ -97,7 +99,12 @@ var CVRG_highlightCallback = function(e, pts, yOffset, xOffset) {
 	var rangeWidth = rangeSelect.width;
 	var graphHeight = canvasHeight-rangeHeight-20; // minus twenty to account for padding
 	
-	for (var i = 0; i < pts.length; i++) {
+	if(bJustFirst){ // how many horizontal lines to draw.
+		pointLen = 1;
+	}else{
+		pointLen = pts.length;
+	}
+	for (var i = 0; i < pointLen; i++) {
 //		y = pts[i].canvasy;
 //		x = pts[i].canvasx;
 		y = pts[i].canvasy+yPadding;
@@ -106,15 +113,16 @@ var CVRG_highlightCallback = function(e, pts, yOffset, xOffset) {
 		//red
 		ylinesLeft[i].style.display = "";
 		ylinesLeft[i].style.top = y + "px";
-		ylinesLeft[i].style.width = (x-lineGap-25) + "px";
+		ylinesLeft[i].style.width = (x-lineGap-60) + "px";
 //		ylinesLeft[i].style.width = (x-lineGap) + "px";
 		
 
 		//magenta
 		ylinesRight[i].style.display = "";
 		ylinesRight[i].style.top = y + "px";
-		ylinesRight[i].style.left = (x+lineGap+25) + "px";
-		ylinesRight[i].style.width = (canvasWidth-lineGap-x) + "px";
+		ylinesRight[i].style.left = (x+lineGap+10) + "px";
+		
+		ylinesRight[i].style.width = (canvasWidth-x) + "px";
 
 		if (i == 0){
 			xlineTop.style.left = x + "px";
@@ -147,18 +155,19 @@ var CVRG_highlightCallback = function(e, pts, yOffset, xOffset) {
 		yl = y;
 	}
 	
-
 	xlineTop.style.height = (yl-lineGap) +"px";  // blue
-	xlineBottom.style.top = (yl+lineGap) +"px"; // green
-	xlineBottom.style.height = (graphHeight-lineGap-yl) + "px";
-	xlineTop.style.display = "";
+	xlineTop.style.display = "";// blue
+	
+	xlineBottom.style.top = (yl+lineGap+yPadding) +"px"; // green
+//	xlineBottom.style.bottom = (graphHeight + yPadding+20) +"px"; // green
+	xlineBottom.style.height = (graphHeight-yl) + "px";// green
 	xlineBottom.style.display = "";
 };
 
 var CVRG_unhighlightCrosshairs = function(iLeadCount) {
 	for (var i = 0; i < iLeadCount; i++) {
-//		ylinesLeft[i].style.display = "none";
-//		ylinesRight[i].style.display = "none";
+		ylinesLeft[i].style.display = "none";
+		ylinesRight[i].style.display = "none";
 	}
 //	xlineTop.style.display = "none";
 //	xlineBottom.style.display = "none";

@@ -38,13 +38,13 @@ var CVRG_getLeadName = function() {
 var CVRG_clickCallCommon = function(leadNumber){
 	leadNum = leadNumber;
 	leadName =  labelFull[leadNumber+1];
-	
-	alert("Graph of lead #:" + leadNumber + " clicked.");
+	alert('Graph of lead #: "' + leadNumber + '" clicked. Lead Name: "' + leadName + '"');
+	viewSingleGraph2Param([{name:'sLeadName', value:leadName},{name:'sLeadNumber', value:leadNum}]);
 //	onclick="jQuery('#form:hdnBtn').click();";
 	
 	//***********
 //	document.getElementById("Frm1" + ":vendbtn").click();
-	document.getElementById(namespaceGlobal + ":hiddenForm:singleLeadFrom12").click();
+//	document.getElementById(namespaceGlobal + ":formNavigation:showSingleLead").click();
 };
 
 // if you want to make the button invisible you can do this
