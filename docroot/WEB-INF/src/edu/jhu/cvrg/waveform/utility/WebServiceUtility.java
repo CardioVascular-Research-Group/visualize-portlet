@@ -335,19 +335,21 @@ public class WebServiceUtility {
 	/** Looks up the Long definition of an ECG Ontology node ID.
 	 * 
 	 * @param sNodeID -  node ID from the ECG ontology tree. e.g. "ECGTermsv1:ECG_000000103" for Q_Wave
-	 * @return
-	 */
+	 * @return - 2 element string array,<BR> 
+	 * --- array[0]=Ontology label, (e.g. "Q_Wave")<BR>
+	 * --- array[1]=Ontology Definition (e.g. "The peak of the Q Wave.") */
 	public static String[] lookupOntologyDefinition(String sNodeID){ // e.g. "ECGTermsv1:ECG_000000103" for Q_Wave
 		String[] sRet = new String[2];
 		String sDefinition="No definition found";
 		String sLabel = "No label found";
 		String ontID="2079";
 		String apikey="24e0e602-54e0-11e0-9d7b-005056aa3316";
-		String port="80";
-		
+		String port="80";		
 		
 		String sRestURL = getAnnotationRestURL(sNodeID, ontID, apikey, port);
+		System.out.println("sRestURL:" + sRestURL);
 		sDefinition = WebServiceUtility.annotationLookup(sRestURL);
+		System.out.println("sDefinition:" + sDefinition);
 		int iEndOfLabel = sDefinition.indexOf("</label>");
 		sLabel = sDefinition.substring(7, iEndOfLabel);
 		sDefinition = sDefinition.substring(iEndOfLabel + 8);

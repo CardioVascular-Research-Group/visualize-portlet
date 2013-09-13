@@ -129,7 +129,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 						interactionModel : {  // custom interation model definition parameter (Implemented in interval.js)
 							'mousedown' : CVRG_mousedown2,
 							'mousemove' : CVRG_mousemove2,
-							'mouseup' : CVRG_mouseup2
+							'mouseup' : WAVEFORM3_mouseup
 						}
 					}
 			);
@@ -156,7 +156,9 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		if (p.annotation){
 			alert("CVRG Message: " + p.name + " already has an annotation at: " + p.xval + " seconds.");
 		}
-		alert("CVRG Message: Point on " + p.name + " clicked at: " + p.xval + " seconds, open annotation popup.");
+//		alert("CVRG Message: Point on " + p.name + " clicked at: " + p.xval + " seconds, " + p.yval + "yVolts,  open annotation popup.");
+//		viewAnnotationPointEdit([{name:'sDataSX', value:p.xval},{name:'sDataSY', value:p.yval}]);
+
 //		annotationBar.show();  // Scott Alger Primefaces dropdown menu SA 1/17/2013
 		num++;
 	};

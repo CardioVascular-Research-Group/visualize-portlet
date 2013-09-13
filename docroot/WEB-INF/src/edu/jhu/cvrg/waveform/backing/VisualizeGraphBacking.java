@@ -126,10 +126,10 @@ public class VisualizeGraphBacking implements Serializable {
     	FacesContext context = FacesContext.getCurrentInstance();
 		Map map = context.getExternalContext().getRequestParameterMap();
 		String passedLeadName = (String) map.get("sLeadName");
-		int passedLeadNumber = Integer.parseInt((String) map.get("sLeadNumber"));
+		String passedLeadNumber = (String) map.get("sLeadNumber");
 		
-		visualizeSharedBacking.getSharedAnnotationBacking().setLeadName(passedLeadName);
-		visualizeSharedBacking.getSharedAnnotationBacking().setLeadnum(passedLeadNumber);
+		visualizeSharedBacking.setSelectedLeadName(passedLeadName);
+		visualizeSharedBacking.setSelectedLeadNumber(passedLeadNumber);
 //		visualizeSharedBacking.getSharedAnnotationBacking().showAnnotationForLead();
     	System.out.println("+++ VisualizeGraphBacking.java, viewSingleGraph2() passedLeadName: " + passedLeadName + " passedLeadNumber: " + passedLeadNumber + " +++ ");
 		return "viewD_SingleLead";
@@ -198,7 +198,9 @@ public class VisualizeGraphBacking implements Serializable {
 	}
 
     public String getDescription() {
-    	description = "Subject:" + visualizeSharedBacking.getSharedStudyEntry().getRecordName() + " / Lead count:" + visualizeSharedBacking.getSharedStudyEntry().getLeadCount() + " / Sampling-rate:" + visualizeSharedBacking.getSharedStudyEntry().getSamplingRate() + "Hz";
+    	description = "Subject:" + visualizeSharedBacking.getSharedStudyEntry().getRecordName() 
+    			+ " / Lead count:" + visualizeSharedBacking.getSharedStudyEntry().getLeadCount() 
+    			+ " / Sampling-rate:" + visualizeSharedBacking.getSharedStudyEntry().getSamplingRate() + "Hz";
 		return description;
 	}
 

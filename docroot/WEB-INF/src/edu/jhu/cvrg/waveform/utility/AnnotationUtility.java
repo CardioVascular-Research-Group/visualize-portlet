@@ -192,6 +192,7 @@ public class AnnotationUtility extends XMLUtility {
 			while(iter.hasMoreResources()) {
 				// Since the fileInfo retrieval query puts all the HTML tags into one continuous string, we must
 				// use a regex in order to retrieve each value
+				theAnnotations[index].setAnnotation("AnnotationUtility.java, getAnnotationNode() is not returning full annotations from the database.");
 				
 				selection = iter.nextResource();
 				String resultString = (selection.getContent()).toString();
@@ -222,9 +223,9 @@ public class AnnotationUtility extends XMLUtility {
 					boolean matchSuccess = theMatches.matches();
 					
 					if (matchSuccess) {
-						// Now check based on what the tag itself is.  There are only certain ones we wanna capture
+						// Now check based on what the tag itself is.  There are only certain ones we want to capture
 						if(theMatches.group(2).equals("<term>")) {
-							// will need a bunch of cases to check which line this is, baesd on the index
+							// will need a bunch of cases to check which line this is, based on the index
 							// not a great solution but it will do for now
 							
 							//  The things being kept track of are the bioportal references for the ENTIRE annotation first, and THEN the onset
@@ -311,8 +312,9 @@ public class AnnotationUtility extends XMLUtility {
 							}
 						}
 						else if(theMatches.group(2).equals("<value>")) {
-							System.out.println("for annotation at index " + index + ", the value = " + theMatches.group(3));
-							theAnnotations[index].setAnnotation(theMatches.group(3));
+							String sValue = theMatches.group(3);
+							System.out.println("for annotation at index " + index + ", the value = " + sValue);
+							theAnnotations[index].setAnnotation(sValue);
 						}
 						
 					}
@@ -596,6 +598,56 @@ public class AnnotationUtility extends XMLUtility {
 			sLetClause = annotationBuilder.commentLet();
 			sOrderByClause = annotationBuilder.orderByID();
 			sReturnClause  = annotationBuilder.returnCommentBlock();
+
+		String sQuery = sLetClause + sForCollection + sWhereClause + sOrderByClause + sReturnClause;
+		// The EnumCollection enumeration will tell the execute method which collection to use
+		try {
+			ResourceSet resultSet = executeQuery(sQuery);
+			ResourceIterator iter;
+
+			iter = resultSet.getIterator();
+
+			Resource selection = null;
+			
+			while(iter.hasMoreResources()) {
+				// Since the fileInfo retrieval query puts all the HTML tags into one continuous string, we must
+				// use a regex in order to retrieve each value
+				
+				selection = iter.nextResource();
+				String commentString = (selection.getContent()).toString();
+				
+				comments.add(commentString);
+			}
+		} catch (XMLDBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return comments;
+		
+	}
+	
+	/**
+	 * This version will also find all comments for a given record.  However, the query used will provide a formatted String output rather
+	 * than raw XML.  This is done as a test prototype.  If this function is successful, lead annotations will be redone based off of this
+	 * function as well, removing the need for parsing the XML output altogether (which is currently how it works).
+	 * 
+	 * @param sUserID
+	 * @param sStudyID
+	 * @param sSubjectID
+	 * @param sRecordName
+	 * @return
+	 */
+	public ArrayList<String> fetchLeadAnnotationList(String sUserID, String sStudyID, String sSubjectID, 
+			String sLeadName, int iLeadIndex, 
+			String sRecordName, boolean isPhenotype, boolean isComment){
+		ArrayList<String> comments = new ArrayList<String>();
+		
+		String sLetClause = annotationBuilder.commentLet();
+		String sForCollection =  annotationBuilder.defaultFor();
+		String sWhereClause   = annotationBuilder.userRecordSearch(sStudyID, sSubjectID, sRecordName, sUserID);
+		String sOrderByClause = annotationBuilder.orderByID();
+		String sReturnClause = annotationBuilder.returnLeadAnnotationBlock(sLeadName);
 
 		String sQuery = sLetClause + sForCollection + sWhereClause + sOrderByClause + sReturnClause;
 		// The EnumCollection enumeration will tell the execute method which collection to use

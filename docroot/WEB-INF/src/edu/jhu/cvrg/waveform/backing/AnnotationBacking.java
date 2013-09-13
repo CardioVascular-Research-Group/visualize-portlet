@@ -36,6 +36,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.ComponentSystemEvent;
 
 //import org.omnifaces.util.Ajax;
 import org.primefaces.context.RequestContext;
@@ -45,6 +46,7 @@ import com.liferay.portal.model.User;
 import edu.jhu.cvrg.waveform.utility.AnnotationUtility;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 import edu.jhu.cvrg.waveform.model.AnnotationData;
+import edu.jhu.cvrg.waveform.model.FileTree;
 import edu.jhu.cvrg.waveform.model.StudyEntry;
 //import edu.jhu.cvrg.waveform.model.UserModel;
 import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
@@ -81,7 +83,9 @@ public class AnnotationBacking implements Serializable {
         private String email;
         private String phone;
         private User userLifeRayModel;
-//        @ManagedProperty("#{userModel}")
+        private int annotationCount=0;
+//        private boolean newInstance=true;
+        //        @ManagedProperty("#{userModel}")
 //        private UserModel userModel;
         
 //    	@ManagedProperty("#{visualizeBacking.selectedStudyObject}")
@@ -95,31 +99,44 @@ public class AnnotationBacking implements Serializable {
 //
 //	}   	
 
-    public String getLeadnameFromRender(){
-    		
-    		// Ajax.oncomplete("alert('leadOnloadCallback: Hello from the Backing Bean')");
-			   String value = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("leadNamesend");
-			   System.out.println("getLeadnameFromRender(), Onload Callback LeadName: " + getLeadName());
-			   System.out.println("getLeadnameFromRender(), Onload Callback lastnum: " + getLastnum());
-			   System.out.println(value);  
-			   return value;
-	}
+//    public String getLeadnameFromRender(){
+//    		
+//    		// Ajax.oncomplete("alert('leadOnloadCallback: Hello from the Backing Bean')");
+//			   String value = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("leadNamesend");
+//			   System.out.println("getLeadnameFromRender(), Onload Callback LeadName: " + getLeadName());
+//			   System.out.println("getLeadnameFromRender(), Onload Callback lastnum: " + getLastnum());
+//			   System.out.println(value);  
+//			   return value;
+//	}
 
 //  RSA 04/26/13 this is called using a remoteCommand in  gerhythmstrip.xhtml - to initilaize the leadname and Leadnum in the Backing bean.
    
-	public void leadOnloadCallbackTemp() {
-        System.out.println("AnnotationBacking.leadOnloadCallbackTemp() LeadName: " + getLeadName());
-        System.out.println("AnnotationBacking.leadOnloadCallbackTemp() LeadNumber: " + getLeadnum());
-//        RequestContext context = RequestContext.getCurrentInstance();
-//       // showAnnotations(context, RetrieveECGDatabase);  
-    }
+//	public void leadOnloadCallbackTemp() {
+//        System.out.println("AnnotationBacking.leadOnloadCallbackTemp() LeadName: " + getLeadName());
+//        System.out.println("AnnotationBacking.leadOnloadCallbackTemp() LeadNumber: " + getLeadnum());
+////        RequestContext context = RequestContext.getCurrentInstance();
+////       // showAnnotations(context, RetrieveECGDatabase);  
+//    }
 
 
-	public void leadOnloadCallback() {
-		System.out.println("AnnotationBacking.leadOnloadCallback()");
-//		Ajax.oncomplete("alert('AnnotationBacking.leadOnloadCallback: called by singleLead.xhtml line 41')");
-	}
+//	public void leadOnloadCallback() {
+//		System.out.println("AnnotationBacking.leadOnloadCallback()");
+////		Ajax.oncomplete("alert('AnnotationBacking.leadOnloadCallback: called by singleLead.xhtml line 41')");
+//	}
 	
+    	public void initialize(ComponentSystemEvent event) {
+        	System.out.println("*************** AnnotationBacking.java, initialize() **********************");
+        	
+    		
+//			if (newInstance) {
+    			System.out.println("***  New instance ****");
+    			showAnnotationForLead();
+//    		}
+//    		newInstance = false;
+    	}
+        
+    	
+    	
 	/** sets up and calls showAnnotations() which retrieves annotations for the given lead, and executes the JavaScript functions which clear and then set the annotations on the Dygraph.<BR/>
 	 * The executed JavaScript includes:  CVRG_resetAnnotations(), CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval(), CVRG_showAnnotations().
 	 **/
@@ -133,10 +150,33 @@ public class AnnotationBacking implements Serializable {
                 com.liferay.util.portlet.PortletProps.get("dbDriver"),
                 com.liferay.util.portlet.PortletProps.get("dbMainDatabase"));
 		
+		setLeadName(visualizeSharedBacking.getSelectedLeadName());
+		setLeadnum(Integer.parseInt(visualizeSharedBacking.getSelectedLeadNumber()));
+		
         System.out.println("AnnotationBacking.showAnnotationForLead LeadName: " + getLeadName());
         System.out.println("AnnotationBacking.showAnnotationForLead Leadnum: " + getLeadnum());
         showAnnotations(context, RetrieveECGDatabase);  
 	}
+	
+    /** Switches to the selection tree and list view.
+     * Handles onclick event for the button "btnView12LeadECG" in the viewA_SelectionTree.xhtml view.
+     * 
+     */
+    public String viewAnnotationPoint(){
+    	System.out.println("+++ AnnotationBacking.java +++");
+    	FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
+		String passedDataSX = (String) map.get("sDataSX");
+		String passedDataSY = (String) map.get("sDataSY");
+		
+		setDataSXstring(passedDataSX);
+		setDataSX(Double.parseDouble(passedDataSX));
+		setDataSYstring(passedDataSY);
+		setDataSY(Double.parseDouble(passedDataSY));
+
+		System.out.println("+++ AnnotationBacking.java, viewAnnotationPoint() passedDataSX: " + passedDataSX + " passedDataSY: " + passedDataSY + " +++ ");
+		return "/include/includeAnnotate";
+    }
 	
 	public void showNodeID(){
 		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getNodeID()); // ECGTermsv1:ECG_000000103 
@@ -257,7 +297,8 @@ public class AnnotationBacking implements Serializable {
 			System.out.println("saveAnnotationSetFlag(), FullAnnotation: " + getFullAnnotation());
 			System.out.println("saveAnnotationSetFlag(), nodeID: " + getNodeID());
 			
-			showAnnotations(context, RetrieveECGDatabase);
+			showAnnotations(context, RetrieveECGDatabase); // clears current annotations and reloads all, including the new one.
+			context.execute("WAVEFORM_ShowAnnotationSingle()"); // need to redisplay all the annotations.
 		}
 	
 
@@ -278,11 +319,11 @@ public class AnnotationBacking implements Serializable {
 			if(sErrorMess.length() > 0){
 				System.err.println ("AnnotationBacking.java, showAnnotations() failed: " + sErrorMess);
 			}else{
-				AnnotationData[] RetrievedAnnotations = RetrieveECGDatabase.getLeadAnnotationNode(userLifeRayModel.getScreenName(), visualizeSharedBacking.getSharedStudyEntry().getStudy(), visualizeSharedBacking.getSharedStudyEntry().getSubjectID(), String.valueOf(leadIndex), leadIndex, visualizeSharedBacking.getSharedStudyEntry().getRecordName());
-
+				AnnotationData[] retrievedAnnotationList = RetrieveECGDatabase.getLeadAnnotationNode(userLifeRayModel.getScreenName(), visualizeSharedBacking.getSharedStudyEntry().getStudy(), visualizeSharedBacking.getSharedStudyEntry().getSubjectID(), String.valueOf(leadIndex), leadIndex, visualizeSharedBacking.getSharedStudyEntry().getRecordName());
+				annotationCount = retrievedAnnotationList.length;
 				context.execute("CVRG_resetAnnotations()");
 
-				Arrays.sort(RetrievedAnnotations);
+				Arrays.sort(retrievedAnnotationList);
 
 				String series = getLeadName();
 				long x = 0;
@@ -294,14 +335,14 @@ public class AnnotationBacking implements Serializable {
 
 				HashMap<Double, Integer> duplicates = new HashMap<Double, Integer>();
 
-				for( int i = 0; i < RetrievedAnnotations.length; i++ ){
+				for( int i = 0; i < retrievedAnnotationList.length; i++ ){
 					//Test JAVA data for CVRG_addAnnotation RSA 0117		
 					// series = RetrievedAnnotations[i].getLeadName(1);
-					x = (long) RetrievedAnnotations[i].getMilliSecondStart();     // time or "X" coordinate 
-					y = RetrievedAnnotations[i].getMicroVoltStart();       //voltage or "Y" coordinate, not needed for dygraph annotation flag, but might be used by our code later.
+					x = (long) retrievedAnnotationList[i].getMilliSecondStart();     // time or "X" coordinate 
+					y = retrievedAnnotationList[i].getMicroVoltStart();       //voltage or "Y" coordinate, not needed for dygraph annotation flag, but might be used by our code later.
 					flagLabel = String.valueOf(i+1);   // label of Annotation
-					ontologyId = RetrievedAnnotations[i].getConceptLabel();
-					fullAnnotation = "fullAnnotation needs to be setup in UserControloler and RetrieveAnnotation";
+					ontologyId = retrievedAnnotationList[i].getConceptLabel();
+					fullAnnotation = retrievedAnnotationList[i].getAnnotation();// "fullAnnotation needs to be setup in UserControloler and RetrieveAnnotation";
 					System.out.println("RetrieveAnnotation loop x:" + x + " y:" + y + " flagLabel: " + flagLabel);
 
 					Double xPosition = Double.valueOf(x);
@@ -319,7 +360,7 @@ public class AnnotationBacking implements Serializable {
 						duplicates.put(xPosition, Integer.valueOf(heightMultiplier));
 					}
 
-					if(RetrievedAnnotations[i].getIsSinglePoint()) {
+					if(retrievedAnnotationList[i].getIsSinglePoint()) {
 						int finalHeight = heightMultiplier * 15;
 						System.out.println("-- Add single point, finalHeight:" + x);
 						// add annotaion from JAVA to JavaScript Dygraph 
@@ -332,8 +373,8 @@ public class AnnotationBacking implements Serializable {
 						String flagLabelCenter  = flagLabel + " Interval";
 						int width = 30;
 						int widthInterval = 66;
-						double secondX = RetrievedAnnotations[i].getMilliSecondEnd();
-						double secondY = RetrievedAnnotations[i].getMicroVoltEnd();
+						double secondX = retrievedAnnotationList[i].getMilliSecondEnd();
+						double secondY = retrievedAnnotationList[i].getMicroVoltEnd();
 
 						//TODO: corrected for Display at low resolution. RSA 04/15 works for 1000 samples per second.
 						int centerX = (int) (( x + secondX ) / 2); 
@@ -367,7 +408,7 @@ public class AnnotationBacking implements Serializable {
 				}
 
 //				context.execute("CVRG_showAnnotations()");
-				context.execute("WAVEFORM_ShowAnnotationSingle()");
+//				context.execute("WAVEFORM_ShowAnnotationSingle()");
 			}
 		}
 
@@ -476,6 +517,18 @@ public class AnnotationBacking implements Serializable {
         public void setPhone(String phone) {
                 this.phone = phone;
         }
+
+		public String getLeadDescription() {
+			String leadDescription = "Subject: "+ visualizeSharedBacking.getSharedStudyEntry().getRecordName()  
+							+ " / Lead: \"" + leadName 
+							+ "\" " + (leadnum+1) + 
+							" of " + visualizeSharedBacking.getSharedStudyEntry().getLeadCount()
+							+ " / Sampling-rate: " + visualizeSharedBacking.getSharedStudyEntry().getSamplingRate()
+							+ "Hz / " + annotationCount + " total annotations." ;
+	
+			return leadDescription;
+		}
+
 
 		public String getPortalDefinitionName() {
 			return portalDefinitionName;

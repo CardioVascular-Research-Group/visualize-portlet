@@ -234,10 +234,30 @@ public class AnnotationQueryBuilder extends XQueryBuilder {
 	 * @return
 	 */
 	public String returnLeadAnnotation(String leadName) {
-		String query = "	return $x/lead[bioportalReference/term='" + leadName + "']/annotation\n";;
+		String query = "	return $x/lead[bioportalReference/term='" + leadName + "']/annotation\n";
 		
 		return query;
 	}
+
+	/**
+	 * A return statement specifically for retrieving all annotations on a single lead
+	 * 
+	 * @param leadName
+	 * @return
+	 */
+	public String returnLeadAnnotationBlock(String leadName) {
+		String query = "\n return	\n" +
+				"			for $annotation in $x/annotation\n" +
+				"				let $comment := $annotation/value\n" +
+				"				let $author := $annotation/createdBy\n" +
+				"				let $date := $annotation/ID\n" +
+				"				let $nl := \"&#10;\"\n" +
+				"				let $finalBlock := fn:concat($author, \" on \", $date, $nl, $comment, $nl)\n" +
+				"			return fn:data($finalBlock)\n";
+		
+		return query;
+	}
+
 	
 	/**
 	 * A return statement specifically for retrieving all comment annotations for a record
