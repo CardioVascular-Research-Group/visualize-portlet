@@ -7,7 +7,7 @@ revision 0.1 : 9/7/2012 - initial version Michael Shipway
 var ylinesLeft = [];
 var ylinesRight = [];
 var yPadding = 32;
-var xPadding = 29;
+var xPadding = 28;
 //var leadCount = 2;
 var xlineTop, xlineBottom; //, xlineB;
 

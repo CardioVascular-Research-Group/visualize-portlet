@@ -1,7 +1,7 @@
 // Code for a variety of interaction models. Used in interaction.html, but split out from
 // that file so they can be tested in isolation.
 //
-var dataSX=0, dataSY=0;
+var dataOnsetX=0, dataOnsetY=0;
 
 var CVRG_mousedown = function(event, g, context) {
   context.initializeMouseDown(event, g, context);
@@ -10,8 +10,8 @@ var CVRG_mousedown = function(event, g, context) {
   } else {
 	var eventDomCoord = g.eventToDomCoords(event);
 	var stackedP = g.findStackedPoint(eventDomCoord[0], eventDomCoord[1]);
-	dataSX = stackedP.point.xval;
-	dataSY = stackedP.point.yval;
+	dataOnsetX = stackedP.point.xval;
+	dataOnsetY = stackedP.point.yval;
     Dygraph.startZoom(event, g, context);
   }
 };
@@ -46,29 +46,29 @@ var CVRG_mouseup = function(event, g, context) {
 		dataECoords[1] = stackedP.point.yval;
 		
 		
-//		alert("Data Coordinates Start:(" + dataSX + ", " + dataSY + "), End: (" + (dataECoords[0]) + ", " + (dataECoords[1]) + "), DomCoords: (" + (eventDomCoord[0]) + ", " + (eventDomCoord[1]) + ")");
-//			CVRG_annotationIntervalSelected(dataSX,dataSY, dataECoords[0],dataECoords[1]);
-		if(dataSX>dataECoords[0]){
-			var dummy = dataSX;
-			dataSX = dataECoords[0];
+//		alert("Data Coordinates Start:(" + dataOnsetX + ", " + dataOnsetY + "), End: (" + (dataECoords[0]) + ", " + (dataECoords[1]) + "), DomCoords: (" + (eventDomCoord[0]) + ", " + (eventDomCoord[1]) + ")");
+//			CVRG_annotationIntervalSelected(dataOnsetX,dataOnsetY, dataECoords[0],dataECoords[1]);
+		if(dataOnsetX>dataECoords[0]){
+			var dummy = dataOnsetX;
+			dataOnsetX = dataECoords[0];
 			dataECoords[0] = dummy;
 		}
-		if(dataSY>dataECoords[1]){
-			var dummy2 = dataSY;
-			dataSY = dataECoords[1];
+		if(dataOnsetY>dataECoords[1]){
+			var dummy2 = dataOnsetY;
+			dataOnsetY = dataECoords[1];
 			dataECoords[1] = dummy2;
 		}
-		var xDelta = dataECoords[0]-dataSX;
-		var yDelta = dataECoords[1]-dataSY;
+		var xDelta = dataECoords[0]-dataOnsetX;
+		var yDelta = dataECoords[1]-dataOnsetY;
 
 		if(xDelta<4){
 //			Dygraph.endZoom(event, g, context);
 
-			CVRG_pointClickHandlerJSNI(dataSX,dataSY);
+			CVRG_pointClickHandlerJSNI(dataOnsetX,dataOnsetY);
 			num++;
 		}else{
-			//CVRG_IntervalHandlerJSNI(dataSX,dataSY);
-			CVRG_annotationIntervalSelected(dataSX,dataSY, dataECoords[0],dataECoords[1]);
+			//CVRG_IntervalHandlerJSNI(dataOnsetX,dataOnsetY);
+			CVRG_annotationIntervalSelected(dataOnsetX,dataOnsetY, dataECoords[0],dataECoords[1]);
 			num++;
 		}
 	}
@@ -83,8 +83,8 @@ var CVRG_mouseup = function(event, g, context) {
 	  } else {
 		var eventDomCoord = g.eventToDomCoords(event);
 		var stackedP = g.findStackedPoint(eventDomCoord[0], eventDomCoord[1]);
-		dataSX = stackedP.point.xval;
-		dataSY = stackedP.point.yval;
+		dataOnsetX = stackedP.point.xval;
+		dataOnsetY = stackedP.point.yval;
 	    Dygraph.startZoom(event, g, context);
 	  }
 	};
@@ -97,7 +97,7 @@ var CVRG_mouseup = function(event, g, context) {
 	  }
 	};
 
-	var CVRG_mouseup2 = function(event, g, context) {
+/*	var CVRG_mouseup2 = function(event, g, context) {
 		var isInterval = false;
 	  if (context.isPanning) {
 	    Dygraph.endPan(event, g, context);
@@ -120,17 +120,17 @@ var CVRG_mouseup = function(event, g, context) {
 			dataECoords[1] = stackedP.point.yval;
 
 			// Swap start and end points if start is later time value
-			if(dataSX>dataECoords[0]){
-				var dummy = dataSX;
-				dataSX = dataECoords[0];
+			if(dataOnsetX>dataECoords[0]){
+				var dummy = dataOnsetX;
+				dataOnsetX = dataECoords[0];
 				dataECoords[0] = dummy;
 				
-				var dummy2 = dataSY;
-				dataSY = dataECoords[1];
+				var dummy2 = dataOnsetY;
+				dataOnsetY = dataECoords[1];
 				dataECoords[1] = dummy2;
 			}
-			var xDelta = dataECoords[0]-dataSX;
-			var yDelta = dataECoords[1]-dataSY;
+			var xDelta = dataECoords[0]-dataOnsetX;
+			var yDelta = dataECoords[1]-dataOnsetY;
 
 			// treat this as a single point click, just like CVRG_pointClickCallbackSingle()
 			if(xDelta<4){
@@ -150,12 +150,12 @@ var CVRG_mouseup = function(event, g, context) {
 //			    $(".dataSXsendDOMDuration").text(0.0);
 //			    $(".dataSXsendDOM2Duration").val(0.0);
 
-				alert("interval_new.js, CVRG_mouseup(): Point on " + CVRG_getLeadName() + " clicked at: " + dataSX + " seconds, " + dataSY + "uVolts,  open annotation popup.");
-				viewAnnotationPointEdit([{name:'sDataSX', value:dataSX},{name:'sDataSY', value:p.dataSY}]);
+				alert("interval_new.js, CVRG_mouseup(): Point on " + CVRG_getLeadName() + " clicked at: " + dataOnsetX + " seconds, " + dataOnsetY + "uVolts,  open annotation popup.");
+				viewAnnotationPointEdit([{name:'sDataSX', value:dataOnsetX},{name:'sDataSY', value:p.dataOnsetY}]);
 
 //			    annotationBar.show(); // Scott Alger Primefaces dropdown menu SA 1/17/2013
 //			 	setAnnotionXYonClickDrop(isInterval);
-			 	// setAnnotionStartCoordinants(dataSX,dataSY); // Mike Shipway 3/7/2013 - updated on Scott's
+			 	// setAnnotionStartCoordinants(dataOnsetX,dataOnsetY); // Mike Shipway 3/7/2013 - updated on Scott's
 				num++;
 			}else{
 				isInterval = true;
@@ -176,7 +176,7 @@ var CVRG_mouseup = function(event, g, context) {
 		}
 	  }
 	};
-	
+*/	
 	
 	var WAVEFORM3_mouseup = function(event, g, context) {
 		var isInterval = false;
@@ -199,41 +199,48 @@ var CVRG_mouseup = function(event, g, context) {
 			dataECoords[1] = stackedP.point.yval;
 
 			// Swap start and end points if start is later time value
-			if(dataSX>dataECoords[0]){
-				var dummy = dataSX;
-				dataSX = dataECoords[0];
-				dataECoords[0] = dummy;
+			if(dataOnsetX>dataECoords[0]){
+				var dummyX = dataOnsetX;
+				dataOnsetX = dataECoords[0];
+				dataECoords[0] = dummyX;
 				
-				var dummy2 = dataSY;
-				dataSY = dataECoords[1];
-				dataECoords[1] = dummy2;
+				var dummyY = dataOnsetY;
+				dataOnsetY = dataECoords[1];
+				dataECoords[1] = dummyY;
 			}
-			var xDelta = dataECoords[0]-dataSX;
-			var yDelta = dataECoords[1]-dataSY;
+			var xDelta = dataECoords[0]-dataOnsetX;
+			var yDelta = dataECoords[1]-dataOnsetY;
 
 			// treat this as a single point click, just like CVRG_pointClickCallbackSingle()
 			if(xDelta<4){
 				isInterval = false;
 				Dygraph.endZoom(event, g, context);
 		     // CLEAR Y Duration point send to the input to submit to the backing bean
-				alert("interval_new.js, CVRG_mouseup(): Point on " + CVRG_getLeadName() + " clicked at: " + dataSX + " seconds, " + dataSY + "uVolts,  open annotation popup.");
-				viewAnnotationPointEdit([{name:'sDataSX', value:dataSX},{name:'sDataSY', value:dataSY}]);
+				alert("interval_new.js, CVRG_mouseup(): Point on " + CVRG_getLeadName() + " clicked at: " + dataOnsetX + " seconds, " + dataOnsetY + "uVolts,  open annotation popup.");
+				viewAnnotationPointEdit([{name:'DataOnsetX', value:dataOnsetX},
+				                         {name:'DataOnsetY', value:dataOnsetY}]);
 
 //			    annotationBar.show(); // Scott Alger Primefaces dropdown menu SA 1/17/2013
 //			 	setAnnotionXYonClickDrop(isInterval);
-			 	// setAnnotionStartCoordinants(dataSX,dataSY); // Mike Shipway 3/7/2013 - updated on Scott's
+			 	// setAnnotionStartCoordinants(dataOnsetX,dataOnsetY); // Mike Shipway 3/7/2013 - updated on Scott's
 				num++;
 			}else{
 				isInterval = true;
+				viewAnnotationIntervalEdit([{name:'DataOnsetX', value:dataOnsetX},
+				                            {name:'DataOnsetY', value:dataOnsetY}, 
+				                            {name:'DataOffsetX', value:dataECoords[0]},
+				                            {name:'DataOffsetY', value:dataECoords[1]},
+				                            {name:'DeltaX', value:xDelta},
+				                            {name:'DeltaY', value:yDelta}]);
 			 //  = Y End Of Interval Duration point send to the input to submit to the backing bean
-			    $(".dataSYsendDOMDuration").text(dataECoords[1]);
-			    $(".dataSYsendDOM2Duration").val(dataECoords[1]);
-
-			 //  = X End Of Interval Duration point send to the input to submit to the backing bean
-			    $(".dataSXsendDOMDuration").text(dataECoords[0]);
-			    $(".dataSXsendDOM2Duration").val(dataECoords[0]);
-				
-			    annotationBar.show();
+//			    $(".dataSYsendDOMDuration").text(dataECoords[1]);
+//			    $(".dataSYsendDOM2Duration").val(dataECoords[1]);
+//
+//			 //  = X End Of Interval Duration point send to the input to submit to the backing bean
+//			    $(".dataSXsendDOMDuration").text(dataECoords[0]);
+//			    $(".dataSXsendDOM2Duration").val(dataECoords[0]);
+//				
+//			    annotationBar.show();
 				// Duration Selection - Scott Alger 04/03/12 
 			    setAnnotionXYonClickDrop(isInterval);
 				 // Scott Alger Primefaces dropdown menu SA 1/17/2013

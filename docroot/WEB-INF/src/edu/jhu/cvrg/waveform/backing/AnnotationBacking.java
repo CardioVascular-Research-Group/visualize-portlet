@@ -32,6 +32,7 @@ import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.SessionScoped;
 //import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
@@ -51,20 +52,21 @@ import edu.jhu.cvrg.waveform.model.StudyEntry;
 //import edu.jhu.cvrg.waveform.model.UserModel;
 import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
 
-
-@ViewScoped
+@SessionScoped
 @ManagedBean(name="annotationBacking")
 public class AnnotationBacking implements Serializable {
 
 	private static final long serialVersionUID = -6719393176698520013L;
 
 		public String nodeID;	
-    	public String dataSXstring; 
-    	public String dataSYstring;
-		public double dataSXDuration;
-		public double dataSYDuration;
-		public double dataSX;
-		public double dataSY;
+//    	public String dataSXstring; 
+//    	public String dataSYstring;
+		public double dataXChange; 
+		public double dataYChange; 
+		public double dataOnsetX; // X value (time) of a point or the Start of an interval
+		public double dataOnsetY; // Y value (Voltage) of a point or the Start of an interval
+		public double dataOffsetX;
+		public double dataOffsetY;
 		public double valueofSX;
 		public double valueofSY;
 		public String fullAnnotation;
@@ -84,7 +86,7 @@ public class AnnotationBacking implements Serializable {
         private String phone;
         private User userLifeRayModel;
         private int annotationCount=0;
-//        private boolean newInstance=true;
+        private boolean newInstance=true;
         //        @ManagedProperty("#{userModel}")
 //        private UserModel userModel;
         
@@ -128,11 +130,13 @@ public class AnnotationBacking implements Serializable {
         	System.out.println("*************** AnnotationBacking.java, initialize() **********************");
         	
     		
-//			if (newInstance) {
+			if (newInstance) {
     			System.out.println("***  New instance ****");
     			showAnnotationForLead();
-//    		}
-//    		newInstance = false;
+    		}else{
+    			System.out.println("***  Existing instance, annotationCount:" + annotationCount + " Lead Name:" + leadName + " ****");
+    		}
+    		newInstance = false;
     	}
         
     	
@@ -166,18 +170,50 @@ public class AnnotationBacking implements Serializable {
     	System.out.println("+++ AnnotationBacking.java +++");
     	FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
-		String passedDataSX = (String) map.get("sDataSX");
-		String passedDataSY = (String) map.get("sDataSY");
+		String passedDataOnsetX = (String) map.get("sDataOnsetX");
+		String passedDataOnsetY = (String) map.get("sDataOnsetY");
 		
-		setDataSXstring(passedDataSX);
-		setDataSX(Double.parseDouble(passedDataSX));
-		setDataSYstring(passedDataSY);
-		setDataSY(Double.parseDouble(passedDataSY));
+		setDataSX(Double.parseDouble(passedDataOnsetX));
+		setDataSY(Double.parseDouble(passedDataOnsetY));
 
-		System.out.println("+++ AnnotationBacking.java, viewAnnotationPoint() passedDataSX: " + passedDataSX + " passedDataSY: " + passedDataSY + " +++ ");
-		return "/include/includeAnnotate";
+		setDataOffsetX(0);
+		setDataOffsetY(0);
+		setDeltaX(0);
+		setDeltaY(0);
+		
+		System.out.println("+++ AnnotationBacking.java, viewAnnotationPoint() passedDataOnsetX: " + passedDataOnsetX + " passedDataSY: " + passedDataOnsetY + " +++ ");
+		return "viewE_Annotate";
     }
 	
+    
+    public String viewAnnotationInterval(){
+    	System.out.println("+++ AnnotationBacking.java, viewAnnotationIntervalEdit() +++");
+    	FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
+		String passedDataOnsetX = (String) map.get("DataOnsetX");
+		String passedDataOnsetY = (String) map.get("DataOnsetY");
+		String passedDataOffsetX = (String) map.get("DataOffsetX");
+		String passedDataOffsetY = (String) map.get("DataOffsetY");
+		String passedDeltaX = (String) map.get("DeltaX");
+		String passedDeltaY = (String) map.get("DeltaY");
+		
+		setDataSX(Double.parseDouble(passedDataOnsetX));
+		setDataSY(Double.parseDouble(passedDataOnsetY));
+		setDataOffsetX(Double.parseDouble(passedDataOffsetX));
+		setDataOffsetY(Double.parseDouble(passedDataOffsetY));
+
+		setDeltaX(Double.parseDouble(passedDeltaX));
+		setDeltaY(Double.parseDouble(passedDeltaY));
+		
+		System.out.println("+++ AnnotationBacking.java, viewAnnotationIntervalEdit() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
+		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
+		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDataSXDuration() + "  dataSYDuration: " + getDataSYDuration() + " +++ ");
+		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++++++ getDataOffsetX: " + getDataOffsetX() + " getDataOffsetY: " + getDataOffsetY() + " +++ ");
+
+		return "viewE_Annotate";
+    }
+    
+    
 	public void showNodeID(){
 		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getNodeID()); // ECGTermsv1:ECG_000000103 
 		String sDefinition= saOntDetail[1];
@@ -581,36 +617,36 @@ public class AnnotationBacking implements Serializable {
 		}
 
 		public double getDataSX() {
-			return dataSX;
+			return dataOnsetX;
 		}
 
 		public void setDataSX(double dataSX) {
-			this.dataSX = dataSX;
+			this.dataOnsetX = dataSX;
 		}
 
 		public double getDataSY() {
-			return dataSY;
+			return dataOnsetY;
 		}
 
 		public void setDataSY(double dataSY) {
-			this.dataSY = dataSY;
+			this.dataOnsetY = dataSY;
 		}
 
-		public String getDataSXstring() {
-			return dataSXstring;
-		}
+//		public String getDataSXstring() {
+//			return dataSXstring;
+//		}
+//
+//		public void setDataSXstring(String dataSXstring) {
+//			this.dataSXstring = dataSXstring;
+//		}
 
-		public void setDataSXstring(String dataSXstring) {
-			this.dataSXstring = dataSXstring;
-		}
-
-		public String getDataSYstring() {
-			return dataSYstring;
-		}
-
-		public void setDataSYstring(String dataSYstring) {
-			this.dataSYstring = dataSYstring;
-		}
+//		public String getDataSYstring() {
+//			return dataSYstring;
+//		}
+//
+//		public void setDataSYstring(String dataSYstring) {
+//			this.dataSYstring = dataSYstring;
+//		}
 
 		public String getNodeID() {
 			return nodeID;
@@ -639,20 +675,50 @@ public class AnnotationBacking implements Serializable {
 			this.leadnum = leadnum;
 		}
 
-		public void setDataSXDuration(double dataSXDuration) {
-			this.dataSXDuration = dataSXDuration;
+		public void setDeltaX(double deltaX) {
+			this.dataXChange = deltaX;
 		}
 
-		public void setDataSYDuration(double dataSYDuration) {
-			this.dataSYDuration = dataSYDuration;
+		public void setDeltaY(double deltaY) {
+			this.dataYChange = deltaY;
 		}
 
 		public double getDataSXDuration() {
-			return dataSXDuration;
+			return dataXChange;
 		}
 
 		public double getDataSYDuration() {
-			return dataSYDuration;
+			return dataYChange;
+		}
+
+
+		public void setDataOffsetX(double dataOffsetX) {
+			this.dataOffsetX = dataOffsetX;
+		}
+
+		public void setDataOffsetY(double dataOffsetY) {
+			this.dataOffsetY = dataOffsetY;
 		}
 		
+		public double getDataOffsetX() {
+			return dataOffsetX;
+//			double ret;
+//			if(dataSXDuration==0)
+//				ret = 0;
+//			else 
+//				ret = dataSX+dataSXDuration;
+//			
+//			return ret;
+		}
+		public double getDataOffsetY() {
+			return dataOffsetY;
+//			double ret;
+//			if(dataSYDuration==0)
+//				ret = 0;
+//			else 
+//				ret = dataSY+dataSYDuration;
+//			
+//			return ret;
+		}
+
 }
