@@ -23,7 +23,7 @@
 		<h:form id="formManualAnnotation">
 			<p:panelGrid id="AnnotationSetter" layout="block" columns="2" style="border:1px;">
 				<p:panel id="panelLeft" header="Bioportal"
-					style="background-color:#d0e4f6; padding:20 0; height:364px; width:380px">
+					style="background-color:#d0e4f6; padding:20 0; height:360px; width:350px">
 					<p:media player="flash" id="OntologyTree"
 						value="http://keg.cs.uvic.ca/ncbo/ontologytree/OntologyTree.swf?"
 						style="left:40px;position:absolute;" width="300" height="300">
@@ -34,63 +34,72 @@
 				</p:panel>
 
 				<p:panel id="panelRight" header="Annotation"
-					style="background: whiteSmoke; padding:0 0;width:550px;">
-					<h:outputText id="TitleDiv0" 
-							value="#{annotationBacking.leadDescription}"
-							styleClass="title"/>
-<!--					<h:panelGroup id="timeAndAmplitude" layout="block">-->
+					style="background-color:#d0e4f6; top:0; padding:0 0; height:360px; width:550px;">
  					<h:panelGrid columns="2" frame="box" cellpadding="0" cellspacing="0" 
- 						 styleClass="title" style="background: whiteSmoke;"> 
-						<h:panelGrid id="StartPoint" columns="2" cellpadding="10" style="background:whiteSmoke; border:1px solid green;"> 
+ 						 styleClass="title" 
+ 						 style="background: whiteSmoke;"> 
+						<h:panelGrid columns="2" frame="none" 
+							style="background: whiteSmoke;">
+							<h:outputLabel value="Subject ID" styleClass="title"/>
+							<h:outputLabel value="#{annotationBacking.studyEntry.recordName}" styleClass="dataValue"/>
+							
+							<h:outputLabel value="Lead" styleClass="title"/>
+							<h:outputLabel value="#{annotationBacking.leadName}" styleClass="dataValue"/>
+							
+							<h:outputLabel value="Rate" styleClass="title"/>
+							<h:outputLabel value="#{annotationBacking.studyEntry.samplingRate}Hz" styleClass="dataValue"/>
+							
+							<h:outputLabel value="Annotations" styleClass="title"/>
+							<h:outputLabel value="#{annotationBacking.annotationCount}" styleClass="dataValue"/>
+						</h:panelGrid>
+						
+						<p:panelGrid id="EndPoint" columns="#{annotationBacking.singlePoint? '2' : '4'}" cellpadding="10" style="background: whiteSmoke;border: 1px solid blue;"> 
 							<h:outputLabel value="" style="width:140px;"/>
 							<h:outputLabel value="Onset" styleClass="title"/>
+							<h:outputLabel value="Offset" styleClass="title" style="width:100px" rendered="#{!annotationBacking.singlePoint}"/>
+							<h:outputLabel value="Change" styleClass="title" style="width:100px" rendered="#{!annotationBacking.singlePoint}"/>
 
 							<h:outputLabel value="Time(mSec)" styleClass="title"/>
-							<h:panelGroup id="dataSYHolder" layout="block">
+							<h:panelGroup id="dataSYHolder2" layout="block">
 								<h:outputText id="dataSX" 
 									styleClass="dataValue"
 									value="#{annotationBacking.dataSX}"/>
 							</h:panelGroup>
+							<h:panelGroup layout="block" id="dataEXHolder2"
+								class="dataSXPosition2Duration"
+								rendered="#{!annotationBacking.singlePoint}">
+								<h:outputText id="dataSXDuration" 
+									styleClass="dataValue"
+									value="#{annotationBacking.dataOffsetX}" />
+							</h:panelGroup>
+							<h:panelGroup layout="block" id="dataEYHolder"
+								class="dataSXPosition2Duration"
+								rendered="#{!annotationBacking.singlePoint}">
+								<h:outputText id="dataSXDuration2" 
+									styleClass="dataValue"
+									value="#{annotationBacking.dataSXDuration}" />
+							</h:panelGroup>		
 		
 							<h:outputLabel
-								class="window-buttons dataSYPosition borderTextAnalysysPop"
+								class="window-buttons dataSYPosition"
 								styleClass="title"
 								value="Amplitude(μV)" />
-							<h:panelGroup layout="block" id="dataSXHolder"
-								class="dataSYPosition2 borderTextAnalysysPop">
+							<h:panelGroup id="dataSXHolder2" layout="block" >
 								<h:outputText id="dataSY" class="dataSYsendDOM"
 									styleClass="dataValue"
 									value="#{annotationBacking.dataSY}" />
 							</h:panelGroup>
-						</h:panelGrid>							
-						<p:panelGrid id="EndPoint" columns="2" cellpadding="10" style="background: whiteSmoke;border: 1px solid blue; "> 
-							<h:outputLabel value="Offset" styleClass="title" style="width:100px"/>
-							<h:outputLabel value="Change" styleClass="title" style="width:100px"/>
-
-							<h:panelGroup layout="block" id="dataEXHolder"
-								class="dataSXPosition2Duration borderTextAnalysysPop">
-								<h:outputText id="dataSXDuration" 
-									styleClass="dataValue"
-									class="dataSXsendDOMDuration"
-									value="#{annotationBacking.dataOffsetX}" />
-							</h:panelGroup>
-							<h:panelGroup layout="block" id="dataEYHolder"
-								class="dataSXPosition2Duration borderTextAnalysysPop">
-								<h:outputText id="dataSXDuration2" 
-									styleClass="dataValue"
-									class="dataSXsendDOMDuration"
-									value="#{annotationBacking.dataSXDuration}" />
-							</h:panelGroup>		
-		
-							<h:panelGroup layout="block" id="dataSXHolderDuration"
-								class="dataSYPosition2Duration borderTextAnalysysPop">
+							<h:panelGroup id="dataSXHolderDuration"
+								layout="block" 
+								rendered="#{!annotationBacking.singlePoint}">
 								<h:outputText id="dataSYDuration" 
 									styleClass="dataValue"
 									class="dataSYsendDOMDuration"
 									value="#{annotationBacking.dataOffsetY}" />
 							</h:panelGroup>						
-							<h:panelGroup layout="block" id="dataSXHolderDuration2"
-								class="dataSYPosition2Duration borderTextAnalysysPop">
+							<h:panelGroup id="dataSXHolderDuration2"
+								layout="block" 
+								rendered="#{!annotationBacking.singlePoint}">
 								<h:outputText id="dataSYDuration2" 
 									styleClass="dataValue"
 									class="dataSYsendDOMDuration"
@@ -98,13 +107,11 @@
 							</h:panelGroup>						
 						</p:panelGrid>	
  					</h:panelGrid> 
-<!--					</h:panelGroup>-->
-<!-- 						</p:fieldset> -->
 
 
 
-					<h:panelGrid columns="2"
-						style="border: 1px solid red; width:540px;">
+					<h:panelGrid columns="2" 
+						style="background: whiteSmoke; border: 1px solid red; width:540px;">
 
 						<h:outputLabel for="nodeIDName" value="*" rendered="false" />
 						<h:outputText id="nodeIDDOM" class="nodeIDsendDOM"
@@ -113,18 +120,19 @@
 						<h:outputLabel for="FindTermName" value="" />
 						<p:button icon="ui-icon ui-icon-circle-arrow-w" iconPos="left"
 							value="Find The Term In The Bioportal Ontology Tree"
-							style="width:350px;" />
+							style="width:350px;" 
+							disabled="true"/>
 
 						<h:outputLabel for="termName"
-							icon="ui-icon ui-icon-star wijmo-wijmenu-icon-left"
 							styleClass="title" 
 							value="Term:" />
 						<h:outputText id="termNameDOM"
 							styleClass="title" 							
-							class="termNamesendDOM" value="#{annotationBacking.termName}"
+							class="termNamesendDOM" 
+							value="#{annotationBacking.termName}"
 							required="true" />
 
-						<h:outputLabel for="discript"
+						<h:outputLabel for="showData"
 							styleClass="title" 
 							value="Definition" />
 						<div id="showData" class="showDataStyle">showData</div>
@@ -133,9 +141,13 @@
 
 						<!-- END Top notificationBar to set Annotation flag Note:  type="button" use to turn button off of primefaces
 						START Below - TermName for display and sends the nodeID to backing bean : HIDDEN from VIEW -->
-						<p:remoteCommand name="setBioportalOntology"
+						<p:remoteCommand name="lookupDefinition"
+							actionListener="#{annotationBacking.lookupDefinition}"
+							out="fullAnnotationDOM"  />
+
+						<p:remoteCommand  name="setBioportalOntology"
 							actionListener="#{annotationBacking.showNodeID}"
-							out="fullAnnotationDOM" />
+							out="fullAnnotationDOM"  />
 						<script type="text/javascript">
 							function setBioportalDefinition() {
 								//your custom code
@@ -153,16 +165,15 @@
 				
 				<h:outputLabel value=""/>
 				<h:panelGroup id="buttons" layout="block">
-					<p:commandButton   id="set" value="close" onclick="bar.hide()"  />
-
 					<p:commandButton value="Save" onclick="$('#showData').empty()"
 						action="#{annotationBacking.showNodeID}"
 						actionListener="#{annotationBacking.saveAnnotationSetFlag}"
 						oncomplete="handleComplete(xhr, status, args)" />
 
-					<p:commandButton value="Cancel" onclick="bar.hide();" />
-				</h:panelGroup>
-				
+					<p:commandButton value="Cancel"
+									action="#{visualizeGraphBacking.viewSingleGraph}"
+									title="Close manual annotation panel without saving."/>					
+				</h:panelGroup>				
 			</p:panelGrid>
 						<!-- invisable  3db6e3 -->
 
@@ -198,7 +209,7 @@
 
 						<h:panelGroup layout="block" id="leadnumHolder"
 							style="display:none"
-							class="leadnumPosition2 borderTextAnalysysPop">
+							class="leadnumPosition2">
 							<h:outputText id="leadnum" class="leadnumsendDOM"
 								value="#{annotationBacking.leadnum}" />
 						</h:panelGroup>

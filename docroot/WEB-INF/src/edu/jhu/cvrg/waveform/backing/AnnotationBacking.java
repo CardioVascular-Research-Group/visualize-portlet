@@ -86,11 +86,12 @@ public class AnnotationBacking implements Serializable {
         private String phone;
         private User userLifeRayModel;
         private int annotationCount=0;
+		private boolean singlePoint=true;
         private boolean newInstance=true;
         //        @ManagedProperty("#{userModel}")
 //        private UserModel userModel;
         
-//    	@ManagedProperty("#{visualizeBacking.selectedStudyObject}")
+		//    	@ManagedProperty("#{visualizeBacking.selectedStudyObject}")
 //    	private StudyEntry studyEntry;
     	@ManagedProperty("#{visualizeSharedBacking}")
     	private VisualizeSharedBacking visualizeSharedBacking;   
@@ -167,19 +168,23 @@ public class AnnotationBacking implements Serializable {
      * 
      */
     public String viewAnnotationPoint(){
-    	System.out.println("+++ AnnotationBacking.java +++");
+    	System.out.println("+++ AnnotationBacking.java, viewAnnotationPoint() +++");
     	FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
-		String passedDataOnsetX = (String) map.get("sDataOnsetX");
-		String passedDataOnsetY = (String) map.get("sDataOnsetY");
 		
+		String passedDataOnsetX = (String) map.get("DataOnsetX");
+		String passedDataOnsetY = (String) map.get("DataOnsetY");
+
 		setDataSX(Double.parseDouble(passedDataOnsetX));
 		setDataSY(Double.parseDouble(passedDataOnsetY));
 
 		setDataOffsetX(0);
 		setDataOffsetY(0);
+		
 		setDeltaX(0);
 		setDeltaY(0);
+		
+		setSinglePoint(true);
 		
 		System.out.println("+++ AnnotationBacking.java, viewAnnotationPoint() passedDataOnsetX: " + passedDataOnsetX + " passedDataSY: " + passedDataOnsetY + " +++ ");
 		return "viewE_Annotate";
@@ -199,16 +204,18 @@ public class AnnotationBacking implements Serializable {
 		
 		setDataSX(Double.parseDouble(passedDataOnsetX));
 		setDataSY(Double.parseDouble(passedDataOnsetY));
+		
 		setDataOffsetX(Double.parseDouble(passedDataOffsetX));
 		setDataOffsetY(Double.parseDouble(passedDataOffsetY));
 
 		setDeltaX(Double.parseDouble(passedDeltaX));
 		setDeltaY(Double.parseDouble(passedDeltaY));
 		
+		setSinglePoint(false);
+		
 		System.out.println("+++ AnnotationBacking.java, viewAnnotationIntervalEdit() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
 		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
 		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDataSXDuration() + "  dataSYDuration: " + getDataSYDuration() + " +++ ");
-		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++++++ getDataOffsetX: " + getDataOffsetX() + " getDataOffsetY: " + getDataOffsetY() + " +++ ");
 
 		return "viewE_Annotate";
     }
@@ -233,6 +240,30 @@ public class AnnotationBacking implements Serializable {
 	        
 	}
 	
+	public void lookupDefinition(){
+    	FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
+		
+		String passedNodeID = (String) map.get("nodeID");
+		String passedNodeName = (String) map.get("nodeName");
+
+		setNodeID(passedNodeID);
+		setTermName(passedNodeName);
+
+		
+		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getNodeID()); // ECGTermsv1:ECG_000000103 
+		String sDefinition= saOntDetail[1];
+		// String sDefinition=lookupOntologyDefinition("ECGTermsv1:ECG_000000103");
+		
+		setFullAnnotation(sDefinition);
+		System.out.println("*** showNodeID(), nodeID: \"" + getNodeID() + "\"");
+		System.out.println("*** showNodeID(), FullAnnotation: \"" + getFullAnnotation()  + "\"");
+	     
+//	     	Map<String, Object> data = new HashMap<String, Object>();
+//	     	String dataFullAnnotation = getFullAnnotation();
+//	        
+//	     	data.put("*", dataFullAnnotation);
+	}
 	
 	
 	/**Sets the dygraphs flag inplace carrys the x and y info and fills these values with the user input data for each lead annotation.
@@ -719,6 +750,19 @@ public class AnnotationBacking implements Serializable {
 //				ret = dataSY+dataSYDuration;
 //			
 //			return ret;
+		}
+
+
+
+		public boolean isSinglePoint() {
+			return singlePoint;
+		}
+		public void setSinglePoint(boolean singlePoint) {
+			this.singlePoint = singlePoint;
+		}
+
+        public int getAnnotationCount() {
+			return annotationCount;
 		}
 
 }

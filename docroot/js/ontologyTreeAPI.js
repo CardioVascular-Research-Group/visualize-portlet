@@ -139,27 +139,26 @@ function appComplete(swfID) {
  * e.g. "ECGOntologyv0:ECG000000318", "Negative_Electrode", "OntologyTree"
  */
 function treeSelectionChanged(nodeID, nodeName, swfID) {
-	// alert("tree selection: " + nodeID + " - " + nodeName + " - " + swfID);
+	alert("tree selection: " + nodeID + " - " + nodeName + " - " + swfID);
 	// CVRG_ontologyTreeSelectionChanged(nodeID, nodeName);
-	
-   //	alert("its seding "+ nodeID + nodeName);
 	
 	
 //  $(".fullAnnotationsendDOM2").text("Bioportal ECG Term Definition");	
 //  $(".fullAnnotationsendDOM").val("Bioportal ECG Term Definition");
     
-    $(".nodeIDsendDOM").text(nodeID);
-    //  alert($(".termNamesendDOM").text());     
-    $(".nodeIDsendDOM2").val(nodeID);
-   //   alert($(".termNamesendDOM2").val()); 
+//    $(".nodeIDsendDOM").text(nodeID);
+//    //  alert($(".termNamesendDOM").text());     
+//    $(".nodeIDsendDOM2").val(nodeID);
+//   //   alert($(".termNamesendDOM2").val()); 
+//
+//    $(".termNamesendDOM").text(nodeName);
+//   //   alert($(".termNamesendDOM").text());       
+//    $(".termNamesendDOM2").val(nodeName);
+//   //   alert($(".termNamesendDOM2").val()); 
+    
+    lookupAnnotation([{name:'nodeID', value:nodeID},{name:'nodeName', value:nodeName}]);
 
-    $(".termNamesendDOM").text(nodeName);
-   //   alert($(".termNamesendDOM").text());       
-    $(".termNamesendDOM2").val(nodeName);
-   //   alert($(".termNamesendDOM2").val()); 
-    
-    
-    setBioportalOntology();
+//    setBioportalOntology();
     
 	return false;
 }
