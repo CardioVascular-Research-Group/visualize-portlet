@@ -242,7 +242,7 @@ var CVRG_mouseup = function(event, g, context) {
 //				
 //			    annotationBar.show();
 				// Duration Selection - Scott Alger 04/03/12 
-			    setAnnotionXYonClickDrop(isInterval);
+			   // setAnnotionXYonClickDrop(isInterval);
 				 // Scott Alger Primefaces dropdown menu SA 1/17/2013
 				num++;
 			}

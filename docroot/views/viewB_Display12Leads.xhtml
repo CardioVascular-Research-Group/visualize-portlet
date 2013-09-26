@@ -51,7 +51,10 @@
 	             }
 	         </script>
 		</f:verbatim>
-	
+		<h:form>
+			<p:remoteCommand name="viewSingleGraph2Param" 
+				action="#{visualizeGraphBacking.viewSingleGraph2}"/>
+        </h:form>
 		<h:panelGroup layout="block" styleClass="backgroundofContent">
 			<p:layout id="graphView"
 				style=" min-height:710px; height:720px; top:20px">
@@ -69,21 +72,23 @@
 							var dataJsonParse = JSON.parse(data);
 							show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
 							
-							
+							var saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
+							var saGraphTitleArray = JSON.parse(saGraphTitle);
+							//alert("saGraphTitleArray[0]: " + saGraphTitleArray[0] + "  saGraphTitleArray[1]: " + saGraphTitleArray[1] );
 						</script>
 
-						<!-- <h:outputText value="namespace=#{facesContext.externalContext.encodeNamespace('')}" /> -->
 						<ui:include src="include/12Lead_DIV.xhtml" />	
+
+						<script>
+							setGraphLabel(12);
+						</script>
 					</h:panelGroup>
 					
 				</p:layoutUnit>
 	
  				<p:layoutUnit id="viewChangeButtons" position="east" resizable="true" size="150"
 					minSize="50" maxSize="550">
-					<h:form>
-						<p:remoteCommand name="viewSingleGraph2Param" 
-                 					action="#{visualizeGraphBacking.viewSingleGraph2}"/>
-                 	</h:form>
+
 					<h:form>
 						<p:commandButton id="returnToList" 
 										value="View ECG List"

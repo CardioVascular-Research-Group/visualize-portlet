@@ -18,8 +18,13 @@
 		<h:form>
 			<p:remoteCommand name="viewAnnotationPointEdit" 
             				action="#{annotationBacking.viewAnnotationPoint}"/>
+
 			<p:remoteCommand name="viewAnnotationIntervalEdit" 
             				action="#{annotationBacking.viewAnnotationInterval}"/>
+
+			<p:remoteCommand name="viewCurrentAnnotationNoEdit"
+				partialSubmit="false"
+				action="#{annotationBacking.viewCurrentAnnotation}" />
 		</h:form>
 		<script>
 			var renderGraphAndAnnotations = function(){

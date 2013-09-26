@@ -182,85 +182,6 @@
 		}
 	};
 
-	
-// Ver 3
-	
-
-// RSA highlight Area:
-	
-
-// Ver 3
-  
-
-//// This is the Single TEST Lead Dygraph Display RSA 04/10/2013 
-//	
-//	var CVRG_drawECGgraphSingle = function(){
-//		if(drawECGCallCount == 0){
-//			drawECGCallCount++;
-//			ecg_graph = new Dygraph( 
-//					document.getElementById("ecg_div"),
-//					parent.data, 
-//					{
-//						stepPlot: false,
-//						labelsDiv: document.getElementById('status_div'),
-//						labelsDivStyles: { border: '1px solid black' },
-//						labelsSeparateLines: false,
-//						gridLineColor: '#FA8C8C',
-//						labelsKMB: true,
-//						axes: { 
-//							x: { 
-//								valueFormatter: CVRG_xValueFormatter2,
-//								axisLabelFormatter: CVRG_xAxisLabelFormatter2,
-//								ticker: CVRG_xTicker 
-//							}, 
-//							y: { 
-//								valueFormatter: CVRG_yValueFormatter2,
-//								axisLabelFormatter: CVRG_yAxisLabelFormatter2, 
-//								ticker: CVRG_yTicker 
-//							} 
-//						},
-//						annotationClickHandler:    CVRG_annotationClickHandler, 
-//						annotationDblClickHandler: CVRG_annotationDblClickHandler, 
-//						annotationMouseOverHandler:CVRG_annotationMouseOverHandler, 
-//						annotationMouseOutHandler: CVRG_annotationMouseOutHandler, 
-//						drawCallback:              CVRG_drawCallback, 
-//						pointClickCallback:        CVRG_pointClickCallback2,
-//						zoomCallback:              CVRG_zoomCallback,
-//						
-//						highlightCallback: function(e, x, pts) {
-//							var x = document.getElementById("ecg_div").xpos;
-//							var y = document.getElementById("ecg_div").ypos;
-//							var yOffset = 209;
-//							var xOffset = 380;
-//							//var yOffset = 0;
-//							//var xOffset = 0;
-//							CVRG_highlightCallback(e, pts, yOffset, xOffset);
-//						},
-//						unhighlightCallback: function(e){
-//							CVRG_unhighlightCallback(e, ecg_graph.rawData_[0].length-1);
-//						},
-//						visibility: [true, false, false, false, false, false, false, false, false, false, false, false, ],
-//						highlightCircleSize: 5,
-//						strokeWidth: 1,
-//						drawPoints: false,
-//						padding: {left: 1, right: 1, top: 5, bottom: 5},
-//			            showRangeSelector: true,
-//			            rangeSelectorHeight: 50,
-//			            rangeSelectorPlotStrokeColor: 'black',
-//			            rangeSelectorPlotFillColor: 'lightblue',
-//						//dateWindow: [0,2500], // Start and End times in milliseconds
-//						interactionModel : {  // custom interation model definition parameter
-//							'mousedown' : CVRG_mousedown2,
-//							'mousemove' : CVRG_mousemove2,
-//							'mouseup' : CVRG_mouseup2
-//
-//				      }
-//						
-//				}
-//			);
-//		}
-//	};
-//	
 	// Highlight one portion out of line. RSA 041113
     var highlight_start = 0;          // 480 dataSX now - set to the Current X Start javascript Var
     var highlight_end = 0; 			  // 710  dataECoords[0] - now set to the Current X End javascript Var dataECoords[0] 
@@ -565,7 +486,7 @@
 	};
 	
 
-	var CVRG_addAnnotationHeight = function(series, x, y, flagLabel, ontologyId, fullAnnotation, height){
+	var CVRG_addAnnotationHeight = function(series, x, y, flagLabel, ontologyId, fullAnnotation, height, uniqueID){
 //		alert("Received CVRG_addAnnotationHeight() command series: " + series + " x: " + x  + " y: " + y  + " flagLabel: " + flagLabel + " ontologyId: " + ontologyId + " fullAnnotation: " + fullAnnotation + " height:" + height);
 		//var anns = ecg_graph.annotations();
 		//alert("ecg_graph:" + ecg_graph + " CVRG_last_ann: " + CVRG_last_ann + " anns.length: " + anns.length);
@@ -577,7 +498,8 @@
 			shortText: flagLabel, // text to show in the flag
 			text: ontologyId, // will appear when mouse hovers over flag
 			fullAnnotation: fullAnnotation, // CVRG extra data, not used by dygraphs, displayed when mousing over annotation list.
-			tickHeight: height
+			tickHeight: height, 
+			annotationID: uniqueID // Unique annotation ID (primary key) as found in the database.  
 		};
 		
 		//anns.push(ann);
@@ -594,7 +516,7 @@
 
 	// Marking the Middle of The Interval Annotation
 	
-	var CVRG_addAnnotationInterval = function(series, x, y, flagLabel, ontologyId, fullAnnotation, height, width){
+	var CVRG_addAnnotationInterval = function(series, x, y, flagLabel, ontologyId, fullAnnotation, height, width, uniqueID){
 //		alert("Received addAnnotation command series: " + series + " x: " + x  + " y: " + y  + " flagLabel: " + flagLabel + " ontologyId: " + ontologyId + " fullAnnotation: " + fullAnnotation);
 		//var anns = ecg_graph.annotations();
 		//alert("ecg_graph:" + ecg_graph + " CVRG_last_ann: " + CVRG_last_ann + " anns.length: " + anns.length);
@@ -607,12 +529,13 @@
 			text: ontologyId, // will appear when mouse hovers over flag
 			fullAnnotation: fullAnnotation, // CVRG extra data, not used by dygraphs, displayed when mousing over annotation list.
 			tickHeight: height,
-			width: width  // CVRG extra width to the Flag - RSA 
+			width: width,  // CVRG extra width to the Flag - RSA 
+			annotationID: uniqueID // Unique annotation ID (primary key) as found in the database.  
 		};
 	
 		//anns.push(ann);
 		tempAnnotations.push(ann);
-		alert(tempAnnotations.length + ") series: |" + tempAnnotations[tempAnnotations.length-1].series + "| text: |" + tempAnnotations[tempAnnotations.length-1].text + "|");
+//		alert(tempAnnotations.length + ") series: |" + tempAnnotations[tempAnnotations.length-1].series + "| text: |" + tempAnnotations[tempAnnotations.length-1].text + "|");
 		
 //		alert(anns.length + ") series: |" + anns[anns.length-1].series + "| text: |" + anns[anns.length-1].text + "|");
 		// ecg_graph.setAnnotations(anns);

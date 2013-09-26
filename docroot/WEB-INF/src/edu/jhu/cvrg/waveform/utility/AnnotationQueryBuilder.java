@@ -69,7 +69,7 @@ public class AnnotationQueryBuilder extends XQueryBuilder {
 		// The default order by statement will be used for retrieving lead annotations
 		// It will sort by the t-coordinate on the onset tag
 		// In the future, another version will be needed for non-lead annotations
-		String query = " order by $x/lead/annotation/onset/position/tCoordinate ascending ";
+		String query = " order by $x/lead/annotation/onset/position/tCoordinate ascending \n";
 		
 		return query;
 	}
@@ -80,7 +80,7 @@ public class AnnotationQueryBuilder extends XQueryBuilder {
 	 * @return
 	 */
 	public String orderByID() {
-		String query = " order by $id ascending";
+		String query = " order by $id ascending \n";
 		
 		return query;
 	}
@@ -221,7 +221,7 @@ public class AnnotationQueryBuilder extends XQueryBuilder {
 	 * @return
 	 */
 	public String userRecordSearch(String sStudyID, String sSubjectID, String sRecordName, String sUserID) {
-		String query = "   where studyEntry/studyID='" + sStudyID + "' and studyEntry/subjectID='" + sSubjectID + "' and studyEntry/recordName='" + sRecordName + "' and studyEntry/submitterID='" + sUserID + "'";
+		String query = "   where studyEntry/studyID='" + sStudyID + "'\n   and studyEntry/subjectID='" + sSubjectID + "'\n   and studyEntry/recordName='" + sRecordName + "'\n   and studyEntry/submitterID='" + sUserID + "'\n";
 		
 		return query;
 	}
@@ -266,7 +266,7 @@ public class AnnotationQueryBuilder extends XQueryBuilder {
 	 * @return
 	 */
 	public String returnCommentAnnotation() {
-		String query = "	return $x/annotation[bioportalReference/term='comment']\n";;
+		String query = "	return $x/annotation[bioportalReference/term='comment']\n";
 		
 		return query;
 	}

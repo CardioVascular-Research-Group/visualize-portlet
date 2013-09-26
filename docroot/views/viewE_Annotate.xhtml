@@ -13,7 +13,7 @@
 				font-family:Calibri;
 			}
 			.dataValue {
-				font-size: 10px; 
+				font-size: 12px; 
 				font-weight:normal;
 				font-family:arial,sans-serif;
 			}
@@ -21,41 +21,65 @@
 	
 <!-- 		knalb tfel yllanoitnetni egap siht \_|_/ this page intentionally left blank  -->
 		<h:form id="formManualAnnotation">
-			<p:panelGrid id="AnnotationSetter" layout="block" columns="2" style="border:1px;">
+			<p:remoteCommand name="lookupAnnotationParam"
+				partialSubmit="false"
+				action="#{annotationBacking.lookupDefinition}"
+				update="ontologyDefinition, ontologyTermName"  />
+		
+			<p:panelGrid id="AnnotationSetter" layout="block" 
+				columns="2" 
+				frame="none"
+				border="0" 
+				cellpadding="0" 
+				cellspacing="0" >
 				<p:panel id="panelLeft" header="Bioportal"
-					style="background-color:#d0e4f6; padding:20 0; height:360px; width:350px">
+					style="background-color:#d0e4f6; padding:20 0; height:360px; width:370px">
 					<p:media player="flash" id="OntologyTree"
 						value="http://keg.cs.uvic.ca/ncbo/ontologytree/OntologyTree.swf?"
-						style="left:40px;position:absolute;" width="300" height="300">
+						style="left:40px;position:absolute;" width="350" height="300">
 						<f:param name="allowScriptAccess" value="always" />
 						<f:param name="flashVars"
 							value="ontology=2079&amp;alerterrors=false&amp;canchangeontology=true&amp;virtual=true" />
 					</p:media>
 				</p:panel>
 
-				<p:panel id="panelRight" header="Annotation"
+				<p:panel id="panelRight" header="Annotation" 
 					style="background-color:#d0e4f6; top:0; padding:0 0; height:360px; width:550px;">
- 					<h:panelGrid columns="2" frame="box" cellpadding="0" cellspacing="0" 
- 						 styleClass="title" 
- 						 style="background: whiteSmoke;"> 
-						<h:panelGrid columns="2" frame="none" 
+ 					<h:panelGrid id="GraphClickData"
+ 						columns="2" 
+ 						frame="none"
+ 						border="0" 
+ 						cellpadding="0" 
+ 						cellspacing="0" 
+ 						styleClass="title" 
+ 						style="background: whiteSmoke; vertical-align:text-top;"> 
+						<h:panelGrid id="ECG_Attributes"
+							columns="2" 
+							frame="none" 
 							style="background: whiteSmoke;">
-							<h:outputLabel value="Subject ID" styleClass="title"/>
+							<h:outputLabel value="Subject ID"/>
 							<h:outputLabel value="#{annotationBacking.studyEntry.recordName}" styleClass="dataValue"/>
 							
-							<h:outputLabel value="Lead" styleClass="title"/>
+							<h:outputLabel value="Lead"/>
 							<h:outputLabel value="#{annotationBacking.leadName}" styleClass="dataValue"/>
 							
-							<h:outputLabel value="Rate" styleClass="title"/>
+							<h:outputLabel value="Rate"/>
 							<h:outputLabel value="#{annotationBacking.studyEntry.samplingRate}Hz" styleClass="dataValue"/>
 							
-							<h:outputLabel value="Annotations" styleClass="title"/>
+							<h:outputLabel value="Annotations"/>
 							<h:outputLabel value="#{annotationBacking.annotationCount}" styleClass="dataValue"/>
 						</h:panelGrid>
-						
-						<p:panelGrid id="EndPoint" columns="#{annotationBacking.singlePoint? '2' : '4'}" cellpadding="10" style="background: whiteSmoke;border: 1px solid blue;"> 
+											
+						<h:panelGrid id="SelectedPoints" 
+							columns="#{annotationBacking.singlePoint? '2' : '4'}" 
+							frame="none" 
+							cellpadding="0" 
+							cellspacing="0" 
+							styleClass="title"							
+							style="background: whiteSmoke; top:0; "> 
+							
 							<h:outputLabel value="" style="width:140px;"/>
-							<h:outputLabel value="Onset" styleClass="title"/>
+							<h:outputLabel value="Onset" styleClass="title" style="width:100px" />
 							<h:outputLabel value="Offset" styleClass="title" style="width:100px" rendered="#{!annotationBacking.singlePoint}"/>
 							<h:outputLabel value="Change" styleClass="title" style="width:100px" rendered="#{!annotationBacking.singlePoint}"/>
 
@@ -85,7 +109,7 @@
 								styleClass="title"
 								value="Amplitude(μV)" />
 							<h:panelGroup id="dataSXHolder2" layout="block" >
-								<h:outputText id="dataSY" class="dataSYsendDOM"
+								<h:outputText id="dataSY" 
 									styleClass="dataValue"
 									value="#{annotationBacking.dataSY}" />
 							</h:panelGroup>
@@ -94,7 +118,6 @@
 								rendered="#{!annotationBacking.singlePoint}">
 								<h:outputText id="dataSYDuration" 
 									styleClass="dataValue"
-									class="dataSYsendDOMDuration"
 									value="#{annotationBacking.dataOffsetY}" />
 							</h:panelGroup>						
 							<h:panelGroup id="dataSXHolderDuration2"
@@ -102,64 +125,52 @@
 								rendered="#{!annotationBacking.singlePoint}">
 								<h:outputText id="dataSYDuration2" 
 									styleClass="dataValue"
-									class="dataSYsendDOMDuration"
 									value="#{annotationBacking.dataSYDuration}" />
-							</h:panelGroup>						
-						</p:panelGrid>	
+							</h:panelGroup>		
+											
+							<h:outputLabel value="Adjust" styleClass="title"/>
+							<p:commandButton value="On"
+								title="Fine tune the selected onset time."/>
+							<p:commandButton value="Off"
+								title="Fine tune the selected Offset time."
+								rendered="#{!annotationBacking.singlePoint}"/>	
+							<p:commandButton value="Review"
+								title="View a detailed graph showing the selected times."
+								rendered="#{!annotationBacking.singlePoint}"/>	
+						</h:panelGrid>	
  					</h:panelGrid> 
 
 
 
 					<h:panelGrid columns="2" 
-						style="background: whiteSmoke; border: 1px solid red; width:540px;">
+						style="background: whiteSmoke; border: 1px solid red; width:500px;">
 
 						<h:outputLabel for="nodeIDName" value="*" rendered="false" />
 						<h:outputText id="nodeIDDOM" class="nodeIDsendDOM"
 							value="#{annotationBacking.nodeID}" rendered="false" />
 
-						<h:outputLabel for="FindTermName" value="" />
-						<p:button icon="ui-icon ui-icon-circle-arrow-w" iconPos="left"
-							value="Find The Term In The Bioportal Ontology Tree"
-							style="width:350px;" 
-							disabled="true"/>
+						<h:outputLabel value="" />
+						<h:outputLabel styleClass="title"
+							value="Find the term in the bioportal ontology tree." />
 
-						<h:outputLabel for="termName"
+						<h:outputLabel for="ontologyTermName"
 							styleClass="title" 
 							value="Term:" />
-						<h:outputText id="termNameDOM"
-							styleClass="title" 							
-							class="termNamesendDOM" 
+						<h:outputText id="ontologyTermName"
+							styleClass="dataValue"
 							value="#{annotationBacking.termName}"
 							required="true" />
 
-						<h:outputLabel for="showData"
+						<h:outputLabel for="ontologyDefinition"
 							styleClass="title" 
 							value="Definition" />
-						<div id="showData" class="showDataStyle">showData</div>
-
-						
-
-						<!-- END Top notificationBar to set Annotation flag Note:  type="button" use to turn button off of primefaces
-						START Below - TermName for display and sends the nodeID to backing bean : HIDDEN from VIEW -->
-						<p:remoteCommand name="lookupDefinition"
-							actionListener="#{annotationBacking.lookupDefinition}"
-							out="fullAnnotationDOM"  />
-
-						<p:remoteCommand  name="setBioportalOntology"
-							actionListener="#{annotationBacking.showNodeID}"
-							out="fullAnnotationDOM"  />
-						<script type="text/javascript">
-							function setBioportalDefinition() {
-								//your custom code
-								setBioportalOntology(); //makes a remote call
-							}
-						</script>
-
-						<h:inputText id="termNamesend" class="termNamesendDOM2"
-							style="display:none" value="#{annotationBacking.termName}">
-							<p:ajax update="termNameDOM" event="keyup" />
-						</h:inputText>
+						<h:outputText id="ontologyDefinition" 
+							styleClass="dataValue"
+							value="#{annotationBacking.fullAnnotation}" />
 					</h:panelGrid>
+					
+					<!-- END Top notificationBar to set Annotation flag Note:  type="button" use to turn button off of primefaces
+					START Below - TermName for display and sends the nodeID to backing bean : HIDDEN from VIEW -->
 				</p:panel>
 				
 				

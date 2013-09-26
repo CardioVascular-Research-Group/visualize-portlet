@@ -155,8 +155,8 @@ function treeSelectionChanged(nodeID, nodeName, swfID) {
 //   //   alert($(".termNamesendDOM").text());       
 //    $(".termNamesendDOM2").val(nodeName);
 //   //   alert($(".termNamesendDOM2").val()); 
-    
-    lookupAnnotation([{name:'nodeID', value:nodeID},{name:'nodeName', value:nodeName}]);
+//	viewSingleGraph2Param([{name:'sLeadName', value:leadName},{name:'sLeadNumber', value:leadNum}]);
+    lookupAnnotationParam([{name:'nodeID',    value:nodeID},  {name:'nodeName',    value:nodeName}]);
 
 //    setBioportalOntology();
     

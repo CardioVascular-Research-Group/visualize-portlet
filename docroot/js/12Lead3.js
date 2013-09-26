@@ -632,3 +632,11 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		var newLayoutElement = document.getElementById(newLayoutElementName);
 		alert("Phenotype - name:" + newLayout.label + " value:" + newLayout.value);
 	};
+
+	var setGraphLabel = function(graphCount){		
+		for(var i=0;i<12;i++){
+	       	var title = document.getElementById(namespaceGlobal + ":TitleDiv"+i);
+//	       	alert("saGraphTitleArray[" + i + "]: " + saGraphTitleArray[i]);
+        	title.innerHTML = saGraphTitleArray[i];
+		}
+	};

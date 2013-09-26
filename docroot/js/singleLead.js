@@ -103,7 +103,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 								ticker: CVRG_yTickerSingle  // Draws grid lines and draws numbers on the axis
 							} 
 						},
-						annotationClickHandler:    CVRG_annotationClickHandler, 
+						annotationClickHandler:    SINGLELEAD_annotationClickHandler, 
 						annotationDblClickHandler: CVRG_annotationDblClickHandler, 
 						annotationMouseOverHandler:CVRG_annotationMouseOverHandler, 
 						annotationMouseOutHandler: CVRG_annotationMouseOutHandler, 
@@ -329,4 +329,26 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 //			xlabel: newTimeLabel,
 			drawPoints: bDots
 		});
+	};
+	
+	/** Called whenever the user clicks on an annotation.
+	 * 
+	 * Type: function(annotation, point, dygraph, event)
+	 * annotation: the annotation left
+	 * point: the point associated with the annotation
+	 * dygraph: the reference graph
+	 * event: the mouse event
+	 * Default: null
+	**/
+	var SINGLELEAD_annotationClickHandler = function(ann, point, dg, event) {
+//		CVRG_annotationClickHandlerJSNI(point.xval, point.yval);
+		alert("SINGLELEAD_annotationClickHandler() called.  series: " + ann.series + " x: " + ann.x  + " y: " + ann.y  
+				+ " flagLabel: " + ann.flagLabel + " ontologyId: " + ann.ontologyId 
+				+ " fullAnnotation: " + ann.fullAnnotation + " height: " + ann.height + " annotationID: " + ann.annotationID);
+		
+		viewCurrentAnnotationNoEdit([{name:'annotationID', value:ann.annotationID}]);
+
+		
+		//eventDiv.innerHTML += "click: " + nameAnnotation(ann)  + "<br/>";
+		
 	};
