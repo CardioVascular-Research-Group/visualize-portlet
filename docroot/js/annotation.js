@@ -193,9 +193,35 @@
     	CVRG_underlayCallbackClicked();  // gathers the call to set the color on the interval
     };
 	
+    var highlightQueue = [];
+    var WAVEFORM_clearHighLightQueue = function(){
+    	highlightQueue = [];
+    };
+    
+    var WAVEFORM_queueHighLightLocation = function (X1, XC ,X2){
+		var highlight = {
+			xStart: X1, // milliseconds
+			xCenter: XC, // milliseconds
+			xEnd: X2 // milliseconds
+		};
+//		alert("WAVEFORM_queueHighLightLocation() --  X1:" + X1 + " XC:" + XC + " X2:" + X2);
+
+		highlightQueue.push(highlight);
+    };
+    
+    var WAVEFORM_showHighLight = function(){
+    	for(var h=0;h < highlightQueue.length;h++){
+    		//CVRG_underlayCallbackClicked(hl.xStart, hl.xCenter, hl.xEnd);
+        	highlight_start = highlightQueue[h].xStart;
+        	toCenterWithArea = highlightQueue[h].xCenter;
+        	highlight_end = highlightQueue[h].xEnd;
+        	CVRG_underlayCallbackClicked();  // gathers the call to set the color on the interval
+    		alert("WAVEFORM_showHighLight() --  highlight_start:" + highlight_start + " toCenterWithArea:" + toCenterWithArea + " highlight_end:" + highlight_end);
+    	};    	
+    };
 
     // Set the Highlight on the interval
-    function CVRG_underlayCallbackClicked(highlight_start, toCenterWithArea, highlight_end){
+    var CVRG_underlayCallbackClicked = function(highlight_start, toCenterWithArea, highlight_end){
     	ecg_graph.updateOptions({
     		underlayCallback:   CVRG_underlayCallback
     	});
@@ -208,7 +234,7 @@
     };
 	    
 	    // Highlight one portion out of line. RSA 041113
-		var CVRG_underlayCallback = function(canvas, area, g) {
+	var CVRG_underlayCallback = function(canvas, area, g) {
         var bottom_left = g.toDomCoords(highlight_start, -20);
         var top_right = g.toDomCoords(highlight_end, +20);
 
