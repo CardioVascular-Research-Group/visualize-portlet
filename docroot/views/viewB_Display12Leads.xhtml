@@ -96,20 +96,13 @@
 										ajax="true"
 										icon="ui-icon-seek-first"
 										title="View the ECG selection tree."/>
-												
-						<p:commandButton id="singleLead" 
-										value="View Single"
-										action="#{visualizeGraphBacking.viewSingleGraph}"
-										icon="ui-icon-seek-end"
-										title="View Single Lead"/>
+						<p:button id="voltCenterButtonMulti" value="center" type="button"
+								onclick="centerVoltageMulti();return false;"></p:button>
+						<p:button id="voltCenterNScaleButtonMulti" value="center and scale" type="button"
+								onclick="centerScaleVoltageMulti();return false;"></p:button>
+						<p:button id="voltResetButtonMulti" value="reset" type="button"
+								onclick="setVoltageZoomMulti(-2000,2000);return false;"></p:button>										
 					</h:form>				
-					<h:form id="hiddenForm" style="display: none;">
-						<p:commandButton id="singleLeadFrom12" 
-										value="View Single"
-										action="#{visualizeGraphBacking.viewSingleGraph}"
-										icon="ui-icon-seek-end"
-										title="View Single Lead"/>
-					</h:form> 
 				</p:layoutUnit>
 			</p:layout>
 		</h:panelGroup>

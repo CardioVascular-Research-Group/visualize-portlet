@@ -5,7 +5,7 @@ revision 0.1 : May 29, 2013 - initial version Michael Shipway
 *************************/
 var dataSingle = [];
 var labelSingle = [];
-var drawECGCallCount = 0.0;
+//var drawECGCallCount = 0.0;
 //var leadNum = 1; // parent.CVRG_getLeadNum();
 //var leadName = "DUMMY I"; // parent.CVRG_getLeadName();
 var sSecondSuffix       = leadName;
@@ -16,6 +16,7 @@ var maxTime = parent.WF_maxTime;
 var displayMinV2 = parent.displayMinV;
 var displayMaxV2 = parent.displayMaxV;
 var singleLeadNamespace = "";
+var calPointCount = 300;
 CVRG_sSecondSuffix = sSecondSuffix;
 CVRG_timeLabelPrefix = timeLabelPrefix; 
 
@@ -38,7 +39,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 //		point[2] = ""; 
 //		singleDataCol.push(point);
 	
-		for(var cal=0; cal<=300;cal++){
+		for(var cal=0; cal<=calPointCount;cal++){
 			var point = [];
 			
 			// calibration mark is offset -400 msec from the start of data
@@ -77,8 +78,8 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	var CVRG_drawECGgraphSingle = function(divName, namespace){
 		singleLeadNamespace = namespace;
 //		alert("running CVRG_drawECGgraphSingle("+ singleLeadNamespace + ":" + divName +")");
-		if(drawECGCallCount == 0){
-			drawECGCallCount++;
+//		if(drawECGCallCount == 0){
+//			drawECGCallCount++;
 			dataSingle = WAVEFORM_getSingleLeadData(CVRG_getLeadNum(), dataFull, labelFull);
 			ecg_graph = new Dygraph( 
 					document.getElementById(singleLeadNamespace + ":" + divName),
@@ -133,7 +134,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 						}
 					}
 			);
-		}
+		//}
 		var newWidth = 700; 
 		var newHeight= 400;
 		ecg_graph.resize(newWidth, newHeight);
@@ -200,19 +201,11 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
     
     var centerVoltage = function(){
     	CVRG_unhighlightCrosshairs(1);
-    	var col = 1;
-    	var dataMin = ecg_graph.getValue(0,col);
-    	var dataMax = ecg_graph.getValue(0,col);
-    	var val = 0;
-    	for(var row=0;row<ecg_graph.numRows();row++){
-    		val = ecg_graph.getValue(row,col);
-    		if(dataMax < val) dataMax = val;
-    		if(dataMin > val) dataMin = val;
-    	}
-    	var deltaV = (dataMax-dataMin);
+    	var ext = getDataMinMax();
+    	var centerV = (ext.dataMax+ext.dataMin)/2;
     	
-		displayMinV2 = dataMin-(deltaV*.05); // leave a 5% space at the bottom
-		displayMaxV2 = dataMax+(deltaV*.05); // leave a 5% space at the top
+		displayMinV2 = centerV-1000; // leave a 5% space at the bottom
+		displayMaxV2 = centerV+1000
 //    	var dataCenter = deltaV/2 + displayMinV2;
     	
 		ecg_graph.updateOptions({
@@ -224,6 +217,53 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		voltMinInput.value = displayMinV2;
 		voltMaxInput.value = displayMaxV2;
 		voltCenterInput.value = 00;
+    };
+    
+    var centerScaleVoltage = function(){
+    	CVRG_unhighlightCrosshairs(1);
+//    	var col = 1; // column zero is time, 1 is data, 2 is calibration.
+//    	var dataMin = ecg_graph.getValue(calPointCount+1,col);
+//    	var dataMax = ecg_graph.getValue(calPointCount+1,col);
+//    	var val = 0;
+//    	for(var row=calPointCount+2;row<ecg_graph.numRows();row++){
+//    		val = ecg_graph.getValue(row,col);
+//    		if(dataMax < val) dataMax = val;
+//    		if(dataMin > val) dataMin = val;
+//    	}
+    	var ext = getDataMinMax();
+    	var deltaV = (ext.dataMax-ext.dataMin);
+    	
+		displayMinV2 = ext.dataMin-(deltaV*.05); // leave a 5% space at the bottom
+		displayMaxV2 = ext.dataMax+(deltaV*.05); // leave a 5% space at the top
+//    	var dataCenter = deltaV/2 + displayMinV2;
+    	
+		ecg_graph.updateOptions({
+			valueRange: [displayMinV2, displayMaxV2]
+		});
+
+		sliderVoltRangeSingle.minValue = displayMinV2;
+		sliderVoltRangeSingle.maxValue = displayMaxV2;
+		voltMinInput.value = displayMinV2;
+		voltMaxInput.value = displayMaxV2;
+		voltCenterInput.value = 00;
+    };
+    
+    var getDataMinMax = function (){
+    	var col = 1; // column zero is time, 1 is data, 2 is calibration.
+    	var dataMin = ecg_graph.getValue(calPointCount+1,col);
+    	var dataMax = ecg_graph.getValue(calPointCount+1,col);
+    	var val = 0;
+    	for(var row=calPointCount+2;row<ecg_graph.numRows();row++){
+    		val = ecg_graph.getValue(row,col);
+    		if(dataMax < val) dataMax = val;
+    		if(dataMin > val) dataMin = val;
+    	}
+    	var ret = {
+    				dataMin: dataMin, // microVolts
+		    		dataMax: dataMax // microVolts
+    			};
+    	
+    	return ret;
     };
     
     var centerTime = function(){

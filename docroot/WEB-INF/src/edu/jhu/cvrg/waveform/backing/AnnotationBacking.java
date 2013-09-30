@@ -47,7 +47,6 @@ import com.liferay.portal.model.User;
 import edu.jhu.cvrg.waveform.utility.AnnotationUtility;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 import edu.jhu.cvrg.waveform.model.AnnotationData;
-import edu.jhu.cvrg.waveform.model.FileTree;
 import edu.jhu.cvrg.waveform.model.StudyEntry;
 //import edu.jhu.cvrg.waveform.model.UserModel;
 import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
@@ -72,18 +71,9 @@ public class AnnotationBacking implements Serializable {
 		public String fullAnnotation="full annotation";
 		private String leadName;
 		public int leadnum;
-//		public String firstname;
-//        public String lastname;
         public int lastnum;
         public String portalDefinitionName;
         public String termName;
-//        public Integer age;
-//        private String street;
-//        private String city;
-//        private String postalCode;
-//        private String info;
-//        private String email;
-//        private String phone;
         private User userLifeRayModel;
         private int annotationCount=0;
 		private boolean singlePoint=true;
@@ -95,37 +85,6 @@ public class AnnotationBacking implements Serializable {
 //    	private StudyEntry studyEntry;
     	@ManagedProperty("#{visualizeSharedBacking}")
     	private VisualizeSharedBacking visualizeSharedBacking;   
-
-//   public void populateRythStrip(){
-//	   Ajax.oncomplete("calledOnLoadData()");
-//	   Ajax.oncomplete("alert('leadOnloadCallback: Hello from the Backing Bean')");
-//
-//	}   	
-
-//    public String getLeadnameFromRender(){
-//    		
-//    		// Ajax.oncomplete("alert('leadOnloadCallback: Hello from the Backing Bean')");
-//			   String value = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("leadNamesend");
-//			   System.out.println("getLeadnameFromRender(), Onload Callback LeadName: " + getLeadName());
-//			   System.out.println("getLeadnameFromRender(), Onload Callback lastnum: " + getLastnum());
-//			   System.out.println(value);  
-//			   return value;
-//	}
-
-//  RSA 04/26/13 this is called using a remoteCommand in  gerhythmstrip.xhtml - to initilaize the leadname and Leadnum in the Backing bean.
-   
-//	public void leadOnloadCallbackTemp() {
-//        System.out.println("AnnotationBacking.leadOnloadCallbackTemp() LeadName: " + getLeadName());
-//        System.out.println("AnnotationBacking.leadOnloadCallbackTemp() LeadNumber: " + getLeadnum());
-////        RequestContext context = RequestContext.getCurrentInstance();
-////       // showAnnotations(context, RetrieveECGDatabase);  
-//    }
-
-
-//	public void leadOnloadCallback() {
-//		System.out.println("AnnotationBacking.leadOnloadCallback()");
-////		Ajax.oncomplete("alert('AnnotationBacking.leadOnloadCallback: called by singleLead.xhtml line 41')");
-//	}
 	
     	public void initialize(ComponentSystemEvent event) {
         	System.out.println("*************** AnnotationBacking.java, initialize() **********************");
@@ -267,6 +226,14 @@ public class AnnotationBacking implements Serializable {
 		return "viewE_Annotate";
     }
 	
+    /** Switches to the selection tree and list view.
+     * Handles onclick event for the button "btnView12LeadECG" in the viewA_SelectionTree.xhtml view.
+     * 
+     */
+    public String viewSingleGraph(){
+    	System.out.println("*** AnnotationBack.java, viewSingleGraph() ***");
+		return "viewD_SingleLead";
+    }
 
     
 	public void showNodeID(){
@@ -315,7 +282,7 @@ public class AnnotationBacking implements Serializable {
 	}
 	
 	
-	/**Sets the dygraphs flag inplace carrys the x and y info and fills these values with the user input data for each lead annotation.
+	/** Sets the dygraphs flag inplace carrys the x and y info and fills these values with the user input data for each lead annotation.
 	 *   termName, getLeadName, dataSY, dataSX, getFullAnnotation
 	 */
 		public void saveAnnotationSetFlag(ActionEvent actionEvent) {
@@ -512,14 +479,10 @@ public class AnnotationBacking implements Serializable {
 						long secondX = (long) retrievedAnnotationList[i].getMilliSecondEnd();
 						long secondY = (long) retrievedAnnotationList[i].getMicroVoltEnd();
 
-						//TODO: corrected for Display at low resolution. RSA 04/15 works for 1000 samples per second.
 						long centerX = (( firstX + secondX ) / 2);
-						// rounds centerX to nearest valid sample time
 						long msSample = (long)(1000/visualizeSharedBacking.getSharedStudyEntry().getSamplingRate()); // milliseconds per sample
 						long remainder = centerX % msSample;
 						centerX = centerX - remainder;
-//						centerX = centerX / 10;
-//						centerX = centerX * 10;
 
 //						int YcenterY = (int) (( x + secondX ) / 2); 
 //						double centerArea = ( secondX - x );
@@ -562,15 +525,6 @@ public class AnnotationBacking implements Serializable {
 			}
 		}
 
-			
-//    	public UserModel getUserModel() {
-//			return userModel;
-//		}
-//
-//		public void setUserModel(UserModel userModel) {
-//			this.userModel = userModel;
-//		}
-
 		public User getUserLifeRayModel() {
 			return userLifeRayModel;
 		}
@@ -595,78 +549,6 @@ public class AnnotationBacking implements Serializable {
 				VisualizeSharedBacking visualizeSharedBacking) {
 			this.visualizeSharedBacking = visualizeSharedBacking;
 		}
-
-//		public String getFirstname() {
-//                return firstname;
-//        }
-//
-//        public void setFirstname(String firstname) {
-//                this.firstname = firstname;
-//        }
-//
-//        public String getLastname() {
-//                return lastname;
-//        }
-//
-//        public void setLastname(String lastname) {
-//                this.lastname = lastname;
-//        }
-
-//        public Integer getAge() {
-//                return age;
-//        }
-//
-//        public void setAge(Integer age) {
-//                this.age = age;
-//        }
-//
-//        public String getStreet() {
-//                return street;
-//        }
-//
-//        public void setStreet(String street) {
-//                this.street = street;
-//        }
-//
-//        public String getCity() {
-//                return city;
-//        }
-//
-//        public void setCity(String city) {
-//                this.city = city;
-//        }
-//
-//        public String getPostalCode() {
-//                return postalCode;
-//        }
-//
-//        public void setPostalCode(String postalCode) {
-//                this.postalCode = postalCode;
-//        }
-//
-//        public String getInfo() {
-//                return info;
-//        }
-//
-//        public void setInfo(String info) {
-//                this.info = info;
-//        }
-//        
-//        public String getEmail() {
-//                return email;
-//        }
-//
-//        public void setEmail(String email) {
-//                this.email = email;
-//        }
-//
-//        public String getPhone() {
-//                return phone;
-//        }
-//
-//        public void setPhone(String phone) {
-//                this.phone = phone;
-//        }
 
 		public String getLeadDescription() {
 			String leadDescription = "Subject: "+ visualizeSharedBacking.getSharedStudyEntry().getRecordName()  
@@ -745,22 +627,6 @@ public class AnnotationBacking implements Serializable {
 		public void setDataSY(double dataSY) {
 			this.dataOnsetY = dataSY;
 		}
-
-//		public String getDataSXstring() {
-//			return dataSXstring;
-//		}
-//
-//		public void setDataSXstring(String dataSXstring) {
-//			this.dataSXstring = dataSXstring;
-//		}
-
-//		public String getDataSYstring() {
-//			return dataSYstring;
-//		}
-//
-//		public void setDataSYstring(String dataSYstring) {
-//			this.dataSYstring = dataSYstring;
-//		}
 
 		public String getNodeID() {
 			return nodeID;
