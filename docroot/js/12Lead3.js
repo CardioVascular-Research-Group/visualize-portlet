@@ -8,7 +8,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	var graphSet = [];
 	var graphCalSet = [];
 	var xLineSet = [];
-	var blockRedraw = false;
+	var blockRedraw = false; // prevents WAVEFORM_drawCallback from looping on events from other graphs.
 	var initialized = false;
 	var leadDurationMS = 1200;
     var displayMinV = -2000;
@@ -82,13 +82,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 
 				// don't show the line on the graph the mouse is over.
 				if(xLineID == lineID){
-			
-//					xLineTemp.style.display = "";
-//					xLineTemp.style.display = "none";
 					xLineTemp.style.width = "0px";
 				}else{  
-//					xLineTemp.style.display = "none";
-//					xLineTemp.style.display = "";
 					xLineTemp.style.width = "3px";
 				}
 			}
@@ -113,10 +108,10 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	 * 
 	 * Default: null
 	 */
-	var CVRG_drawCallback = function(me, initial) {
+	var WAVEFORM_drawCallback = function(me, initial) {
 //		return;
 		var dummy=0;
-		if (blockRedraw || initial) return;
+		if (blockRedraw || initial) return;  // "blockRedraw" prevents WAVEFORM_drawCallback from looping on events from other graphs.
 		blockRedraw = true;
 		var range = me.xAxisRange();
 		var yrange = me.yAxisRange();
@@ -127,7 +122,6 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 				valueRange: yrange
 			} );
 		}
-		// document.getElementById("rythm_div").
 		blockRedraw = false;
 	}; 
 	
@@ -145,49 +139,6 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 			} );
 		}
 	}; 
-
-// TODO Debug the above Mike and Scott 04/30	
-/*
-	var makeRhythmStrip = function(name, vis, namespace){
-		var graphDivName = namespace + ":" + name + "_Div";
-		var graphDiv = document.getElementById(graphDivName);
-		var labelDivName = namespace + ":" + name + "_LabelDiv";
-		var labelDiv = document.getElementById(labelDivName);
-		gRythm = new Dygraph(
-			graphDiv,
-			data,
-			{
-				visibility: vis,
-				rollPeriod: 0,
-				showRoller: false,
-				errorBars: false,
-				axes: { 
-					x: { 
-						valueFormatter: CVRG_xValueFormatter2,
-						axisLabelFormatter: CVRG_xAxisLabelFormatter2,
-						ticker: CVRG_xTickerMultiLead 
-					}, 
-					y: { 
-						valueFormatter: CVRG_yValueFormatter2,
-						axisLabelFormatter: CVRG_yAxisLabelFormatter2, 
-						ticker: CVRG_yTickerMultiLead 
-					} 
-				},
-				xAxisLabelWidth:0,
-				yAxisLabelWidth:0,
-				axisLabelFontSize: 0,
-				dateWindow: [ 0, 10000],
-				valueRange: [displayMinV, displayMaxV],
-				gridLineColor: '#FF0000',
-				labelsDiv: labelDiv
-//				highlightCallback: CVRG_highlightCallback,
-//				unhighlightCallback: CVRG_unhighlightCallback
-//				drawCallback: CVRG_drawCallback
-			}
-		);
-		return gRythm;
-	};
-*/
 
 	var createXLine = function(lineIdName){
 		var xlineX = document.createElement("div");
@@ -229,9 +180,10 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		//var divTag = "";
 		var labelDivName ="";
 		//data = new Array(dataFull.length);
-		data = dataFull;
+//		data = dataFull;
 //		data = [];
-//		for(var samp=0; samp < dataFull.length ;samp+=10){
+//		var data20thSize = dataFull.length/20;
+//		for(var samp=0; samp < data20thSize;samp++){
 //			fields = dataFull[samp];
 //			data.push(fields);
 ////			data[samp] = fields;
@@ -264,6 +216,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 //			xLineSet.push(xLine);
 			xLineSet[col] = xLine;
 		}
+//		blockRedraw=false;
 	};
 
 	var getGraphCommon  = function (lead, leadNumber, graphDivName, labelDivName,
@@ -280,14 +233,14 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		
 		var graph = new Dygraph(
 			graphDiv,
-			data,
+			dataFull,
 			{
 				clickCallback: function(e, x, points){
 					CVRG_clickCallCommon(leadNumber);
 				},
 				highlightCallback: CVRG_highlightCallbackAll,
 				unhighlightCallback: CVRG_unhighlightCallback,
-				drawCallback: CVRG_drawCallback,				
+				drawCallback: WAVEFORM_drawCallback, //called every time the dygraph is drawn. 			
 				visibility: vis,
 				dateWindow: [ 0, leadDurationMS],
 				valueRange: [displayMinV, displayMaxV],
@@ -367,7 +320,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 					errorBars: false,
 					axes: { 
 						x: { 
-							valueFormatter: CVRG_xValueFormatter2,
+//							valueFormatter: CVRG_xValueFormatterCalibration,
 							axisLabelFormatter: CVRG_xAxisLabelFormatter2,
 							ticker: CVRG_xTickerMultiLead 
 						}, 
@@ -384,7 +337,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 					valueRange: [displayMinV, displayMaxV],
 					gridLineColor: '#FF0000',
 					unhighlightCallback: CVRG_unhighlightCallback,
-					drawCallback: CVRG_drawCallback				
+					drawCallback: WAVEFORM_drawCallback // called every time the dygraph is drawn. 			 	
 				}
 			);
 			graphCal.resize(40, graphHeightPx);
@@ -440,25 +393,103 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		var maxVolt = displayMaxV+(voltCenterValue);
 		
 		blockRedraw=bPanSingle;
-		if(graphNumber=="ALL") graphNumber = 0;
-		graphSet[graphNumber].updateOptions({
-			valueRange: [minVolt, maxVolt]
-		});
+		if(graphNumber=="ALL") {
+			graphNumber = 0;
+			for(var gs=0;gs<graphSet.length;gs++){
+				graphSet[gs].updateOptions({
+					valueRange: [minVolt, maxVolt]
+				});
+			}
+		}else{
+			graphSet[graphNumber].updateOptions({
+				valueRange: [minVolt, maxVolt]
+			});
+		}
 		blockRedraw=false;
 		
     };
     
-    var panVoltageSingle = function(namespace){
-        // the screen size in use
-    	var voltCenterInputName = namespace + ":voltCenterInput" + graphNumber;
-        var voltCoeff = (displayMaxV-displayMinV)/100; // converts percentage scroll bar to Voltage scale
-		var voltCenterValue = (document.getElementById(voltCenterInputName).value-50)*voltCoeff;
-		var minVolt = displayMinV+(voltCenterValue);
-		var maxVolt = displayMaxV+(voltCenterValue);
-
-		ecg_graph.updateOptions({
-			valueRange: [minVolt, maxVolt]
-		});
+//    var panVoltageSingle = function(namespace){
+//        // the screen size in use
+//    	var voltCenterInputName = namespace + ":voltCenterInput" + graphNumber;
+//        var voltCoeff = (displayMaxV-displayMinV)/100; // converts percentage scroll bar to Voltage scale
+//		var voltCenterValue = (document.getElementById(voltCenterInputName).value-50)*voltCoeff;
+//		var minVolt = displayMinV+(voltCenterValue);
+//		var maxVolt = displayMaxV+(voltCenterValue);
+//
+//		ecg_graph.updateOptions({
+//			valueRange: [minVolt, maxVolt]
+//		});
+//    };
+    
+    
+    var centerScaleVoltageMulti = function(){
+		for(var gs=0;gs<graphSet.length;gs++){
+	    	var ext = getDataMinMaxMulti(gs);
+	    	var deltaV = (ext.dataMax-ext.dataMin);
+	    	
+			displayMinV2 = ext.dataMin-(deltaV*.05); // leave a 5% space at the bottom
+			displayMaxV2 = ext.dataMax+(deltaV*.05); // leave a 5% space at the top
+	    	
+			graphSet[gs].updateOptions({
+				valueRange: [displayMinV2, displayMaxV2]
+			});
+	
+//			sliderVoltRangeSingle.minValue = displayMinV2;
+//			sliderVoltRangeSingle.maxValue = displayMaxV2;
+//			voltMinInput.value = displayMinV2;
+//			voltMaxInput.value = displayMaxV2;
+//			voltCenterInput.value = 00;
+		}
+    };
+    
+    var centerVoltageMulti = function(){
+		for(var gs=0;gs<graphSet.length;gs++){
+	    	var ext = getDataMinMaxMulti(gs);
+	    	var centerV = (ext.dataMax+ext.dataMin)/2;
+	    	
+			displayMinV2 = centerV-1000; // leave a 5% space at the bottom
+			displayMaxV2 = centerV+1000
+	    	
+			graphSet[gs].updateOptions({
+				valueRange: [displayMinV2, displayMaxV2]
+			});
+	
+//			sliderVoltRangeSingle.minValue = displayMinV2;
+//			sliderVoltRangeSingle.maxValue = displayMaxV2;
+//			voltMinInput.value = displayMinV2;
+//			voltMaxInput.value = displayMaxV2;
+//			voltCenterInput.value = 00;
+    	}
+    };
+    
+    /** Find the minimum and maximum Voltage values in all of the samples for the specified graph.
+     * Assumes that the graph number and lead number are the same value.
+     */ 
+    var getDataMinMaxMulti = function (graphNumber){
+    	var ret = [];
+    	var dataMin = graphSet[graphNumber].getValue(calPointCount+1,graphNumber+1);
+    	var dataMax = graphSet[graphNumber].getValue(calPointCount+1,graphNumber+1);
+    	var val = 0;
+    	for(var row=calPointCount+2;row<graphSet[graphNumber].numRows();row++){
+    		val = graphSet[graphNumber].getValue(row,graphNumber+1); // column zero is time, so lead zero's data is in column one.
+    		if(dataMax < val) dataMax = val;
+    		if(dataMin > val) dataMin = val;
+    	}
+    	ret = {
+			dataMin: dataMin, // microVolts
+			dataMax: dataMax // microVolts
+		};
+    	
+    	return ret;
+    };
+    
+    var setVoltageZoomMulti = function(newDisplayMinV, newDisplayMaxV){
+		for(var gs=0;gs<graphSet.length;gs++){
+			graphSet[gs].updateOptions({
+				valueRange: [newDisplayMinV, newDisplayMaxV]
+			});
+		}
     };
     
     var dataFull = "";

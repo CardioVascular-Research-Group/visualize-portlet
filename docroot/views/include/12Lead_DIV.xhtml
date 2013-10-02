@@ -219,7 +219,12 @@
 			</h:panelGroup>
 		</h:panelGrid>
 
-		<p:slider for="voltCenterInputALL" id="voltCenterALL" styleClass="voltCenterAllLead" style="height:500px" type="vertical" 
+		<p:slider id="voltCenterALL"  
+			for="voltCenterInputALL"
+			styleClass="voltCenterAllLead" 
+			style="height:500px" 
+			type="vertical"
+			animate="false" 
 			onSlideEnd="panVoltage('ALL',false,'#{facesContext.externalContext.encodeNamespace('')}')" />
 	</h:panelGrid>
 	<!--  END 12 Lead Container -->

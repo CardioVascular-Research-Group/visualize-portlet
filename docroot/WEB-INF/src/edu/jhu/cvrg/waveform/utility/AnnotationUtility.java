@@ -506,31 +506,10 @@ public class AnnotationUtility extends XMLUtility {
 				selection = iter.nextResource();
 				String csvString = (selection.getContent()).toString();
 				String[] saLine = csvString.split(",");
-				iaAnnPerLead[index][0] = Integer.parseInt(saLine[0]); // lead
-																		// <term>
-																		// e.g.
-																		// ones
-																		// based
-																		// lead
-																		// number
-																		// from
-																		// 1 to
-																		// 12.
-				iaAnnPerLead[index][1] = Integer.parseInt(saLine[1]); // Total
-																		// annotation
-																		// count
-																		// (should
-																		// be
-																		// equal
-																		// to
-																		// [2] +
-																		// [3])
-				iaAnnPerLead[index][2] = Integer.parseInt(saLine[2]); // Manual
-																		// annotation
-																		// count
-				iaAnnPerLead[index][3] = Integer.parseInt(saLine[3]); // Automated
-																		// annotation
-																		// count
+				iaAnnPerLead[index][0] = Integer.parseInt(saLine[0]); // lead <term> e.g. ones based lead number from 1 to 12.
+				iaAnnPerLead[index][1] = Integer.parseInt(saLine[1]); // Total annotation count (should be equal to [2] + [3])
+				iaAnnPerLead[index][2] = Integer.parseInt(saLine[2]); // Manual annotation count
+				iaAnnPerLead[index][3] = Integer.parseInt(saLine[3]); // Automated  annotation count
 
 				index++;
 

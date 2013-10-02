@@ -16,6 +16,9 @@
 				border-radius: 5px;
 				box-shadow: 0 5px 10px rgba(80, 0, 0, .3);
 			}
+			.navigationButton{
+				width:120px;
+			}
 		</style>
 		<!-- MOVE TO CSS -->
 		
@@ -91,16 +94,35 @@
 
 					<h:form>
 						<p:commandButton id="returnToList" 
-										value="View ECG List"
-										action="#{visualizeGraphBacking.viewSelectionTree}"
-										ajax="true"
-										icon="ui-icon-seek-first"
-										title="View the ECG selection tree."/>
-						<p:button id="voltCenterButtonMulti" value="center" type="button"
+								value="View ECG List"
+								action="#{visualizeGraphBacking.viewSelectionTree}"
+								ajax="true"
+								icon="ui-icon-document"
+								styleClass="navigationButton"
+								title="View the ECG selection tree."/>
+										
+						<p:button id="voltCenterButtonMulti" 
+								value="center" 
+								type="button"
+								icon="ui-icon-arrowthick-2-n-s"
+								styleClass="navigationButton"
+								title="Center each graph, while using the standard voltage scale (+/- 2000uV)."
 								onclick="centerVoltageMulti();return false;"></p:button>
-						<p:button id="voltCenterNScaleButtonMulti" value="center and scale" type="button"
+								
+						<p:button id="voltCenterNScaleButtonMulti" 
+								value="center and scale" 
+								type="button"
+								icon="ui-icon-arrowthick-2-n-s"
+								styleClass="navigationButton"
+								title="Center all graphs, stretching the voltage scale of each independently."
 								onclick="centerScaleVoltageMulti();return false;"></p:button>
-						<p:button id="voltResetButtonMulti" value="reset" type="button"
+								
+						<p:button id="voltResetButtonMulti" 
+								value="reset" 
+								type="button"
+								icon="ui-icon-circle-plus"
+								styleClass="navigationButton"
+								title="Reset all graphs to zero volts at the center, using the standard voltage scale (+/- 2000uV)"
 								onclick="setVoltageZoomMulti(-2000,2000);return false;"></p:button>										
 					</h:form>				
 				</p:layoutUnit>

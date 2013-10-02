@@ -8,6 +8,12 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 	<h:head />
 	<h:body>
+		<style>
+			.navigationButton{
+				width:120px;
+			}
+		</style>
+	
 		<f:event type="preRenderView" listener="#{annotationBacking.initialize}" />
 		<h:form id="drawGraph_loadAnnotations">
 			<p:remoteCommand name="calledOnLoad"
@@ -15,6 +21,15 @@
 				autoRun="true">
 			</p:remoteCommand>
 		</h:form>
+		<script>
+			var renderGraphAndAnnotations = function(){
+				//alert("renderGraphAndAnnotations() called.");
+				var namespace = '#{facesContext.externalContext.encodeNamespace('')}';
+				SINGLELEAD_drawECGgraph('ecgSingle_div', namespace);
+				WAVEFORM_ShowAnnotationSingle();
+			}
+		</script>
+
 		<h:form>
 			<p:remoteCommand name="viewAnnotationPointEdit" 
             				action="#{annotationBacking.viewAnnotationPoint}"/>
@@ -26,16 +41,6 @@
 				partialSubmit="false"
 				action="#{annotationBacking.viewCurrentAnnotation}" />
 		</h:form>
-		<script>
-			var renderGraphAndAnnotations = function(){
-				//alert("renderGraphAndAnnotations() called.");
-				var namespace = '#{facesContext.externalContext.encodeNamespace('')}';
-				CVRG_drawECGgraphSingle('ecgSingle_div', namespace);
-				WAVEFORM_ShowAnnotationSingle();
-				WAVEFORM_showHighLight();
-			}
-		</script>
-
 		<h:panelGroup id="backgroundofContentDiv" layout="block" styleClass="backgroundofContent">
 			<p:layout id="graphView"
 				style=" min-height:710px; height:720px; top:20px">
@@ -74,12 +79,6 @@
 							</h:panelGroup>
 						</h:panelGrid>
 						
-						<p:button id="voltCenterButton" value="center" type="button"
-								onclick="centerVoltage();return false;"></p:button>
-						<p:button id="voltCenterNScaleButton" value="center and scale" type="button"
-								onclick="centerScaleVoltage();return false;"></p:button>
-						<p:button id="voltResetButton" value="reset" type="button"
-								onclick="setVoltageZoom(-2000,2000);return false;"></p:button>
 						
 						<h:panelGroup id="list_div" layout="block"></h:panelGroup>
 				 	</p:panel>	
@@ -87,9 +86,47 @@
 				
  				<p:layoutUnit id="viewChangeButtons" position="east" resizable="true" size="150"
 					minSize="50" maxSize="550">
-					<ui:include src="include/includeViewChangeButtons.xhtml" />
+					<p:commandButton id="returnToList" 
+								value="View ECG List"
+								action="#{visualizeGraphBacking.viewSelectionTree}"
+								ajax="true"
+								icon="ui-icon-document"
+								styleClass="navigationButton"
+								title="View the ECG selection tree."/>
+								
+					<p:commandButton id="showMultiLead" 
+								value="View Multi-Lead"
+								action="#{visualizeGraphBacking.view12LeadsGraph}"
+								icon="ui-icon-arrowreturnthick-1-w"
+								title="View multiple lead graphs."
+								styleClass="navigationButton"
+								onkeydown="CVRG_clickCallCommon(0);"/>
+
+						<p:button id="voltCenterButton" 
+								value="center" 
+								type="button"
+								styleClass="navigationButton"
+								icon="ui-icon-arrowthick-2-n-s"
+								title="Center the graph, while using the standard voltage scale (+/- 2000uV)."
+								onclick="centerVoltage();return false;"/>
+								
+						<p:button id="voltCenterNScaleButton" 
+								value="center and scale" 
+								type="button"
+								styleClass="navigationButton"
+								icon="ui-icon-arrowthick-2-n-s"
+								title="Center the graph, stretching the voltage scale."
+								onclick="centerScaleVoltage();return false;"/>
+								
+						<p:button id="voltResetButton" 
+								value="reset" 
+								type="button"
+								icon="ui-icon-circle-plus"
+								styleClass="navigationButton"
+								title="Reset the graph to zero volts at the center, using the standard voltage scale (+/- 2000uV)"
+								onclick="setVoltageZoom(-2000,2000);return false;"/>
+					
 					<ui:include src="include/includePanZoom.xhtml" />
-					<ui:include src="include/includeAnnotate.xhtml" />
 				</p:layoutUnit>
 			</p:layout>
 		</h:panelGroup>

@@ -238,7 +238,19 @@
 		return label;
 	};
 
-
+	/** Controls the display of numbers in the legend, formatted for the limited space under the calibration marks.
+	 * (i.e. the text that appears when you hover on the chart).
+	 * 
+	 * @param val = the value
+	 * @param opts = a function which maps options to their values
+	 * @param series_name = the name of the relevant series
+	 * @param dygraph = the dygraph object
+	 */ 
+	var CVRG_xValueFormatterCalibration = function(val, opts, series_name, dygraph){
+		var result = "";		
+		result = formatMsecToExponent(val);
+		return result;
+	};
 			
 
 	/** Controls the display of numbers in the legend 

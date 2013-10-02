@@ -186,21 +186,23 @@
     var highlight_start = 0;          // 480 dataSX now - set to the Current X Start javascript Var
     var highlight_end = 0; 			  // 710  dataECoords[0] - now set to the Current X End javascript Var dataECoords[0] 
     var CenterArea = 0;
-    var CVRG_setHightLightLocation = function(X1, XC ,X2){
-    	highlight_start = X1;
-    	toCenterWithArea = XC;
-    	highlight_end = X2;
-    	CVRG_underlayCallbackClicked();  // gathers the call to set the color on the interval
-    };
+//    var CVRG_setHightLightLocation = function(X1, XC ,X2){
+//    	highlight_start = X1;
+//    	toCenterWithArea = XC;
+//    	highlight_end = X2;
+//    	CVRG_underlayCallbackClicked();  // gathers the call to set the color on the interval
+//    };
 	
     var highlightQueue = [];
     var WAVEFORM_clearHighLightQueue = function(){
     	highlightQueue = [];
     };
     
-    var WAVEFORM_queueHighLightLocation = function (X1, XC ,X2){
+    var WAVEFORM_queueHighLightLocation = function (X1, Y1, flagHeight, XC ,X2){
 		var highlight = {
 			xStart: X1, // milliseconds
+			yStart: Y1, // microvolts
+			fhStart: flagHeight, 
 			xCenter: XC, // milliseconds
 			xEnd: X2 // milliseconds
 		};
@@ -209,16 +211,60 @@
 		highlightQueue.push(highlight);
     };
     
-    var WAVEFORM_showHighLight = function(){
+//    var WAVEFORM_showHighLight = function(){
+//    	for(var h=0;h < highlightQueue.length;h++){
+//    		//CVRG_underlayCallbackClicked(hl.xStart, hl.xCenter, hl.xEnd);
+//        	highlight_start = highlightQueue[h].xStart;
+//        	toCenterWithArea = highlightQueue[h].xCenter;
+//        	highlight_end = highlightQueue[h].xEnd;
+//        	CVRG_underlayCallbackClicked();  // gathers the call to set the color on the interval
+//    		alert("WAVEFORM_showHighLight() --  highlight_start:" + highlight_start + " toCenterWithArea:" + toCenterWithArea + " highlight_end:" + highlight_end);
+//    	};    	
+//    };
+
+    var fillStyleList = [ 
+    		"rgb(255, 255, 0)", 
+    		"rgb(70, 230, 230)", 
+    		"rgb(250, 190, 80)", 
+    		"rgb(110, 240, 150)", 
+    		"rgb(240, 50, 50)"];
+    
+    var WAVEFORM_showHighLightQueue = function(canvas, area, g){
+//    	alert("WAVEFORM_showHighLightQueue()");
+        canvas.strokeStyle= "#000000";
+        canvas.shadowBlur = 0;
+        canvas.shadowColor = '#82B4D2';
     	for(var h=0;h < highlightQueue.length;h++){
     		//CVRG_underlayCallbackClicked(hl.xStart, hl.xCenter, hl.xEnd);
-        	highlight_start = highlightQueue[h].xStart;
-        	toCenterWithArea = highlightQueue[h].xCenter;
-        	highlight_end = highlightQueue[h].xEnd;
-        	CVRG_underlayCallbackClicked();  // gathers the call to set the color on the interval
-    		alert("WAVEFORM_showHighLight() --  highlight_start:" + highlight_start + " toCenterWithArea:" + toCenterWithArea + " highlight_end:" + highlight_end);
+        	//highlight_start = highlightQueue[h].xStart;
+//        	toCenterWithArea = highlightQueue[h].xCenter;
+//        	highlight_end = highlightQueue[h].xEnd;
+    		
+            var top_left = g.toDomCoords(highlightQueue[h].xStart, (highlightQueue[h].yStart - 400 -(h*50)) ); // + highlightQueue[h].fhStart ;
+            var bottom_right = g.toDomCoords(highlightQueue[h].xEnd, (highlightQueue[h].yStart - 600-(h*50)) );; // + highlightQueue[h].fhStart ;
+
+            var leftX = top_left[0];
+            var topY = top_left[1];
+            var rightX = bottom_right[0];
+            var bottomY = bottom_right[1];
+            
+            var width = rightX-leftX;
+            var height = bottomY-topY;
+            
+            canvas.fillStyle = fillStyleList[h%5];
+            canvas.shadowOffsetX = 2*h;
+            canvas.shadowOffsetY = 2*h;
+            if(h>2) canvas.shadowBlur = 5;
+            canvas.fillRect(leftX, topY, width, height);        	
+        	
+//    		alert("WAVEFORM_showHighLightQueue() --  leftX:" + leftX + " topY:" + topY + " height:" + height + " width:" + width);
     	};    	
+        canvas.shadowOffsetX = 0;
+        canvas.shadowOffsetY = 0;
+        canvas.shadowBlur = 0;
+
     };
+
 
     // Set the Highlight on the interval
     var CVRG_underlayCallbackClicked = function(highlight_start, toCenterWithArea, highlight_end){

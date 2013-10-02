@@ -75,19 +75,19 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	 * 
 	 * @returns
 	 */	
-	var CVRG_drawECGgraphSingle = function(divName, namespace){
+	var SINGLELEAD_drawECGgraph = function(divName, namespace){
 		singleLeadNamespace = namespace;
 //		alert("running CVRG_drawECGgraphSingle("+ singleLeadNamespace + ":" + divName +")");
 //		if(drawECGCallCount == 0){
 //			drawECGCallCount++;
 			dataSingle = WAVEFORM_getSingleLeadData(CVRG_getLeadNum(), dataFull, labelFull);
 			ecg_graph = new Dygraph( 
-					document.getElementById(singleLeadNamespace + ":" + divName),
+					WAVEFORM_getElementById(divName),
 					dataSingle,
 					{
 						stepPlot: false,
 						labels: labelSingle,
-						labelsDiv: document.getElementById(singleLeadNamespace + ":status_div"),
+						labelsDiv: WAVEFORM_getElementById("status_div"),
 						labelsDivStyles: { border: '1px solid black' },
 						labelsSeparateLines: false,
 						gridLineColor: '#FA8C8C',
@@ -111,7 +111,8 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 						drawCallback:              CVRG_drawCallbackSingle, 
 						pointClickCallback:        CVRG_pointClickCallbackSingle,
 						zoomCallback:              WAVEFORM_zoomCallbackSingle,
-//						
+						underlayCallback:          SINGLELEAD_underlayCallback,
+
 						highlightCallback: CVRG_highlightCallbackSingle,
 						unhighlightCallback: function(e){
 							CVRG_unhighlightCrosshairs(1);
@@ -190,7 +191,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		var minVolt = ((WAVEFORM_getElementById('voltMinInput').value-50)*voltCoeff);
 		var maxVolt = ((WAVEFORM_getElementById('voltMaxInput').value-50)*voltCoeff);
 
-		dataCenter += voltCenterOffset;
+		dataCenter -= voltCenterOffset;
 		minVolt += dataCenter;
 		maxVolt += dataCenter;
 
@@ -204,8 +205,8 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
     	var ext = getDataMinMax();
     	var centerV = (ext.dataMax+ext.dataMin)/2;
     	
-		displayMinV2 = centerV-1000; // leave a 5% space at the bottom
-		displayMaxV2 = centerV+1000
+		displayMinV2 = centerV-2000; 
+		displayMaxV2 = centerV+2000;
 //    	var dataCenter = deltaV/2 + displayMinV2;
     	
 		ecg_graph.updateOptions({
@@ -392,3 +393,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		//eventDiv.innerHTML += "click: " + nameAnnotation(ann)  + "<br/>";
 		
 	};
+	
+	var SINGLELEAD_underlayCallback = function(canvas, area, g){
+		WAVEFORM_showHighLightQueue(canvas, area, g);		
+	}

@@ -18,7 +18,7 @@ public class AnnotationData implements Serializable , Comparable<AnnotationData>
 	private String studyID = "Mesa";
 	private int leadIndex;
 	private String leadName;	
-	private double milliSecondStart; // start time of interval in milliSeconds from beginning of the file.
+	private double milliSecondStart=-999999999; // start time of interval in milliSeconds from beginning of the file.
 	private double uVoltStart;	// Y Coordinate in Schema
 	private double milliSecondEnd; // end time of interval in milliSeconds from beginning of the file.
 	private double uVoltEnd;	// Y Coordinate in Schema
