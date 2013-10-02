@@ -119,7 +119,7 @@ public class VisualizeBacking implements Serializable {
     	String nextView="";
     	System.out.println("+++ VisualizeBacking.java, graphSelectedECG() +++ ");
     	System.out.println("+ selected record:" + selectedStudyObject.getRecordName() + " in file:" + selectedStudyObject.getDataFile() + " lead count:" + selectedStudyObject.getLeadCount());
-    	setVisibleFragment(2); // show 12 lead graph page fragment.
+//    	setVisibleFragment(2); // show 12 lead graph page fragment.
     	if(selectedStudyObject.getLeadCount()==12){
     		nextView = "viewB_Display12Leads";
     	}else{

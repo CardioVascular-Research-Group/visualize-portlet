@@ -75,7 +75,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	 * 
 	 * @returns
 	 */	
-	var CVRG_drawECGgraphSingle = function(divName, namespace){
+	var SINGLELEAD_drawECGgraph = function(divName, namespace){
 		singleLeadNamespace = namespace;
 //		alert("running CVRG_drawECGgraphSingle("+ singleLeadNamespace + ":" + divName +")");
 //		if(drawECGCallCount == 0){
@@ -111,7 +111,8 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 						drawCallback:              CVRG_drawCallbackSingle, 
 						pointClickCallback:        CVRG_pointClickCallbackSingle,
 						zoomCallback:              WAVEFORM_zoomCallbackSingle,
-//						
+						underlayCallback:          SINGLELEAD_underlayCallback,
+
 						highlightCallback: CVRG_highlightCallbackSingle,
 						unhighlightCallback: function(e){
 							CVRG_unhighlightCrosshairs(1);
@@ -190,7 +191,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		var minVolt = ((WAVEFORM_getElementById('voltMinInput').value-50)*voltCoeff);
 		var maxVolt = ((WAVEFORM_getElementById('voltMaxInput').value-50)*voltCoeff);
 
-		dataCenter += voltCenterOffset;
+		dataCenter -= voltCenterOffset;
 		minVolt += dataCenter;
 		maxVolt += dataCenter;
 
@@ -392,3 +393,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		//eventDiv.innerHTML += "click: " + nameAnnotation(ann)  + "<br/>";
 		
 	};
+	
+	var SINGLELEAD_underlayCallback = function(canvas, area, g){
+		WAVEFORM_showHighLightQueue(canvas, area, g);		
+	}

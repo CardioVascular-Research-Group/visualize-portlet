@@ -302,7 +302,7 @@ public class VisualizeGraphBacking implements Serializable {
 	 * @param event
 	 */
 	public void generic12leadOnloadCallback() {
-		System.out.println("-Entering function generic12leadOnCallback graphedStudyEntry:" + visualizeSharedBacking.getSharedStudyEntry().toString());
+		System.out.println("-Entering function generic12leadOnCallback graphedStudyEntry:" + visualizeSharedBacking.getSharedStudyEntry().getRecordName());
 		if(visualizeSharedBacking.getSharedStudyEntry() != null){
 //			AnnotationUtility annUtil = new AnnotationUtility(com.liferay.util.portlet.PortletProps.get("dbUser"),
 //					com.liferay.util.portlet.PortletProps.get("dbPassword"), 
@@ -390,6 +390,7 @@ public class VisualizeGraphBacking implements Serializable {
 	 * @return
 	 */
 	private int[][] fetchAnnotationArray(){
+		System.out.println("---fetchAnnotationArray()----");
 		int iaAnnCount[][] = null;
 		if(visualizeSharedBacking.getSharedStudyEntry() != null){
 			AnnotationUtility annUtil = new AnnotationUtility(com.liferay.util.portlet.PortletProps.get("dbUser"),
@@ -397,11 +398,23 @@ public class VisualizeGraphBacking implements Serializable {
 					com.liferay.util.portlet.PortletProps.get("dbURI"),	
 					com.liferay.util.portlet.PortletProps.get("dbDriver"), 
 					com.liferay.util.portlet.PortletProps.get("dbMainDatabase"));
-			iaAnnCount = annUtil.getAnnotationCountPerLead(userModel.getScreenName(), 
-					visualizeSharedBacking.getSharedStudyEntry().getStudy(),
-					visualizeSharedBacking.getSharedStudyEntry().getSubjectID(),
-					visualizeSharedBacking.getSharedStudyEntry().getRecordName());
+			System.out.println("----AnnotationUtility using URI: " + annUtil.getURI());
+			
+			userModel = ResourceUtility.getCurrentUser();
+			String SN = userModel.getScreenName();
+			System.out.println("----userModel.getScreenName(): " + SN);
+			String St = visualizeSharedBacking.getSharedStudyEntry().getStudy();
+			System.out.println("----visualizeSharedBacking.getSharedStudyEntry().getStudy(): " + St);
+			String SID = visualizeSharedBacking.getSharedStudyEntry().getSubjectID();
+			System.out.println("----visualizeSharedBacking.getSharedStudyEntry().getSubjectID(): " + SID);
+			String RN = visualizeSharedBacking.getSharedStudyEntry().getRecordName();
+			System.out.println("----visualizeSharedBacking.getSharedStudyEntry().getRecordName(): " + RN);
+			
+			iaAnnCount = annUtil.getAnnotationCountPerLead(SN, St, SID, RN);
+		}else{
+			System.err.println("---fetchAnnotationArray() SharedStudyEntry now found.");
 		}
+		System.out.println("--- annotations count, 1st lead: " + iaAnnCount[0][1]);
 		return iaAnnCount;
 	}
 
@@ -409,7 +422,7 @@ public class VisualizeGraphBacking implements Serializable {
 	 * @return - lead count
 	 */
 	private int fetchDisplayData(){
-		System.out.println("---Entering function fetchDisplayData() with iCurrentVisualizationOffset:" + iCurrentVisualizationOffset);
+		System.out.println("--- fetchDisplayData() with iCurrentVisualizationOffset:" + iCurrentVisualizationOffset);
 		boolean verbose = false;
 
 		String userID="";
