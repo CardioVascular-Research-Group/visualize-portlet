@@ -3,4 +3,10 @@
 
 <project name="visualize-portlet" basedir="." default="deploy">
 	<import file="../build-common-portlet.xml" />
+	
+<target name="compile">
+	<copy todir="docroot/WEB-INF/lib">
+		<fileset dir="/opt/liferay/portlet-opt" includes="*.jar"/>
+	</copy>
+</target>
 </project>
