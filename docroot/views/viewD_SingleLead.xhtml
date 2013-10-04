@@ -125,6 +125,13 @@
 								styleClass="navigationButton"
 								title="Reset the graph to zero volts at the center, using the standard voltage scale (+/- 2000uV)"
 								onclick="setVoltageZoom(-2000,2000);return false;"/>
+								
+					<p:commandButton id="showMultiLead" 
+								value="View Multi"
+								action="#{visualizeGraphBacking.view12LeadsGraph}"
+								icon="ui-icon-seek-end"
+								title="View Single Lead"
+								onkeydown="CVRG_clickCallCommon(0);"/>
 					
 					<ui:include src="include/includePanZoom.xhtml" />
 				</p:layoutUnit>
