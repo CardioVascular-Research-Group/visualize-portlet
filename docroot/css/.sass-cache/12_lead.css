@@ -1,0 +1,174 @@
+.Container_12LeadDivOutside {
+  border: 0px solid blue; }
+
+.Container_12LeadDiv {
+  border: 0px solid red; }
+
+/*
+.centered {
+	margin: 0px auto;
+}
+*/
+/*********Start of Calibration Container Divs (div.calContainer below) ****
+#ContainerCal0{left:0px;top:0px;}
+#ContainerCal1{left:0px;top:175px;}
+#ContainerCal2{left:0px;top:350px;}
+#ContainerCal3{display:none;}
+*/
+/********* end of Calibration Container Divs *****/
+/********* Start of ECG Container Divs (div.ecgContainer below) ********
+/****** 1st column *****
+#ContainerDiv0{left:45px;top:0px;}
+#ContainerDiv1{left:45px;top:175px;}
+#ContainerDiv2{left:45px;top:350px;}
+*/
+/****** 2nd column *****
+#ContainerDiv3{left:290px;top:0px;}
+#ContainerDiv4{left:290px;top:175px;}
+#ContainerDiv5{left:290px;top:350px;}
+*/
+/****** 3rd column *****
+#ContainerDiv6{left:535px;top:0px;}
+#ContainerDiv7{left:535px;top:175px;}
+#ContainerDiv8{left:535px;top:350px;}
+*/
+/****** 4th column *****
+#ContainerDiv9{ left:780px;top:0px;}
+#ContainerDiv10{left:780px;top:175px;}
+#ContainerDiv11{left:780px;top:350px;}
+*/
+.voltCenterAllLead {
+  width: 10px;
+  height: 100%; }
+
+.ui-slider {
+  border-radius: 10px 10px 10px 10px; }
+
+/********* ECG ContainerDiv and children ********/
+.ecgContainer {
+  border: 1px solid black;
+  margin: 0 auto;
+  padding: 0 auto; }
+
+.label {
+  text-align: right;
+  height: 20px; }
+
+/* 
+.graph{
+    position:absolute;
+    left:0px;
+    top:20px;
+    right: 10px;
+    bottom: 0px;
+} */
+.voltSlider {
+  right: -3px;
+  height: 100%; }
+
+/********* calibration ContainerDiv and children ********/
+.calContainer {
+  border: 1px solid black;
+  margin: 0 auto;
+  padding: 0 auto; }
+
+/* 
+.titleCal{
+    position:absolute;
+    left:5px;
+    top:0px;
+    font-size:8pt;
+}
+*/
+.labelCal {
+  text-align: right;
+  height: 20px; }
+
+/*
+.ylabelCal2{
+    position:absolute;
+    left:-5px;
+    top:50px;
+    font-size:8pt;
+    
+    Safari
+    -webkit-transform: rotate(-90deg);
+    Firefox
+    -moz-transform: rotate(-90deg);
+    IE
+    -ms-transform: rotate(-90deg);
+    Opera
+    -o-transform: rotate(-90deg);
+    Internet Explorer 
+    filter: progid : DXImageTransform.Microsoft.BasicImage ( rotation = 3 );
+   
+}
+
+.graphCal{
+    position:absolute;
+    left:10px;
+    top:20px;
+    width:40px;
+    height:150px;
+} */
+/******** drag able panels ********/
+/* 
+.clearfix:after { 
+   content: "."; 
+   visibility: hidden; 
+   display: block; 
+   height: 0; 
+   clear: both;
+}
+
+
+.dragPanelPhenotype{
+    top: 20px;
+    width: 200px; 
+    float:right;
+    padding-right:10px;
+    border-radius: 5px;
+    z-index: 1000;
+    clear: right;
+}
+
+.dragPanelComments{
+    top:40px;
+    width: 200px; 
+    float:right;
+    padding:10px;
+    z-index:1001;
+    clear: right;
+}
+
+
+.dragPanelPanZoom {
+    top: 44px;
+	height: 65px;
+    width: 200px; 
+	float:right;
+    padding-right:10px;
+    z-index:1002;
+    overflow: hidden;
+    clear: right;
+}
+
+.instruction12Lead{
+	position:absolute;   
+	top: 5px;
+	left:250px; 
+	z-index:1004;
+}
+ */
+/* 
+.crossHairVert{
+	position: "relative";
+	display: "none";
+	width: "1px";
+	height: "100%";
+	bottom: "10px";
+	left: "0px";
+	backgroundColor: "blue";
+}
+ */
+

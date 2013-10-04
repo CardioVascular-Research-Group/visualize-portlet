@@ -122,6 +122,9 @@ public class VisualizeBacking implements Serializable {
 //    	setVisibleFragment(2); // show 12 lead graph page fragment.
     	if(selectedStudyObject.getLeadCount()==3){
     		nextView = "viewC_Display3Leads";
+//    	setVisibleFragment(2); // show 12 lead graph page fragment.
+    	if(selectedStudyObject.getLeadCount()==12){
+    		nextView = "viewB_Display12Leads";
     	}else{
 //    		if(selectedStudyObject.getLeadCount()==15){
 //	    		nextView = "viewD_SingleLead";
