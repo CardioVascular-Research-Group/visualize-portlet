@@ -69,6 +69,7 @@ public class AnnotationBacking implements Serializable {
 		public double valueofSX;
 		public double valueofSY;
 		public String fullAnnotation="full annotation";
+		public String comment="";
 		private String leadName;
 		public int leadnum;
         public int lastnum;
@@ -116,6 +117,7 @@ public class AnnotationBacking implements Serializable {
 		
 		setLeadName(visualizeSharedBacking.getSelectedLeadName());
 		setLeadnum(Integer.parseInt(visualizeSharedBacking.getSelectedLeadNumber()));
+		setComment(""); // make sure it is blank
 		
         System.out.println("AnnotationBacking.showAnnotationForLead LeadName: " + getLeadName());
         System.out.println("AnnotationBacking.showAnnotationForLead Leadnum: " + getLeadnum());
@@ -367,6 +369,7 @@ public class AnnotationBacking implements Serializable {
 			 annotationToInsert.setOffsetLabel("Offset");
 			 annotationToInsert.setOffsetRestURL("");
 			 annotationToInsert.setAnnotation(getFullAnnotation());
+			 annotationToInsert.setComment(getComment());
 			 annotationToInsert.setUnit("");
 			
 //Inserting save to XML database
@@ -411,7 +414,13 @@ public class AnnotationBacking implements Serializable {
 			if(sErrorMess.length() > 0){
 				System.err.println ("AnnotationBacking.java, showAnnotations() failed: " + sErrorMess);
 			}else{
-				AnnotationData[] retrievedAnnotationList = RetrieveECGDatabase.getLeadAnnotationNode(userLifeRayModel.getScreenName(), visualizeSharedBacking.getSharedStudyEntry().getStudy(), visualizeSharedBacking.getSharedStudyEntry().getSubjectID(), String.valueOf(leadIndex), leadIndex, visualizeSharedBacking.getSharedStudyEntry().getRecordName());
+				AnnotationData[] retrievedAnnotationList = 
+					RetrieveECGDatabase.getLeadAnnotationNode(userLifeRayModel.getScreenName(), 
+													visualizeSharedBacking.getSharedStudyEntry().getStudy(), 
+													visualizeSharedBacking.getSharedStudyEntry().getSubjectID(), 
+													String.valueOf(leadIndex), 
+													leadIndex, 
+													visualizeSharedBacking.getSharedStudyEntry().getRecordName());
 				annotationCount = retrievedAnnotationList.length;
 				context.execute("CVRG_resetAnnotations()");
 				context.execute("WAVEFORM_clearHighLightQueue()");
@@ -437,6 +446,7 @@ public class AnnotationBacking implements Serializable {
 //					flagLabel = String.valueOf(i+1);   // label of Annotation
 					ontologyId = retrievedAnnotationList[i].getConceptLabel();
 					fullAnnotation = retrievedAnnotationList[i].getAnnotation();
+					setComment(retrievedAnnotationList[i].getComment() );
 					annotationID = retrievedAnnotationList[i].getUniqueID();
 					System.out.println("RetrieveAnnotation loop x:" + firstX + " y:" + firstY + " flagCount: " + flagCount + " ontologyId:" + ontologyId + " fullAnnotation:\"" + fullAnnotation + "\" annotationID:\"" + annotationID + "\"");
 
@@ -471,7 +481,7 @@ public class AnnotationBacking implements Serializable {
 							int finalHeight = heightMultiplier * 15;
 							// 	add annotaion from JAVA to JavaScript Dygraph 
 							context.execute("CVRG_addAnnotationHeight('" + series + "' , '" +  firstX + "', '" +  firstY + "','" 
-								+ flagLabel + "','" + ontologyId + "','" + fullAnnotation + "',' " 
+								+ flagLabel + "','" + ontologyId + "','" + fullAnnotation + "/" + getComment() + "',' " 
 								+ finalHeight + "','" + annotationID + "')");
 							flagCount++;
 						}
@@ -592,10 +602,20 @@ public class AnnotationBacking implements Serializable {
 		public void setFullAnnotation(String fullAnnotation) {
 			this.fullAnnotation = fullAnnotation;
 		}
-
 		public String getFullAnnotation() {
 			return fullAnnotation;
 		}
+
+		/** Comment on annotation, separate and in addition to the full annotation.
+		 * Optional */
+		public String getComment() {
+			return comment;
+		}
+		public void setComment(String comment) {
+			this.comment = comment;
+		}
+
+
 
 		public void setLeadName(String leadName) {
 			System.out.println( "AnnotationBacking.setLeadName() called with:" + leadName);

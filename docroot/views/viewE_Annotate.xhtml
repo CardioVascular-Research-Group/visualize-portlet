@@ -165,6 +165,15 @@
 						<h:outputText id="ontologyDefinition" 
 							styleClass="dataValue"
 							value="#{annotationBacking.fullAnnotation}" />
+
+						<h:outputLabel for="manualComment"
+							styleClass="title" 
+							value="Comment" />
+						<h:inputTextarea id="manualComment" 
+							styleClass="dataValue"
+							rows="4"
+							style="border: 1px solid magenta;"
+							value="#{annotationBacking.comment}" />
 					</h:panelGrid>
 				</p:panel>
 				

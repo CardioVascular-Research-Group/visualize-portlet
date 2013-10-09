@@ -29,6 +29,7 @@ public class AnnotationData implements Serializable , Comparable<AnnotationData>
 	private String onsetID;
 	private String offsetID;	
 	private String annotation;
+	private String comment="";
 	private String measurementUnit;
 	private String onsetDescription;
 	private String offsetDescription;
@@ -224,6 +225,24 @@ public class AnnotationData implements Serializable , Comparable<AnnotationData>
 	public void setAnnotation(String annotation) {
 		this.annotation = annotation;
 	}
+	
+	/** Comment on annotation, separate and in addition to the full annotation.
+	 * Optional 
+	 * e.g. "This clearly makes this patient a candidate for grail study, must tell Sir Bedivere.".
+	 * @return Text of the comment.
+	 **/
+	public String getComment() {
+		return comment;
+	}
+	/** Comment on annotation, separate and in addition to the full annotation.
+	 * Optional 
+	 * e.g. "This clearly makes this patient a candidate for grail study, must tell Sir Bedivere."
+	 * @param comment - Text of the comment.
+	 **/	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	
 	public String getUnit() {
 		return measurementUnit;
 	}

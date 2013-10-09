@@ -383,9 +383,9 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	**/
 	var SINGLELEAD_annotationClickHandler = function(ann, point, dg, event) {
 //		CVRG_annotationClickHandlerJSNI(point.xval, point.yval);
-		alert("SINGLELEAD_annotationClickHandler() called.  series: " + ann.series + " x: " + ann.x  + " y: " + ann.y  
-				+ " flagLabel: " + ann.flagLabel + " ontologyId: " + ann.ontologyId 
-				+ " fullAnnotation: " + ann.fullAnnotation + " height: " + ann.height + " annotationID: " + ann.annotationID);
+//		alert("SINGLELEAD_annotationClickHandler() called.  series: " + ann.series + " x: " + ann.x  + " y: " + ann.y  
+//				+ " flagLabel: " + ann.flagLabel + " ontologyId: " + ann.ontologyId 
+//				+ " fullAnnotation: " + ann.fullAnnotation + " height: " + ann.height + " annotationID: " + ann.annotationID);
 		
 		viewCurrentAnnotationNoEdit([{name:'annotationID', value:ann.annotationID}]);
 

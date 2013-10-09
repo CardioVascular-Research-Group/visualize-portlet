@@ -4,7 +4,7 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 *************************/
 	var namespaceGlobal = "";
-	var data = [];
+//	var data = [];
 	var graphSet = [];
 	var graphCalSet = [];
 	var xLineSet = [];
@@ -110,7 +110,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	 */
 	var WAVEFORM_drawCallback = function(me, initial) {
 //		return;
-		var dummy=0;
+//		var dummy=0;
 		if (blockRedraw || initial) return;  // "blockRedraw" prevents WAVEFORM_drawCallback from looping on events from other graphs.
 		blockRedraw = true;
 		var range = me.xAxisRange();
@@ -132,12 +132,14 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	 * Default: null
 	 */
 	var WAVEFORM_zoomGraphX = function(minTime, maxTime) {
+		var startTimeZoomGraphX = (new Date).getTime();
 		var range = [minTime,maxTime];
 		for (var j = 0; j < graphSet.length; j++) {
 			graphSet[j].updateOptions( {
 				dateWindow: range
 			} );
 		}
+		debugPrintTime("ZoomGraphX", startTimeZoomGraphX);
 	}; 
 
 	var createXLine = function(lineIdName){
@@ -163,12 +165,17 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 											dataFull, namespace, calibrationCount){
 		namespaceGlobal = namespace;
 		
+	var startTime1 = (new Date).getTime();
 		populate12Graphs(graphDurationMS, graphWidthPx, graphHeightPx, 
 						dataFull, namespaceGlobal);
+	debugPrintTime("Current", startTime1);
 		
 		var graphDivName = namespaceGlobal + ":" + graphDivCalPrefix;
 		var labelDivName = namespaceGlobal + ":" + labelCalPrefix;
+		
+	var startTimeCal = (new Date).getTime();
         makeCalibrationMarks(calibrationCount, graphHeightPx, graphDivName, labelDivName);
+	debugPrintTime("Calibration", startTimeCal);
 	};
 	
 	
@@ -176,7 +183,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 									dataFull, namespace){
 		
 		StartmSec = dataFull[1][0];  // Starting time in the data, e.g. first point to display.
-		var fields = [];
+//		var fields = [];
 		//var divTag = "";
 		var labelDivName ="";
 		//data = new Array(dataFull.length);
@@ -192,6 +199,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		leadDurationMS = graphDurationMS;
 		graphSet = null;
 		graphSet = [];
+		xLineSet = null;
+		xLineSet = [];
 //		var headerEnd = data.indexOf("\n");
 //		var header = data.substring(0,headerEnd);
 //		var columnNames = header.split(",");
@@ -269,7 +278,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 				gridLineColor: '#FF0000'
 			}
 		);
-		graph.resize(graphWidthPx, graphHeightPx);
+//		graph.resize(graphWidthPx, graphHeightPx);
 		return graph;
 	};
 
@@ -281,18 +290,18 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 //		}
 //	};
 	
-	var WAVEFORM_replaceDataArray = function (dataFull){
-		data = dataFull;
-		//dataFull = null;
-//		for (var j = 0; j < graphSet.length; j++) {
-//			graphSet[j].updateOptions( {
-//				dateWindow: range
-//			} );
-//		}
-		graphSet[0].updateOptions( {
-			dateWindow: null
-		} );
-	};
+//	var WAVEFORM_replaceDataArray = function (dataFull){
+//		data = dataFull;
+//		//dataFull = null;
+////		for (var j = 0; j < graphSet.length; j++) {
+////			graphSet[j].updateOptions( {
+////				dateWindow: range
+////			} );
+////		}
+//		graphSet[0].updateOptions( {
+//			dateWindow: null
+//		} );
+//	};
 	
 	var makeCalibrationMarks = function(markCount, graphHeightPx, graphDivName, labelDivName){
 		//graphCalSet=[];
@@ -357,10 +366,10 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	 * @param {Number} [height] Height (in pixels)
 	 */
 	var set12GraphSize = function(newWidth, newHeight){
-		for(i=0;i<12;i++){
+		for(var i=0;i<12;i++){
 			graphSet[i].resize(newWidth, newHeight);
 		}
-		for(i=0;i<3;i++){
+		for(var i=0;i<3;i++){
 			graphCalSet[i].resize(40, newHeight);
 		}
 	};
@@ -448,8 +457,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	    	var ext = getDataMinMaxMulti(gs);
 	    	var centerV = (ext.dataMax+ext.dataMin)/2;
 	    	
-			displayMinV2 = centerV-1000; // leave a 5% space at the bottom
-			displayMaxV2 = centerV+1000
+			displayMinV2 = centerV-2000; // same scale as default graph
+			displayMaxV2 = centerV+2000; // same scale as default graph
 	    	
 			graphSet[gs].updateOptions({
 				valueRange: [displayMinV2, displayMaxV2]
@@ -492,8 +501,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		}
     };
     
-    var dataFull = "";
-    var labelFull ="";
+    var dataFull = [];
+    var labelFull =[];
     /** Derived from the Dygraph method "Dygraph.prototype.parseCSV_(data)"
      * Also populates the "labelFull[]" array with the headers from the ecg CSV file.
      * The following is the documentation for Dygraphs:
@@ -516,10 +525,12 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
     var WAVEFORM_parseCSV = function(data, namespace) {
 //    	var ret = [];
     	//dataFull = ""; // clear data variable.
+    	namespaceGlobal = namespace;
+    	var startTimeParseCSV = (new Date).getTime();
     	dataFull = []; // clear data variable.
     	var lines = data.split("\n");
-    	var statusPrefix = "Loading ECG data ";
-    	var statusSuffix = " 0% complete";
+//    	var statusPrefix = "Loading ECG data ";
+//    	var statusSuffix = " 0% complete";
 //  	Use the default delimiter or fall back to a tab if that makes sense.
     	var delim = ',';
     	var start = 0;
@@ -569,6 +580,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 //    	var instruction = document.getElementById(instructionName);
 //    	instruction.innerHTML = "Done";
 
+    	debugPrintTime("ParseCSV", startTimeParseCSV);
+    	
     	return dataFull;
     };
     
@@ -655,14 +668,14 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		}
 	};	
 
-	var animatedChangeLayout = function(droplist, namespace){
-		var x=droplist.selectedIndex;
-		var optionList=droplist.options;
-		var newLayout = optionList[x];
-		var newLayoutElementName = namespace + ":" + optionList[x];
-		var newLayoutElement = document.getElementById(newLayoutElementName);
-		alert("Phenotype - name:" + newLayout.label + " value:" + newLayout.value);
-	};
+//	var animatedChangeLayout = function(droplist, namespace){
+//		var x=droplist.selectedIndex;
+//		var optionList=droplist.options;
+//		var newLayout = optionList[x];
+//		var newLayoutElementName = namespace + ":" + optionList[x];
+//		var newLayoutElement = document.getElementById(newLayoutElementName);
+//		alert("Phenotype - name:" + newLayout.label + " value:" + newLayout.value);
+//	};
 
 	var setGraphLabel = function(graphCount){		
 		for(var i=0;i<12;i++){
@@ -671,3 +684,472 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
         	title.innerHTML = saGraphTitleArray[i];
 		}
 	};
+	
+	var stretchToContentMulti = function(){
+		var extraSpaceForVScroll = 25; 
+		// lookup all the relevent widths
+		var contentArea = document.getElementById(namespaceGlobal + ":ecgGraphLayout");
+		var contentWidth = parseInt(contentArea.clientWidth) - extraSpaceForVScroll;  // removes the "px" at the end
+		
+		var graphContainer = document.getElementById(namespaceGlobal + ":Container_12LeadDivOutside");
+		var gcWidth = parseInt(graphContainer.clientWidth);  // removes the "px" at the end
+		
+		
+		var graphZero = document.getElementById(namespaceGlobal + ":graphDiv0");
+		var g0Width = parseInt(graphZero.clientWidth);  // removes the "px" at the end
+		var g0Height = parseInt(graphZero.clientHeight);  // removes the "px" at the end
+
+		var calZero = document.getElementById(namespaceGlobal + ":graphDivCal0");
+		var c0Width = parseInt(calZero.clientWidth);  // removes the "px" at the end
+		var c0Height = parseInt(calZero.clientHeight);  // removes the "px" at the end
+
+		// calculations
+		var nonGraphWidth =(gcWidth -(g0Width*4) - c0Width);
+		var AvailableGraphWidth = contentWidth - nonGraphWidth;
+		var zoomRatio = AvailableGraphWidth/(4*g0Width + c0Width); // Largest graph width : current graph width
+		
+		// Set graph sizes
+		resizeAllGraphs(g0Width*zoomRatio, g0Height*zoomRatio);
+		resizeAllCallibrations(c0Width*zoomRatio, c0Height*zoomRatio);
+		resizeAllSliders(g0Height*zoomRatio);
+		
+		var gcHeight = parseInt(graphContainer.clientHeight);  // uses the new height after graphs have been resized.
+		document.getElementById(namespaceGlobal + ":voltCenterALL").style.height = parseInt(gcHeight) + "px";
+	};
+	
+	// *************************************************************** test suite ******************************************************
+	var runTestSuite = function(){
+			
+	        var graphDurationMS = 1200;
+	        var graphWidthPx = 120;
+	        var graphHeightPx = 150;
+	        
+	        //************************************************************	        
+			var startTime10 = (new Date).getTime();
+				for(var i=0;i<10;i++){
+//					var startTimeCLear = (new Date).getTime();
+//					clearGraphs();
+//					debugPrintTime("Clearing Graphs", startTimeCLear);
+		
+					populate12Graphs(graphDurationMS, graphWidthPx, graphHeightPx, 
+								dataFull, namespaceGlobal);
+				}
+			debugPrintTime("Original *10 ", startTime10);
+			
+	        //************************************************************	        
+			var startTimeResize = (new Date).getTime();
+				resizeAllGraphs(graphWidthPx, graphHeightPx);
+			debugPrintTime("Resize all 12 ", startTimeResize);
+	        //************************************************************	        
+			var startTimeDelayOptions = (new Date).getTime();
+	
+				for(var i=0;i<10;i++){
+//					var startTimeCLear = (new Date).getTime();
+//					clearGraphs();
+//					debugPrintTime("Clearing Graphs", startTimeCLear);
+
+					populate12GraphsNoOptions(graphDurationMS, graphWidthPx, graphHeightPx, 
+								dataFull, namespaceGlobal);
+				}
+			debugPrintTime("12 Graphs minimal options *10 . . . ", startTimeDelayOptions);
+			
+			var startTimeDelayOptions = (new Date).getTime();
+				for(var i=0;i<10;i++){
+					setAllOptions(namespaceGlobal);
+				}
+			debugPrintTime("Set all options. *10", startTimeDelayOptions);
+	        //************************************************************	        
+			var startTimeResize = (new Date).getTime();
+				resizeAllGraphs(graphWidthPx, graphHeightPx);
+			debugPrintTime("Resize all 12 ", startTimeResize);
+			//************************************************************
+
+			
+			var startTimeEmpty10 = (new Date).getTime();
+				var singleDataColTest=[];
+				for(var samp=0; samp < 10 ;samp++){
+					var point = [];
+					fields = dataFull[samp];
+					point[0] = fields[0]; // column zero is time in milliseconds
+					point[1] = fields[1]; // column one is a single data column
+					singleDataColTest.push(point);
+				}
+				for(var i=0;i<10;i++){
+//					var startTimeCLear = (new Date).getTime();
+//					clearGraphs();
+//					debugPrintTime("Clearing Graphs", startTimeCLear);
+	
+					populate12GraphEmpty(graphDurationMS, graphWidthPx, graphHeightPx, singleDataColTest);
+				}
+			debugPrintTime("Empty   *10", startTimeEmpty10);
+			
+			//************************************************************
+			var startTimeSingle = (new Date).getTime();
+				for(var i=0;i<10;i++){
+//					var startTimeCLear = (new Date).getTime();
+//					clearGraphs();
+//					debugPrintTime("Clearing Graphs", startTimeCLear);
+					
+					populateOneGraph(graphDurationMS, graphWidthPx, graphHeightPx, 
+								dataFull, namespaceGlobal);
+				}
+			debugPrintTime("Single Graph *10", startTimeSingle);
+
+	        //************************************************************	        
+			var startTimeNoOptions = (new Date).getTime();
+	
+				for(var i=0;i<10;i++){
+//					var startTimeCLear = (new Date).getTime();
+//					clearGraphs();
+//					debugPrintTime("Clearing Graphs", startTimeCLear);
+
+					populate12GraphsNoOptions(graphDurationMS, graphWidthPx, graphHeightPx, 
+								dataFull, namespaceGlobal);
+				}
+			debugPrintTime("12 Graphs w/o options", startTimeNoOptions);
+			
+
+//	        //************************************************************	     
+			endDebugTable();
+			
+			return false;
+	};
+	
+	var debugRows;
+	var debugPrintTime = function(label, startTime){
+		var diffTime = (new Date).getTime() - startTime;
+
+		debugRows += "<tr><td>" + label + "</td><td align='right'>" + diffTime + " mSec</td></tr>";
+		//document.getElementById(namespaceGlobal + ":testSuite_div").innerHTML = document.getElementById(namespaceGlobal + ":testSuite_div").innerHTML + message;
+	};
+
+	var startDebugTable = function(){
+		debugRows="<table>";
+	};
+	var endDebugTable = function(){
+		document.getElementById(namespaceGlobal + ":testSuite_div").innerHTML = debugRows + "</table>";
+	};
+
+	var clearGraphs = function(){
+		// labelFull.length is one greater than the number of data columns 
+		// because it includes the Timestamp column label "msec"
+		
+		for(var col=0;col<(labelFull.length-1); col++){ 
+			var graphDivName = namespaceGlobal + ":" + graphDivPrefix + col;
+			var graphDiv = document.getElementById(graphDivName);
+			graphDiv.innerHTML = "GRAPH DELETED AS PART OF TEST.";
+		};
+		graphSet = null;
+		graphSet = [];
+	};
+	
+	
+
+	var populate12GraphEmpty = function(graphDurationMS, graphWidthPx, graphHeightPx, singleDataColTest){
+		
+		StartmSec = singleDataColTest[1][0];  // Starting time in the data, e.g. first point to display.
+//		var fields = [];
+		//var divTag = "";
+		var labelDivName ="";
+
+		leadDurationMS = graphDurationMS;
+		graphSet = null;
+		graphSet = [];
+		xLineSet = null;
+		xLineSet = [];
+		
+		// labelFull.length is one greater than the number of data columns 
+		// because it includes the Timestamp column label "msec"
+		for(var col=0;col<(labelFull.length-1); col++){ 
+			lineIdName   = namespaceGlobal + ":" + verticalXHairPrefix + col;
+			graphDivName = namespaceGlobal + ":" + graphDivPrefix + col;
+			labelDivName = namespaceGlobal + ":" + labelDivPrefix + col;
+			
+			var xLine = createXLine(lineIdName); // document.getElementById(lineIdName); // 
+			blockRedraw=true;
+
+			var labelSingle = null;
+			labelSingle=[];
+			labelSingle[0] = labelFull[0];
+			labelSingle[1] = labelFull[col+1] + " (TEST TWO)";
+
+			
+			//var cback = eval("CVRG_clickCallback"+ col);
+			graphSet.push(getGraphEmpty(labelFull[col+1],
+							col, 
+							graphDivName, 
+							labelDivName,
+							graphWidthPx, graphHeightPx,
+							singleDataColTest,
+							labelSingle));
+			document.getElementById(graphDivName).appendChild(xLine);
+			xLineSet[col] = xLine;
+		}
+		//blockRedraw=false;
+	};
+
+	var getGraphEmpty  = function (lead, 
+			leadNumber, 
+			graphDivName, 
+			labelDivName,
+			graphWidthPx, graphHeightPx, 
+			singleDataColTest,
+			labelSingle){
+		var graphDiv = document.getElementById(graphDivName);
+		var labelDiv = document.getElementById(labelDivName);
+
+		var vis = Array(12);
+		for(var i=0;i<12;i++){
+			vis[i] = ((i)==leadNumber);
+		}
+
+		var graph = new Dygraph(
+				graphDiv,
+				singleDataColTest,
+				{
+					clickCallback: function(e, x, points){
+						CVRG_clickCallCommon(leadNumber);
+					},
+					highlightCallback: CVRG_highlightCallbackAll,
+					unhighlightCallback: CVRG_unhighlightCallback,
+					drawCallback: WAVEFORM_drawCallback, //called every time the dygraph is drawn. 			
+					visibility: vis,
+					dateWindow: [ 0, leadDurationMS],
+					valueRange: [displayMinV, displayMaxV],
+					labels: labelSingle,
+					labelsDiv: labelDiv,
+					axes: { 
+						x: { 
+							valueFormatter: CVRG_xValueFormatter2,
+							axisLabelFormatter: CVRG_xAxisLabelFormatter2,
+							ticker: CVRG_xTickerMultiLead 
+						}, 
+						y: { 
+							valueFormatter: CVRG_yValueFormatter2,
+							axisLabelFormatter: CVRG_yAxisLabelFormatter2, 
+							ticker: CVRG_yTickerMultiLead 
+						} 
+					},
+					xAxisLabelWidth:0,
+					yAxisLabelWidth:0,
+					rollPeriod: 0,
+					showRoller: false,
+					errorBars: false,
+					stepPlot: true,
+					padding: {left: 0, right: 0, top: 0, bottom: 0},
+					axisLabelFontSize: 0,
+					gridLineColor: '#FF0000'
+				}
+		);
+		//graph.resize(graphWidthPx, graphHeightPx);
+		return graph;
+	};
+
+	//**************************************
+	var populateOneGraph = function(graphDurationMS, graphWidthPx, graphHeightPx, 
+			dataFull, namespace){
+
+		StartmSec = dataFull[1][0];  // Starting time in the data, e.g. first point to display.
+//		var fields = [];
+		var labelDivName ="";
+
+		leadDurationMS = graphDurationMS;
+		graphSet = null;
+		graphSet = [];
+		xLineSet = null;
+		xLineSet = [];
+
+//		labelFull.length is one greater than the number of data columns 
+//		because it includes the Timestamp column label "msec"
+		for(var col=0;col<1; col++){ 
+			lineIdName   = namespace + ":" + verticalXHairPrefix + col;
+			graphDivName = namespace + ":" + graphDivPrefix + col;
+			labelDivName = namespace + ":" + labelDivPrefix + col;
+
+			var xLine = createXLine(lineIdName); // document.getElementById(lineIdName); // 
+			blockRedraw=true;
+			graphSet.push(getGraphOne(labelFull[col+1],
+					col, 
+					graphDivName, 
+					labelDivName,
+					graphWidthPx, graphHeightPx));
+			document.getElementById(graphDivName).appendChild(xLine);
+			xLineSet[col] = xLine;
+		}
+	};
+
+	var getGraphOne  = function (lead, leadNumber, graphDivName, labelDivName,
+			graphWidthPx, graphHeightPx){
+		var graphDiv = document.getElementById(graphDivName);
+		var labelDiv = document.getElementById(labelDivName);
+
+		var vis = Array(12);
+		for(var i=0;i<12;i++){ // show all 12 leads
+			vis[i] = true;
+		}
+
+		var graph = new Dygraph(
+				graphDiv,
+				dataFull,
+				{
+					clickCallback: function(e, x, points){
+						CVRG_clickCallCommon(leadNumber);
+					},
+					highlightCallback: CVRG_highlightCallbackAll,
+					unhighlightCallback: CVRG_unhighlightCallback,
+					drawCallback: WAVEFORM_drawCallback, //called every time the dygraph is drawn. 			
+					visibility: vis,
+					dateWindow: [ 0, leadDurationMS],
+					valueRange: [displayMinV, displayMaxV],
+					labels: labelFull,
+					labelsDiv: labelDiv,
+					axes: { 
+						x: { 
+							valueFormatter: CVRG_xValueFormatter2,
+							axisLabelFormatter: CVRG_xAxisLabelFormatter2,
+							ticker: CVRG_xTickerMultiLead 
+						}, 
+						y: { 
+							valueFormatter: CVRG_yValueFormatter2,
+							axisLabelFormatter: CVRG_yAxisLabelFormatter2, 
+							ticker: CVRG_yTickerMultiLead 
+						} 
+					},
+					xAxisLabelWidth:0,
+					yAxisLabelWidth:0,
+					rollPeriod: 0,
+					showRoller: false,
+					errorBars: false,
+					stepPlot: true,
+					padding: {left: 0, right: 0, top: 0, bottom: 0},
+					axisLabelFontSize: 0,
+					gridLineColor: '#FF0000'
+				}
+		);
+		//graph.resize(graphWidthPx, graphHeightPx);
+		return graph;
+	};
+
+	//**************************************
+	var populate12GraphsNoOptions = function(graphDurationMS, graphWidthPx, graphHeightPx, 
+			dataFull, namespace){
+
+		StartmSec = dataFull[1][0];  // Starting time in the data, e.g. first point to display.
+//		var fields = [];
+		var labelDivName ="";
+
+		leadDurationMS = graphDurationMS;
+		graphSet = null;
+		graphSet = [];
+		xLineSet = null;
+		xLineSet = [];
+
+//		labelFull.length is one greater than the number of data columns 
+//		because it includes the Timestamp column label "msec"
+		for(var col=0;col<(labelFull.length-1); col++){ 
+			lineIdName   = namespace + ":" + verticalXHairPrefix + col;
+			graphDivName = namespace + ":" + graphDivPrefix + col;
+			labelDivName = namespace + ":" + labelDivPrefix + col;
+
+			var xLine = createXLine(lineIdName); // document.getElementById(lineIdName); // 
+			blockRedraw=true;
+			graphSet.push(getGraphNoOptions(labelFull[col+1],
+					col, 
+					graphDivName, 
+					labelDivName,
+					graphWidthPx, graphHeightPx));
+			document.getElementById(graphDivName).appendChild(xLine);
+			xLineSet[col] = xLine;
+		}
+	};
+	//*************************************************
+	var getGraphNoOptions  = function (lead, leadNumber, graphDivName, labelDivName,
+			graphWidthPx, graphHeightPx){
+		var graphDiv = document.getElementById(graphDivName);
+//		var labelDiv = document.getElementById(labelDivName);
+
+		var vis = Array(12);
+		for(var i=0;i<12;i++){ // show all 12 leads
+			vis[i] = ((i)==leadNumber);
+		}
+
+		var labelDivName = namespaceGlobal + ":" + labelDivPrefix + leadNumber;
+		var olabelDiv = document.getElementById(labelDivName);
+
+		var graph = new Dygraph(
+				graphDiv,
+				dataFull,
+				{			
+					labels: labelFull,
+					labelsDiv: olabelDiv,
+					visibility: vis,
+					dateWindow: [ 0, leadDurationMS],
+					valueRange: [displayMinV, displayMaxV]
+				}
+		);
+		//graph.resize(graphWidthPx, graphHeightPx);
+		return graph;
+	};
+	
+	var setAllOptions = function(namespace){
+		var opts = {
+			clickCallback: function(e, x, points){
+				CVRG_clickCallCommon(leadNumber);
+			},
+			highlightCallback: CVRG_highlightCallbackAll,
+			unhighlightCallback: CVRG_unhighlightCallback,
+			drawCallback: WAVEFORM_drawCallback, //called every time the dygraph is drawn. 			
+			axes: { 
+				x: { 
+					valueFormatter: CVRG_xValueFormatter2,
+					axisLabelFormatter: CVRG_xAxisLabelFormatter2,
+					ticker: CVRG_xTickerMultiLead 
+				}, 
+				y: { 
+					valueFormatter: CVRG_yValueFormatter2,
+					axisLabelFormatter: CVRG_yAxisLabelFormatter2, 
+					ticker: CVRG_yTickerMultiLead 
+				} 
+			},
+			xAxisLabelWidth:0,
+			yAxisLabelWidth:0,
+			rollPeriod: 0,
+			showRoller: false,
+			errorBars: false,
+			stepPlot: true,
+			padding: {left: 0, right: 0, top: 0, bottom: 0},
+			axisLabelFontSize: 0,
+			gridLineColor: '#FF0000'
+		};
+		
+		for(var gs=0;gs<graphSet.length;gs++){
+			var vis = Array(12);
+			for(var i=0;i<12;i++){
+				vis[i] = ((i)==gs);
+			}
+
+			graphSet[gs].updateOptions(opts);
+		}
+	};
+
+	/** Change the size of all graphs to the specified width & height. */
+	var resizeAllGraphs = function(graphWidthPx, graphHeightPx){
+		for(var gs=0;gs<graphSet.length;gs++){
+			graphSet[gs].resize(graphWidthPx, graphHeightPx);
+		}
+	};
+	
+	/** Change the size of all Calibration graphs to the specified width & height. */
+	var resizeAllCallibrations = function(graphWidthPx, graphHeightPx){
+		for(var gcs=0;gcs<graphCalSet.length;gcs++){
+			graphCalSet[gcs].resize(graphWidthPx, graphHeightPx);
+		}
+	};
+	
+	var resizeAllSliders = function(graphHeightPx){
+		for (var s=0;s<graphSet.length;s++){
+			var sliderName = namespaceGlobal + ":slider" + s;
+			var oSlider = document.getElementById(sliderName);
+			oSlider.style.height = parseInt(graphHeightPx) + "px";
+		}
+	}

@@ -1,5 +1,6 @@
 .Container_12LeadDivOutside {
-  border: 0px solid blue; }
+  border: 1px solid blue;
+  width: 300px; }
 
 .Container_12LeadDiv {
   border: 0px solid red; }
@@ -54,14 +55,10 @@
   text-align: right;
   height: 20px; }
 
-/* 
-.graph{
-    position:absolute;
-    left:0px;
-    top:20px;
-    right: 10px;
-    bottom: 0px;
-} */
+.graph {
+  height: 150px;
+  width: 120px; }
+
 .voltSlider {
   right: -3px;
   height: 100%; }

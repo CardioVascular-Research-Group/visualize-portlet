@@ -25,7 +25,9 @@ import edu.jhu.cvrg.waveform.model.StudyEntry;
 public class AnnotationUtility extends XMLUtility {
 
 	private AnnotationQueryBuilder annotationBuilder;
-
+	/** The flag which separates Definintions and Comments 
+	 * within the "value" node of an annotation in the database. */
+	private String DefCommSeparator= "[comment]";
 	/**
 	 * Default Constructor
 	 * 
@@ -196,7 +198,7 @@ public class AnnotationUtility extends XMLUtility {
 	
 
 	/**
-	 * Gets the annotation from the metadata storage database and puts it into
+	 * Gets the annotation(s) from the metadata storage database and puts it into
 	 * the an array of AnnotationData beans.
 	 * 
 	 * @param sUserID - ID of the Waveform user who is currently logged in.
@@ -431,6 +433,16 @@ public class AnnotationUtility extends XMLUtility {
 						} else if (xmlTag.equals("<value>")) {
 //							System.out.println("for annotation at index " + index 
 //									+ ", the value = " + xmlContent);
+							int commentIndex = xmlContent.indexOf(DefCommSeparator);
+							if(commentIndex!=(-1)){
+								// manually entered comment is after the "[comment]" flag.
+								theAnnotations[index].setComment(xmlContent.substring(commentIndex+DefCommSeparator.length()));
+								// Ontology definition is before the "[comment]" flag.
+								xmlContent = xmlContent.substring(0,commentIndex); 
+							}else{
+								theAnnotations[index].setComment("");
+							}
+//							System.out.println("Comment found at index: " + commentIndex + ", " + theAnnotations[index].getComment());
 							theAnnotations[index].setAnnotation(xmlContent);
 						} 
 					}
@@ -609,17 +621,14 @@ public class AnnotationUtility extends XMLUtility {
 			}
 			// *******
 		}
-		node += "  <value>" + annData.getAnnotation() + "</value>\n"; // Full
-																		// annotation
-																		// text,
-																		// can
-																		// also
-																		// be
-																		// used
-																		// as a
-																		// value
-																		// for
-																		// phenotypes
+		// Full annotation text, can also be used as a value for phenotypes
+		String valueText = annData.getAnnotation();
+		if(!annData.getComment().isEmpty()){
+			// manually entered comment is stored after the Full annotation text
+			//  and preceded by the "[comment]" flag in the value node.
+			valueText += DefCommSeparator + annData.getComment();
+		}
+		node += "  <value>" + valueText + "</value>\n"; 
 		if (!annData.getIsComment()) {
 			node += "  <measurementUnit>" + annData.getUnit()
 					+ "</measurementUnit>";

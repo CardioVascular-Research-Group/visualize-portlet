@@ -29,24 +29,23 @@
 				//var isSingleLead=false; // determines which graph refresh function to call after a pan or zoom.
 				var WF_minTime = 1, WF_maxTime = 5000;
 				function show12LeadData(minTime, maxTime, ECG) {
-					var namespace = '#{facesContext.externalContext.encodeNamespace('')}';
-					WF_minTime = minTime;
-					WF_maxTime = maxTime;
-					//dataFull = ""; // clear data variable.
-					//var $show12LeadDataVar = $("#show12LeadData"); // A) Used to Show the data arrive on the screen 
-					dataFull = WAVEFORM_parseCSV(ECG, namespace);
 					
-					// Turning on the Dygrahs Display
-					WAVEFORM_showGraphs(namespace);
-					WAVEFORM_zoomGraphX(minTime, maxTime); // Changes the dataWindow on all 12 leads.
-					// WAVEFORM_backfillDataArray(dataFull);
-					WAVEFORM_replaceDataArray(dataFull);
+					var startTimeNormal = (new Date).getTime();
+						var namespace = '#{facesContext.externalContext.encodeNamespace('')}';
+						WF_minTime = minTime;
+						WF_maxTime = maxTime;
+						dataFull = WAVEFORM_parseCSV(ECG, namespace);
+						
+						// Turning on the Dygrahs Display
+						WAVEFORM_showGraphs(namespace);
+						setGraphLabel(12);
+					debugPrintTime("show12LeadData ", startTimeNormal);
 				}
 		
 				// This function is kept on the .xhtml page, because it contains code specific to this layout. 
 	             var WAVEFORM_showGraphs = function(namespace){
 	                 //alert("running WAVEFORM_showGraphs() in panelDisplayLeads.xhtml data.length:" + dataFull.length);
-	                 var graphDurationMS = 2500;
+	                 var graphDurationMS = 1200;
 	                 var graphWidthPx = 250;
 	                 var graphHeightPx = 150;
 	                 var calibrationCount = 3;
@@ -55,6 +54,11 @@
 	         </script>
 		</f:verbatim>
 		<h:form>
+ 			<p:remoteCommand name="calledOnLoad"
+				oncomplete="show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);"
+				autoRun="true">
+			</p:remoteCommand>
+		
 			<p:remoteCommand name="viewSingleGraph2Param" 
 				action="#{visualizeGraphBacking.viewSingleGraph2}"/>
         </h:form>
@@ -71,22 +75,23 @@
 	
 					<h:panelGroup id="panelMultipleGraph" autoUpdate="true" >
 						<script>
-							var data = '#{visualizeGraphBacking.data}';
-							var dataJsonParse = JSON.parse(data);
-							show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
-							
-							var saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
-							var saGraphTitleArray = JSON.parse(saGraphTitle);
-							//alert("saGraphTitleArray[0]: " + saGraphTitleArray[0] + "  saGraphTitleArray[1]: " + saGraphTitleArray[1] );
+							startDebugTable();
+							var startTimeParseData = (new Date).getTime();
+								var data = '#{visualizeGraphBacking.data}';
+								var dataJsonParse = JSON.parse(data);
+								data = null;
+							debugPrintTime("JSON.parse(data) ", startTimeParseData);
+								//show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
+							var startTimeParseTitle = (new Date).getTime();
+								var saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
+								var saGraphTitleArray = JSON.parse(saGraphTitle);
+								//alert("saGraphTitleArray[0]: " + saGraphTitleArray[0] + "  saGraphTitleArray[1]: " + saGraphTitleArray[1] );
+							debugPrintTime("JSON.parse(saGraphTitle) ", startTimeParseTitle);
 						</script>
 
 						<ui:include src="include/12Lead_DIV.xhtml" />	
-
-						<script>
-							setGraphLabel(12);
-						</script>
 					</h:panelGroup>
-					
+					<h:panelGroup id="testSuite_div" layout="block"></h:panelGroup>
 				</p:layoutUnit>
 	
  				<p:layoutUnit id="viewChangeButtons" position="east" resizable="true" size="150"
@@ -106,7 +111,7 @@
 								type="button"
 								icon="ui-icon-arrowthick-2-n-s"
 								styleClass="navigationButton"
-								title="Center each graph, while using the standard voltage scale (+/- 2000uV)."
+								title="Center each graph on it's median, while using the standard voltage scale (+/- 2000uV)."
 								onclick="centerVoltageMulti();return false;"></p:button>
 								
 						<p:button id="voltCenterNScaleButtonMulti" 
@@ -114,7 +119,7 @@
 								type="button"
 								icon="ui-icon-arrowthick-2-n-s"
 								styleClass="navigationButton"
-								title="Center all graphs, stretching the voltage scale of each independently."
+								title="Center each graph on it's median, stretching the voltage scale of each independently."
 								onclick="centerScaleVoltageMulti();return false;"></p:button>
 								
 						<p:button id="voltResetButtonMulti" 
@@ -123,7 +128,22 @@
 								icon="ui-icon-circle-plus"
 								styleClass="navigationButton"
 								title="Reset all graphs to zero volts at the center, using the standard voltage scale (+/- 2000uV)"
-								onclick="setVoltageZoomMulti(-2000,2000);return false;"></p:button>										
+								onclick="setVoltageZoomMulti(-2000,2000);return false;"></p:button>		
+								
+						<p:button id="runTests" 
+								value="Run Test Suite" 
+								type="button"
+								styleClass="navigationButton"
+								title="Run a suite of tests, timing various ways of loading the 12 graphs."
+								onclick="runTestSuite();return false;"></p:button>		
+								
+						<p:button id="fillScreenTestButtonMulti" 
+								value="Fill Screen" 
+								type="button"
+								icon="ui-icon-circle-plus"
+								styleClass="navigationButton"
+								title="Stretch the graphs to fill the content area."
+								onclick="stretchToContentMulti();return false;"></p:button>		
 					</h:form>				
 				</p:layoutUnit>
 			</p:layout>
