@@ -7,31 +7,27 @@
 	xmlns:of="http://omnifaces.org/functions">
 	<h:body>
 		<style>
-			.title {
-				font-size: 12px; 
-				font-weight:bold;  
-				font-family:Calibri;
-			}
-			.dataValue {
-				font-size: 12px; 
-				font-weight:normal;
-				font-family:arial,sans-serif;
-			}
-		</style>
-	
-<!-- 		knalb tfel yllanoitnetni egap siht \_|_/ this page intentionally left blank  -->
+.title {
+	font-size: 12px;
+	font-weight: bold;
+	font-family: Calibri;
+}
+
+.dataValue {
+	font-size: 12px;
+	font-weight: normal;
+	font-family: arial, sans-serif;
+}
+</style>
+
+		<!-- 		knalb tfel yllanoitnetni egap siht \_|_/ this page intentionally left blank  -->
 		<h:form id="formManualAnnotation">
-			<p:remoteCommand name="lookupAnnotationParam"
-				partialSubmit="false"
+			<p:remoteCommand name="lookupAnnotationParam" partialSubmit="false"
 				action="#{annotationBacking.lookupDefinition}"
-				update="ontologyDefinition, ontologyTermName"  />
-		
-			<p:panelGrid id="AnnotationSetter" layout="block" 
-				columns="2" 
-				frame="none"
-				border="0" 
-				cellpadding="0" 
-				cellspacing="0" >
+				update="ontologyDefinition, ontologyTermName" />
+
+			<p:panelGrid id="AnnotationSetter" layout="block" columns="2"
+				frame="none" border="0" cellpadding="0" cellspacing="0">
 				<p:panel id="panelLeft" header="Bioportal"
 					style="background-color:#d0e4f6; padding:20 0; height:360px; width:370px">
 					<p:media player="flash" id="OntologyTree"
@@ -43,104 +39,91 @@
 					</p:media>
 				</p:panel>
 
-				<p:panel id="panelRight" header="Annotation" 
+				<p:panel id="panelRight" header="Annotation"
 					style="background-color:#d0e4f6; top:0; padding:0 0; height:360px; width:550px;">
- 					<h:panelGrid id="GraphClickData"
- 						columns="2" 
- 						frame="none"
- 						border="0" 
- 						cellpadding="0" 
- 						cellspacing="0" 
- 						styleClass="title" 
- 						style="background: whiteSmoke; vertical-align:text-top;"> 
-						<h:panelGrid id="ECG_Attributes"
-							columns="2" 
-							frame="none" 
+					<h:panelGrid id="GraphClickData" columns="2" frame="none"
+						border="0" cellpadding="0" cellspacing="0" styleClass="title"
+						style="background: whiteSmoke; vertical-align:text-top;">
+						<h:panelGrid id="ECG_Attributes" columns="2" frame="none"
 							style="background: whiteSmoke;">
-							<h:outputLabel value="Subject ID"/>
-							<h:outputLabel value="#{annotationBacking.studyEntry.recordName}" styleClass="dataValue"/>
-							
-							<h:outputLabel value="Lead"/>
-							<h:outputLabel value="#{annotationBacking.leadName}" styleClass="dataValue"/>
-							
-							<h:outputLabel value="Rate"/>
-							<h:outputLabel value="#{annotationBacking.studyEntry.samplingRate}Hz" styleClass="dataValue"/>
-							
-							<h:outputLabel value="Annotations"/>
-							<h:outputLabel value="#{annotationBacking.annotationCount}" styleClass="dataValue"/>
-						</h:panelGrid>
-											
-						<h:panelGrid id="SelectedPoints" 
-							columns="#{annotationBacking.singlePoint? '2' : '4'}" 
-							frame="none" 
-							cellpadding="0" 
-							cellspacing="0" 
-							styleClass="title"							
-							style="background: whiteSmoke; top:0; "> 
-							
-							<h:outputLabel value="" style="width:140px;"/>
-							<h:outputLabel value="Onset" styleClass="title" style="width:100px" />
-							<h:outputLabel value="Offset" styleClass="title" style="width:100px" rendered="#{!annotationBacking.singlePoint}"/>
-							<h:outputLabel value="Change" styleClass="title" style="width:100px" rendered="#{!annotationBacking.singlePoint}"/>
+							<h:outputLabel value="Subject ID" />
+							<h:outputLabel value="#{annotationBacking.studyEntry.recordName}"
+								styleClass="dataValue" />
 
-							<h:outputLabel value="Time(mSec)" styleClass="title"/>
+							<h:outputLabel value="Lead" />
+							<h:outputLabel value="#{annotationBacking.leadName}"
+								styleClass="dataValue" />
+
+							<h:outputLabel value="Rate" />
+							<h:outputLabel
+								value="#{annotationBacking.studyEntry.samplingRate}Hz"
+								styleClass="dataValue" />
+
+							<h:outputLabel value="Annotations" />
+							<h:outputLabel value="#{annotationBacking.annotationCount}"
+								styleClass="dataValue" />
+						</h:panelGrid>
+
+						<h:panelGrid id="SelectedPoints"
+							columns="#{annotationBacking.singlePoint? '2' : '4'}"
+							frame="none" cellpadding="0" cellspacing="0" styleClass="title"
+							style="background: whiteSmoke; top:0; ">
+
+							<h:outputLabel value="" style="width:140px;" />
+							<h:outputLabel value="Onset" styleClass="title"
+								style="width:100px" />
+							<h:outputLabel value="Offset" styleClass="title"
+								style="width:100px" rendered="#{!annotationBacking.singlePoint}" />
+							<h:outputLabel value="Change" styleClass="title"
+								style="width:100px" rendered="#{!annotationBacking.singlePoint}" />
+
+							<h:outputLabel value="Time(mSec)" styleClass="title" />
 							<h:panelGroup id="dataSYHolder2" layout="block">
-								<h:outputText id="dataSX" 
-									styleClass="dataValue"
-									value="#{annotationBacking.dataSX}"/>
+								<h:outputText id="dataSX" styleClass="dataValue"
+									value="#{annotationBacking.dataSX}" />
 							</h:panelGroup>
 							<h:panelGroup layout="block" id="dataEXHolder2"
 								class="dataSXPosition2Duration"
 								rendered="#{!annotationBacking.singlePoint}">
-								<h:outputText id="dataSXDuration" 
-									styleClass="dataValue"
+								<h:outputText id="dataSXDuration" styleClass="dataValue"
 									value="#{annotationBacking.dataOffsetX}" />
 							</h:panelGroup>
 							<h:panelGroup layout="block" id="dataEYHolder"
 								class="dataSXPosition2Duration"
 								rendered="#{!annotationBacking.singlePoint}">
-								<h:outputText id="dataSXDuration2" 
-									styleClass="dataValue"
+								<h:outputText id="dataSXDuration2" styleClass="dataValue"
 									value="#{annotationBacking.dataSXDuration}" />
-							</h:panelGroup>		
-		
-							<h:outputLabel
-								class="window-buttons dataSYPosition"
-								styleClass="title"
-								value="Amplitude(μV)" />
-							<h:panelGroup id="dataSXHolder2" layout="block" >
-								<h:outputText id="dataSY" 
-									styleClass="dataValue"
+							</h:panelGroup>
+
+							<h:outputLabel class="window-buttons dataSYPosition"
+								styleClass="title" value="Amplitude(μV)" />
+							<h:panelGroup id="dataSXHolder2" layout="block">
+								<h:outputText id="dataSY" styleClass="dataValue"
 									value="#{annotationBacking.dataSY}" />
 							</h:panelGroup>
-							<h:panelGroup id="dataSXHolderDuration"
-								layout="block" 
+							<h:panelGroup id="dataSXHolderDuration" layout="block"
 								rendered="#{!annotationBacking.singlePoint}">
-								<h:outputText id="dataSYDuration" 
-									styleClass="dataValue"
+								<h:outputText id="dataSYDuration" styleClass="dataValue"
 									value="#{annotationBacking.dataOffsetY}" />
-							</h:panelGroup>						
-							<h:panelGroup id="dataSXHolderDuration2"
-								layout="block" 
+							</h:panelGroup>
+							<h:panelGroup id="dataSXHolderDuration2" layout="block"
 								rendered="#{!annotationBacking.singlePoint}">
-								<h:outputText id="dataSYDuration2" 
-									styleClass="dataValue"
+								<h:outputText id="dataSYDuration2" styleClass="dataValue"
 									value="#{annotationBacking.dataSYDuration}" />
-							</h:panelGroup>		
-											
-							<h:outputLabel value="Adjust" styleClass="title"/>
-							<p:commandButton value="On"							
-								style="height:80%"
-								title="Fine tune the selected onset time."/>
+							</h:panelGroup>
+
+							<h:outputLabel value="Adjust" styleClass="title" />
+							<p:commandButton value="On" style="height:80%"
+								title="Fine tune the selected onset time." />
 							<p:commandButton value="Off"
 								title="Fine tune the selected Offset time."
-								rendered="#{!annotationBacking.singlePoint}"/>	
-						</h:panelGrid>	
- 					</h:panelGrid> 
+								rendered="#{!annotationBacking.singlePoint}" />
+						</h:panelGrid>
+					</h:panelGrid>
 
 
 
-					<h:panelGrid columns="2" 
+					<h:panelGrid columns="2"
 						style="background: whiteSmoke; border: 1px solid red; width:525px;">
 
 						<h:outputLabel for="nodeIDName" value="*" rendered="false" />
@@ -151,44 +134,36 @@
 						<h:outputLabel styleClass="title"
 							value="Find the term in the bioportal ontology tree." />
 
-						<h:outputLabel for="ontologyTermName"
-							styleClass="title" 
+						<h:outputLabel for="ontologyTermName" styleClass="title"
 							value="Term:" />
-						<h:outputText id="ontologyTermName"
-							styleClass="dataValue"
-							value="#{annotationBacking.termName}"
-							required="true" />
+						<h:outputText id="ontologyTermName" styleClass="dataValue"
+							value="#{annotationBacking.termName}" required="true" />
 
-						<h:outputLabel for="ontologyDefinition"
-							styleClass="title" 
+						<h:outputLabel for="ontologyDefinition" styleClass="title"
 							value="Definition" />
-						<h:outputText id="ontologyDefinition" 
-							styleClass="dataValue"
+						<h:outputText id="ontologyDefinition" styleClass="dataValue"
 							value="#{annotationBacking.fullAnnotation}" />
 
-						<h:outputLabel for="manualComment"
-							styleClass="title" 
+						<h:outputLabel for="manualComment" styleClass="title"
 							value="Comment" />
-						<h:inputTextarea id="manualComment" 
-							styleClass="dataValue"
-							rows="4"
-							style="border: 1px solid magenta;"
+						<h:inputTextarea id="manualComment" styleClass="dataValue"
+							rows="4" style="border: 1px solid blue;width:100%"
 							value="#{annotationBacking.comment}" />
 					</h:panelGrid>
 				</p:panel>
-				
-				<h:outputLabel value=""/>
+
+				<h:outputLabel value="" />
 				<h:panelGroup id="buttons" layout="block">
- 					<p:commandButton value="Save" 
- 						action="#{annotationBacking.viewSingleGraph}"
- 						actionListener="#{annotationBacking.saveAnnotationSetFlag}" 
- 						oncomplete="handleComplete(xhr, status, args)" /> 
+					<p:commandButton value="Save"
+						action="#{annotationBacking.viewSingleGraph}"
+						actionListener="#{annotationBacking.saveAnnotationSetFlag}"
+						oncomplete="handleComplete(xhr, status, args)" />
 
 					<p:commandButton value="Cancel"
-									action="#{annotationBacking.viewSingleGraph}"
-									title="Close manual annotation panel without saving."/>					
-				</h:panelGroup>				
+						action="#{annotationBacking.viewSingleGraph}"
+						title="Close manual annotation panel without saving." />
+				</h:panelGroup>
 			</p:panelGrid>
-		</h:form>		
+		</h:form>
 	</h:body>
 </f:view>

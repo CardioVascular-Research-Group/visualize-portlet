@@ -13,7 +13,7 @@
 		<header-portlet-javascript>/js/dygraph-combined.js</header-portlet-javascript>
 		<header-portlet-javascript>/js/clickCallbacks.js</header-portlet-javascript>
 		<header-portlet-javascript>/js/12Lead3.js</header-portlet-javascript>
-		<header-portlet-javascript>/js/singleLead.js</header-portlet-javascript> 
+		<header-portlet-javascript>/js/singleLead.js</header-portlet-javascript>
 		<header-portlet-javascript>/js/annotation.js</header-portlet-javascript>
 		<!-- footer includes -->
 		<footer-portlet-javascript>/js/formatting.js</footer-portlet-javascript>

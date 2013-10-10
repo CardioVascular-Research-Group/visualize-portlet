@@ -1,27 +1,28 @@
 <?xml version="1.0"?>
 
-<f:view
-	xmlns="http://www.w3.org/1999/xhtml"
+<f:view xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 	<h:head />
 	<h:body>
-		<f:event type="preRenderView" listener="#{visualizeGraphBacking.initialize}" />
+		<f:event type="preRenderView"
+			listener="#{visualizeGraphBacking.initialize}" />
 		<!-- START OF TOP include_viewContentLeads -->
 		<!-- MOVE TO CSS -->
 		<style>
-			.hoverShadow:hover {
-				border-radius: 5px;
-				box-shadow: 0 5px 10px rgba(80, 0, 0, .3);
-			}
-			.navigationButton{
-				width:120px;
-			}
-		</style>
+.hoverShadow:hover {
+	border-radius: 5px;
+	box-shadow: 0 5px 10px rgba(80, 0, 0, .3);
+}
+
+.navigationButton {
+	width: 120px;
+}
+</style>
 		<!-- MOVE TO CSS -->
-		
+
 		<f:verbatim>
 			<script>
 				//var OmniFaces=OmniFaces;
@@ -53,100 +54,85 @@
 	             }
 	         </script>
 		</f:verbatim>
-		<h:form>
- 			<p:remoteCommand name="calledOnLoad"
-				oncomplete="show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);"
-				autoRun="true">
-			</p:remoteCommand>
-		
-			<p:remoteCommand name="viewSingleGraph2Param" 
-				action="#{visualizeGraphBacking.viewSingleGraph2}"/>
-        </h:form>
+
+
 		<h:panelGroup layout="block" styleClass="backgroundofContent">
-			<p:layout id="graphView"
-				style=" min-height:710px; height:720px; top:20px">
-				<p:layoutUnit id="ecgGraphLayout" 
-								position="center"
-								style="min-width:400px; 
-									min-height:700px; 
-									width:90%; 
-									background-color:#fdf6e3; 
-									margin:1px auto;">
-	
-					<h:panelGroup id="panelMultipleGraph" autoUpdate="true" >
-						<script>
-							startDebugTable();
-							var startTimeParseData = (new Date).getTime();
-								var data = '#{visualizeGraphBacking.data}';
-								var dataJsonParse = JSON.parse(data);
-								data = null;
-							debugPrintTime("JSON.parse(data) ", startTimeParseData);
-								//show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
-							var startTimeParseTitle = (new Date).getTime();
-								var saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
-								var saGraphTitleArray = JSON.parse(saGraphTitle);
-								//alert("saGraphTitleArray[0]: " + saGraphTitleArray[0] + "  saGraphTitleArray[1]: " + saGraphTitleArray[1] );
-							debugPrintTime("JSON.parse(saGraphTitle) ", startTimeParseTitle);
-						</script>
+				<p:layout id="graphView"
+					style=" min-height:710px; height:720px; top:20px">
+					<p:layoutUnit id="ecgGraphLayout" position="center"
+						style="min-width:400px; 
+										min-height:700px; 
+										width:90%; 
+										background-color:#fdf6e3; 
+										margin:1px auto;">
 
-						<ui:include src="include/12Lead_DIV.xhtml" />	
-					</h:panelGroup>
-					<h:panelGroup id="testSuite_div" layout="block"></h:panelGroup>
-				</p:layoutUnit>
-	
- 				<p:layoutUnit id="viewChangeButtons" position="east" resizable="true" size="150"
-					minSize="50" maxSize="550">
+						<h:panelGroup id="panelMultipleGraph" autoUpdate="true">
+							<script>
+								startDebugTable();
+								var startTimeParseData = (new Date).getTime();
+									var data = '#{visualizeGraphBacking.data}';
+									var dataJsonParse = JSON.parse(data);
+									data = null;
+								debugPrintTime("JSON.parse(data) ", startTimeParseData);
+									//show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
+								var startTimeParseTitle = (new Date).getTime();
+									var saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
+									var saGraphTitleArray = JSON.parse(saGraphTitle);
+									//alert("saGraphTitleArray[0]: " + saGraphTitleArray[0] + "  saGraphTitleArray[1]: " + saGraphTitleArray[1] );
+								debugPrintTime("JSON.parse(saGraphTitle) ", startTimeParseTitle);
+							</script>
 
-					<h:form>
-						<p:commandButton id="returnToList" 
-								value="View ECG List"
-								action="#{visualizeGraphBacking.viewSelectionTree}"
-								ajax="true"
-								icon="ui-icon-document"
-								styleClass="navigationButton"
-								title="View the ECG selection tree."/>
-										
-						<p:button id="voltCenterButtonMulti" 
-								value="center" 
-								type="button"
-								icon="ui-icon-arrowthick-2-n-s"
-								styleClass="navigationButton"
+							<ui:include src="include/12Lead_DIV.xhtml" />
+						</h:panelGroup>
+						<h:panelGroup id="testSuite_div" layout="block"></h:panelGroup>
+					</p:layoutUnit>
+
+					<p:layoutUnit id="viewChangeButtons" position="east"
+						resizable="true" size="150" minSize="50" maxSize="550">
+						<h:form>
+							<p:remoteCommand name="calledOnLoad"
+								oncomplete="show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);"
+								autoRun="true">
+							</p:remoteCommand>
+					
+							<p:remoteCommand name="viewSingleGraph2Param"
+								action="#{visualizeGraphBacking.viewSingleGraph2}" />
+	
+							<p:commandButton id="returnToList" value="View ECG List"
+								action="#{visualizeGraphBacking.viewSelectionTree}" ajax="true"
+								icon="ui-icon-document" styleClass="navigationButton"
+								title="View the ECG selection tree." />
+	
+							<p:button id="voltCenterButtonMulti" value="center" type="button"
+								icon="ui-icon-arrowthick-2-n-s" styleClass="navigationButton"
 								title="Center each graph on it's median, while using the standard voltage scale (+/- 2000uV)."
 								onclick="centerVoltageMulti();return false;"></p:button>
-								
-						<p:button id="voltCenterNScaleButtonMulti" 
-								value="center and scale" 
-								type="button"
-								icon="ui-icon-arrowthick-2-n-s"
-								styleClass="navigationButton"
+	
+							<p:button id="voltCenterNScaleButtonMulti"
+								value="center and scale" type="button"
+								icon="ui-icon-arrowthick-2-n-s" styleClass="navigationButton"
 								title="Center each graph on it's median, stretching the voltage scale of each independently."
 								onclick="centerScaleVoltageMulti();return false;"></p:button>
-								
-						<p:button id="voltResetButtonMulti" 
-								value="reset" 
-								type="button"
-								icon="ui-icon-circle-plus"
-								styleClass="navigationButton"
+	
+							<p:button id="voltResetButtonMulti" value="reset" type="button"
+								icon="ui-icon-circle-plus" styleClass="navigationButton"
 								title="Reset all graphs to zero volts at the center, using the standard voltage scale (+/- 2000uV)"
-								onclick="setVoltageZoomMulti(-2000,2000);return false;"></p:button>		
-								
-						<p:button id="runTests" 
-								value="Run Test Suite" 
-								type="button"
+								onclick="setVoltageZoomMulti(-2000,2000);return false;"></p:button>
+	
+							<p:button id="runTests" value="Run Test Suite" type="button"
 								styleClass="navigationButton"
 								title="Run a suite of tests, timing various ways of loading the 12 graphs."
-								onclick="runTestSuite();return false;"></p:button>		
-								
-						<p:button id="fillScreenTestButtonMulti" 
-								value="Fill Screen" 
-								type="button"
-								icon="ui-icon-circle-plus"
+								onclick="runTestSuite();return false;"></p:button>
+	
+							<p:button id="fillScreenTestButtonMulti" value="Fill Screen"
+								type="button" icon="ui-icon-circle-plus"
 								styleClass="navigationButton"
 								title="Stretch the graphs to fill the content area."
-								onclick="stretchToContentMulti();return false;"></p:button>		
-					</h:form>				
-				</p:layoutUnit>
-			</p:layout>
+								onclick="stretchToContentMulti();return false;"></p:button>
+							<!-- 						<ui:include src="include/includePanZoom.xhtml" />								 -->
+						</h:form>
+					</p:layoutUnit>
+				</p:layout>
 		</h:panelGroup>
 	</h:body>
 </f:view>

@@ -1,11 +1,8 @@
 <?xml version="1.0"?>
 
-<taglib
-	version="2.0"
-	xmlns="http://java.sun.com/xml/ns/j2ee"
+<taglib version="2.0" xmlns="http://java.sun.com/xml/ns/j2ee"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
->
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd">
 	<tlib-version>1.0</tlib-version>
 	<short-name>liferay-ui</short-name>
 	<uri>http://liferay.com/tld/ui</uri>
@@ -89,7 +86,7 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
-	 <tag>
+	<tag>
 		<name>asset-links</name>
 		<tag-class>com.liferay.taglib.ui.AssetLinksTag</tag-class>
 		<body-content>JSP</body-content>
@@ -2821,9 +2818,7 @@
 		<name>tabs</name>
 		<tag-class>com.liferay.taglib.ui.TabsTag</tag-class>
 		<body-content>JSP</body-content>
-		<!--
-		values is a reserved property, so we have to use tabsValues intead
-		-->
+		<!-- values is a reserved property, so we have to use tabsValues intead -->
 		<attribute>
 			<name>backLabel</name>
 			<required>false</required>

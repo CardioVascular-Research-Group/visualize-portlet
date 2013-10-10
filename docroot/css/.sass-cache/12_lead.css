@@ -1,9 +1,11 @@
 .Container_12LeadDivOutside {
-  border: 1px solid blue;
-  width: 300px; }
+	border: 0px solid blue;
+	width: 300px;
+}
 
 .Container_12LeadDiv {
-  border: 0px solid red; }
+	border: 0px solid red;
+}
 
 /*
 .centered {
@@ -39,35 +41,42 @@
 #ContainerDiv11{left:780px;top:350px;}
 */
 .voltCenterAllLead {
-  width: 10px;
-  height: 100%; }
+	width: 10px;
+	height: 100%;
+}
 
 .ui-slider {
-  border-radius: 10px 10px 10px 10px; }
+	border-radius: 10px 10px 10px 10px;
+}
 
 /********* ECG ContainerDiv and children ********/
 .ecgContainer {
-  border: 1px solid black;
-  margin: 0 auto;
-  padding: 0 auto; }
+	border: 1px solid black;
+	margin: 0 auto;
+	padding: 0 auto;
+}
 
 .label {
-  text-align: right;
-  height: 20px; }
+	text-align: right;
+	height: 20px;
+}
 
 .graph {
-  height: 150px;
-  width: 120px; }
+	height: 150px;
+	width: 120px;
+}
 
 .voltSlider {
-  right: -3px;
-  height: 100%; }
+	right: -3px;
+	height: 100%;
+}
 
 /********* calibration ContainerDiv and children ********/
 .calContainer {
-  border: 1px solid black;
-  margin: 0 auto;
-  padding: 0 auto; }
+	border: 1px solid black;
+	margin: 0 auto;
+	padding: 0 auto;
+}
 
 /* 
 .titleCal{
@@ -78,8 +87,9 @@
 }
 */
 .labelCal {
-  text-align: right;
-  height: 20px; }
+	text-align: right;
+	height: 20px;
+}
 
 /*
 .ylabelCal2{
@@ -137,19 +147,12 @@
     z-index:1001;
     clear: right;
 }
-
-
+*/
 .dragPanelPanZoom {
-    top: 44px;
-	height: 65px;
-    width: 200px; 
-	float:right;
-    padding-right:10px;
-    z-index:1002;
-    overflow: hidden;
-    clear: right;
+	width: 116px;
 }
 
+/*
 .instruction12Lead{
 	position:absolute;   
 	top: 5px;
@@ -168,4 +171,3 @@
 	backgroundColor: "blue";
 }
  */
-

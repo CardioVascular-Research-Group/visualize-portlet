@@ -1,6 +1,6 @@
 
 <ui:composition lang="en" xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -15,7 +15,7 @@
 }
 </style>
 	<!-- MOVE TO CSS -->
-	
+
 	<f:verbatim>
 		<script>
 			//var OmniFaces=OmniFaces;
@@ -52,16 +52,16 @@
 	<h:panelGroup layout="block" styleClass="backgroundofContent">
 		<p:layout id="graphView"
 			style=" min-height:710px; height:720px; top:20px">
-			<p:layoutUnit id="ecgGraphLayout" 
-							position="center"
-							style="min-width:400px; 
+			<p:layoutUnit id="ecgGraphLayout" position="center"
+				style="min-width:400px; 
 								min-height:700px; 
 								width:90%; 
 								background-color:#fdf6e3; 
 								margin:1px auto;">
-				<ui:fragment id="panelMultipleGraph" autoUpdate="true" rendered="#{visualizeBacking.graphMultipleVisible}">
+				<ui:fragment id="panelMultipleGraph" autoUpdate="true"
+					rendered="#{visualizeBacking.graphMultipleVisible}">
 					<!-- <h:outputText value="namespace=#{facesContext.externalContext.encodeNamespace('')}" /> -->
-					<ui:include src="12Lead_DIV.xhtml" />					
+					<ui:include src="12Lead_DIV.xhtml" />
 					<script>
 						var data = '#{visualizeBacking.data}';
 						var dataJsonParse = JSON.parse(data);
@@ -69,13 +69,14 @@
 					</script>
 				</ui:fragment>
 
-				<ui:fragment id="panelSingleGraph" autoUpdate="true" rendered="#{visualizeBacking.graphVisible}">
-			    	<ui:include src="singleLeadFragment.xhtml" />
-				</ui:fragment>						
+				<ui:fragment id="panelSingleGraph" autoUpdate="true"
+					rendered="#{visualizeBacking.graphVisible}">
+					<ui:include src="singleLeadFragment.xhtml" />
+				</ui:fragment>
 			</p:layoutUnit>
 
-			<p:layoutUnit id="viewChangeButtons" position="east" resizable="true" size="150"
-				minSize="50" maxSize="550">
+			<p:layoutUnit id="viewChangeButtons" position="east" resizable="true"
+				size="150" minSize="50" maxSize="550">
 				<ui:include src="include/viewChangeButtons.xhtml" />
 			</p:layoutUnit>
 		</p:layout>

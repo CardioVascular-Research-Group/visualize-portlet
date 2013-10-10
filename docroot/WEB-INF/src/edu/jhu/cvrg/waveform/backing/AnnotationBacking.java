@@ -223,6 +223,7 @@ public class AnnotationBacking implements Serializable {
 		setSinglePoint(retrievedAnnotation.getIsSinglePoint());
 		setTermName(retrievedAnnotation.getConceptLabel());
 		setFullAnnotation(retrievedAnnotation.getAnnotation());
+		setComment(retrievedAnnotation.getComment());
 		
 //		System.out.println("+++ AnnotationBacking.java, viewCurrentAnnotation() passedDataOnsetX: " + passedDataOnsetX + " passedDataSY: " + passedDataOnsetY + " +++ ");
 		return "viewE_Annotate";

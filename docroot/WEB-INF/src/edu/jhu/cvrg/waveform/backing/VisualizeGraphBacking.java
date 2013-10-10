@@ -71,9 +71,9 @@ public class VisualizeGraphBacking implements Serializable {
 	private FileTree fileTree;
 	private boolean selectVisible = true, graphVisible = false, graphMultipleVisible=false;
 	private int iCurrentVisualizationOffset=0; // 12 lead displays always start at zero seconds (0 ms).
-	private int iVisualizationWidthMS = 2500;
-	private int iDurationMilliSeconds = 2500; // 2.5 second of data is needed for rhythm strip(s) at the bottom of the page. 
-	private int iGraphWidthPixels = 2500; //width of the longest graph which will use this data. Sets the maximum amount of data compression allowable.
+	private int iVisualizationWidthMS = 1200;
+	private int iDurationMilliSeconds = 1200; // 1.2 second of data 
+	private int iGraphWidthPixels = 1200; //width of the longest graph which will use this data. Sets the maximum amount of data compression allowable.
 	private String[] saGraphTitle= {"I","II","III","aVR","aVL","aVF","V1","V2","V3","V4","V5","V6","VX","VY","VZ"}; // default values, should be replaced by the this.setGraphTitle() method, though usually the values are the same.
 	private JSONObject dataJson;
 

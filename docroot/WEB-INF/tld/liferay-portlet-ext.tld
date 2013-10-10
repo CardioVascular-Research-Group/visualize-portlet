@@ -7,31 +7,18 @@
 	<short-name>liferay-portlet</short-name>
 	<uri>http://liferay.com/tld/portlet</uri>
 
-	<!--
-	liferay-portlet:actionURL is similar to portlet:actionURL except it has the
-	additional attributes plid, portletName, anchor, and encrypt.
-
-	Set varImpl to set the PortletURL object. This gives you an object reference
-	to the underlying URL implementation.
-
-	Set plid to the plid of another layout. This allows you to post the URL to
-	another layout.
-
-	Set portletName to the name of a portlet other than the current portlet.
-	This allows you to post the URL to another portlet.
-
-	Set anchor to false if you do not want the page to refresh and anchor to the
-	current portlet.
-
-	Set encrypt to true if you want to encrypt all the parameter values.
-
-	Set doAsUserId to process this URL as if it is accessed by the specified
-	user.
-
-	Set portletConfiguration to true if you want to pass the parameters needed
-	when you are accessing a portlet that is wrapped by the Portlet
-	Configuration portlet.
-	-->
+	<!-- liferay-portlet:actionURL is similar to portlet:actionURL except it 
+		has the additional attributes plid, portletName, anchor, and encrypt. Set 
+		varImpl to set the PortletURL object. This gives you an object reference 
+		to the underlying URL implementation. Set plid to the plid of another layout. 
+		This allows you to post the URL to another layout. Set portletName to the 
+		name of a portlet other than the current portlet. This allows you to post 
+		the URL to another portlet. Set anchor to false if you do not want the page 
+		to refresh and anchor to the current portlet. Set encrypt to true if you 
+		want to encrypt all the parameter values. Set doAsUserId to process this 
+		URL as if it is accessed by the specified user. Set portletConfiguration 
+		to true if you want to pass the parameters needed when you are accessing 
+		a portlet that is wrapped by the Portlet Configuration portlet. -->
 
 	<tag>
 		<name>actionURL</name>
@@ -245,31 +232,18 @@
 		</attribute>
 	</tag>
 
-	<!--
-	liferay-portlet:renderURL is similar to portlet:renderURL except it has the
-	additional attributes plid, portletName, anchor, and encrypt.
-
-	Set varImpl to set the PortletURL object. This gives you an object reference
-	to the underlying URL implementation.
-
-	Set plid to the plid of another layout. This allows you to post the URL to
-	another layout.
-
-	Set portletName to the name of a portlet other than the current portlet.
-	This allows you to post the URL to another portlet.
-
-	Set anchor to false if you do not want the page to refresh and anchor to the
-	current portlet.
-
-	Set encrypt to true if you want to encrypt all the parameter values.
-
-	Set doAsUserId to process this URL as if it is accessed by the specified
-	user.
-
-	Set portletConfiguration to true if you want to pass the parameters needed
-	when you are accessing a portlet that is wrapped by the Portlet
-	Configuration portlet.
-	-->
+	<!-- liferay-portlet:renderURL is similar to portlet:renderURL except it 
+		has the additional attributes plid, portletName, anchor, and encrypt. Set 
+		varImpl to set the PortletURL object. This gives you an object reference 
+		to the underlying URL implementation. Set plid to the plid of another layout. 
+		This allows you to post the URL to another layout. Set portletName to the 
+		name of a portlet other than the current portlet. This allows you to post 
+		the URL to another portlet. Set anchor to false if you do not want the page 
+		to refresh and anchor to the current portlet. Set encrypt to true if you 
+		want to encrypt all the parameter values. Set doAsUserId to process this 
+		URL as if it is accessed by the specified user. Set portletConfiguration 
+		to true if you want to pass the parameters needed when you are accessing 
+		a portlet that is wrapped by the Portlet Configuration portlet. -->
 
 	<tag>
 		<name>renderURL</name>
@@ -368,31 +342,18 @@
 		</attribute>
 	</tag>
 
-	<!--
-	liferay-portlet:resourceURL is similar to portlet:resourceURL except it has
-	the additional attributes plid, portletName, anchor, and encrypt.
-
-	Set varImpl to set the PortletURL object. This gives you an object reference
-	to the underlying URL implementation.
-
-	Set plid to the plid of another layout. This allows you to post the URL to
-	another layout.
-
-	Set portletName to the name of a portlet other than the current portlet.
-	This allows you to post the URL to another portlet.
-
-	Set anchor to false if you do not want the page to refresh and anchor to the
-	current portlet.
-
-	Set encrypt to true if you want to encrypt all the parameter values.
-
-	Set doAsUserId to process this URL as if it is accessed by the specified
-	user.
-
-	Set portletConfiguration to true if you want to pass the parameters needed
-	when you are accessing a portlet that is wrapped by the Portlet
-	Configuration portlet.
-	-->
+	<!-- liferay-portlet:resourceURL is similar to portlet:resourceURL except 
+		it has the additional attributes plid, portletName, anchor, and encrypt. 
+		Set varImpl to set the PortletURL object. This gives you an object reference 
+		to the underlying URL implementation. Set plid to the plid of another layout. 
+		This allows you to post the URL to another layout. Set portletName to the 
+		name of a portlet other than the current portlet. This allows you to post 
+		the URL to another portlet. Set anchor to false if you do not want the page 
+		to refresh and anchor to the current portlet. Set encrypt to true if you 
+		want to encrypt all the parameter values. Set doAsUserId to process this 
+		URL as if it is accessed by the specified user. Set portletConfiguration 
+		to true if you want to pass the parameters needed when you are accessing 
+		a portlet that is wrapped by the Portlet Configuration portlet. -->
 
 	<tag>
 		<name>resourceURL</name>
