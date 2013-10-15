@@ -52,6 +52,62 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	 // V4  // 
 	 // V5  // 
 	 // V6  // 
+	
+	var WF_minTime = 1, WF_maxTime = 5000;
+	var dataJsonParse=[];
+	var data =[];
+	var saGraphTitle = [];
+	var saGraphTitleArray=[];
+	
+	function show12LeadData(minTime, maxTime, ECG) {
+		//alert("running show12LeadData()");
+		var startTimeNormal = (new Date).getTime();
+//			var namespace = '#{facesContext.externalContext.encodeNamespace('')}';
+			var namespace = "n/a";
+			WF_minTime = minTime;
+			WF_maxTime = maxTime;
+			dataFull = WAVEFORM_parseCSV(ECG, namespace);
+			
+			// Turning on the Dygrahs Display
+			WAVEFORM_showGraphs(namespace);
+			setGraphLabel(12);
+		debugPrintTime("show12LeadData ", startTimeNormal);
+	};
+
+	// This function is kept on the .xhtml page, because it contains code specific to this layout. 
+     var WAVEFORM_showGraphs = function(namespace){
+         //alert("running WAVEFORM_showGraphs() in panelDisplayLeads.xhtml data.length:" + dataFull.length);
+         var graphDurationMS = 1200;
+         var graphWidthPx = 250;
+         var graphHeightPx = 150;
+         var calibrationCount = 3;
+         populateGraphsCalibrations(graphDurationMS, graphWidthPx, graphHeightPx, dataFull, namespace, calibrationCount);
+     };
+	
+	var parseJSONdata = function(){					
+		var startTimeParseData = (new Date).getTime();
+//			var data = '#{visualizeGraphBacking.data}';
+			dataJsonParse = JSON.parse(data);
+	//		data = null;
+		debugPrintTime("JSON.parse(data) ", startTimeParseData);
+		
+		alert("dataJsonParse.minTime, dataJsonParse.maxTime: " + dataJsonParse.minTime + ", " + dataJsonParse.maxTime);
+			//show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
+		var startTimeParseTitle = (new Date).getTime();
+//			var saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
+			saGraphTitleArray = JSON.parse(saGraphTitle);
+//			alert("saGraphTitleArray[0]: " + saGraphTitleArray[0] + "  saGraphTitleArray[1]: " + saGraphTitleArray[1] );
+		debugPrintTime("JSON.parse(saGraphTitle) ", startTimeParseTitle);
+	};
+
+	var renderData =  function(){
+//		saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
+	//  alert("saGraphTitle: " + saGraphTitle);
+		startDebugTable();
+		parseJSONdata();
+		show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
+		endDebugTable();
+	};
 
     /** Event handler for when the mouse is over any graph. 
 	 * this callback gets called every time a new point is highlighted.
@@ -77,7 +133,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 				for(var lab=0;lab<labelFull.length;lab++){
 					if(ptsName == labelFull[lab]){
 						lineID = namespaceGlobal + ":" + verticalXHairPrefix +  (lab-1);
-					}
+					};
 				}
 
 				// don't show the line on the graph the mouse is over.
@@ -85,16 +141,16 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 					xLineTemp.style.width = "0px";
 				}else{  
 					xLineTemp.style.width = "3px";
-				}
-			}
-		}
+				};
+			};
+		};
 	};
 
 
 	var CVRG_unhighlightCallback = function(e) {
 		for (var xL = 0; xL < xLineSet.length; xL++) {
 			xLineSet[xL].style.display = "none";
-		}
+		};
 	};
 
 	
@@ -163,7 +219,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	 */
 	var populateGraphsCalibrations = function(graphDurationMS, graphWidthPx, graphHeightPx, 
 											dataFull, namespace, calibrationCount){
-		namespaceGlobal = namespace;
+//		namespaceGlobal = namespace;
 		
 	var startTime1 = (new Date).getTime();
 		populate12Graphs(graphDurationMS, graphWidthPx, graphHeightPx, 
@@ -251,7 +307,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 				unhighlightCallback: CVRG_unhighlightCallback,
 				drawCallback: WAVEFORM_drawCallback, //called every time the dygraph is drawn. 			
 				visibility: vis,
-				dateWindow: [ 0, leadDurationMS],
+				dateWindow: [ WF_minTime, WF_maxTime],
 				valueRange: [displayMinV, displayMaxV],
 				labels: labelFull,
 				labelsDiv: labelDiv,
@@ -501,6 +557,11 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		}
     };
     
+    var resetMultiGraphDimensions = function(){
+    	setVoltageZoomMulti(displayMinV, displayMaxV);
+		resizeMultiGraphParts(120, 150, 40, 150);
+    };
+    
     var dataFull = [];
     var labelFull =[];
     /** Derived from the Dygraph method "Dygraph.prototype.parseCSV_(data)"
@@ -525,7 +586,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
     var WAVEFORM_parseCSV = function(data, namespace) {
 //    	var ret = [];
     	//dataFull = ""; // clear data variable.
-    	namespaceGlobal = namespace;
+//    	namespaceGlobal = namespace;
     	var startTimeParseCSV = (new Date).getTime();
     	dataFull = []; // clear data variable.
     	var lines = data.split("\n");
@@ -709,13 +770,27 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		var zoomRatio = AvailableGraphWidth/(4*g0Width + c0Width); // Largest graph width : current graph width
 		
 		// Set graph sizes
-		resizeAllGraphs(g0Width*zoomRatio, g0Height*zoomRatio);
-		resizeAllCallibrations(c0Width*zoomRatio, c0Height*zoomRatio);
-		resizeAllSliders(g0Height*zoomRatio);
+		resizeMultiGraphParts(g0Width*zoomRatio, g0Height*zoomRatio, c0Width*zoomRatio, c0Height*zoomRatio);
 		
-		var gcHeight = parseInt(graphContainer.clientHeight);  // uses the new height after graphs have been resized.
+//		resizeAllGraphs(g0Width*zoomRatio, g0Height*zoomRatio);
+//		resizeAllCallibrations(c0Width*zoomRatio, c0Height*zoomRatio);
+//		resizeAllSliders(g0Height*zoomRatio);
+//		
+//		var gcHeight = parseInt(graphContainer.clientHeight);  // uses the new height after graphs have been resized.
+//		document.getElementById(namespaceGlobal + ":voltCenterALL").style.height = parseInt(gcHeight) + "px";
+	};
+	
+	var resizeMultiGraphParts = function (graphWidth, graphHeight, calWidth, calHeight){
+		// Set graph sizes
+		resizeAllGraphs(graphWidth, graphHeight);
+		resizeAllCallibrations(calWidth, calHeight);
+		resizeAllSliders(graphHeight);
+		
+		// uses the new graph container's height after graphs have been resized.
+		var gcHeight = parseInt(document.getElementById(namespaceGlobal + ":Container_12LeadDivOutside").clientHeight); 
 		document.getElementById(namespaceGlobal + ":voltCenterALL").style.height = parseInt(gcHeight) + "px";
 	};
+	
 	
 	// *************************************************************** test suite ******************************************************
 	var runTestSuite = function(){
@@ -1152,4 +1227,4 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 			var oSlider = document.getElementById(sliderName);
 			oSlider.style.height = parseInt(graphHeightPx) + "px";
 		}
-	}
+	};

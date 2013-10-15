@@ -28,7 +28,7 @@
 	var CVRG_sSecondSuffix = "Sec";
 	var CVRG_sampleRate = 1000; // samples per second, used to decide at which zoom level to draw dots
 	var CVRG_isIE=false;
-	var namespaceLocal = namespaceGlobal;
+//	var namespaceLocal = namespaceGlobal;
 	
 	var testJSNI = function(){
 		alert('Testing JSNI with an alert box annotation.js');

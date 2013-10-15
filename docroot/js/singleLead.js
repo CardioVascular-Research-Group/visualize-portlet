@@ -23,19 +23,19 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 //CVRG_sSecondSuffix = sSecondSuffix;
 //CVRG_timeLabelPrefix = timeLabelPrefix; 
 
-	var WAVEFORM_getSingleLeadData = function(leadNum2, dataFull2, labelsFull2){
+	var WAVEFORM_getSingleLeadData = function(leadNum2){
 		var singleDataCol = [];
 		var fields = [];
 		
-		labelSingle[0] = labelsFull2[0];
-		labelSingle[1] = labelsFull2[leadNum2+1];
+		labelSingle[0] = labelFull[0];
+		labelSingle[1] = labelFull[leadNum2+1];
 		labelSingle[2] = "";
 		
-		var minTime = dataFull2[0][0];
+		var minTime = dataFull[0][0];
 		
 //		var point = [];
-//		point[0] = labelsFull2[0];
-//		point[1] = labelsFull2[leadNum2+1];
+//		point[0] = labelFull[0];
+//		point[1] = labelFull[leadNum2+1];
 //		point[2] = ""; 
 //		singleDataCol.push(point);
 	
@@ -55,10 +55,10 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 			singleDataCol.push(point);
 		}
 		
-		for(var samp=0; samp < dataFull2.length ;samp++){
+		for(var samp=0; samp < dataFull.length ;samp++){
 			var point = [];
 		
-			fields = dataFull2[samp];
+			fields = dataFull[samp];
 			point[0] = fields[0]; // column zero is time in milliseconds
 			point[1] = fields[leadNum2+1]; // add 1 because column zero is time
 			point[2] = null;
@@ -80,7 +80,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 //		alert("running CVRG_drawECGgraphSingle("+ singleLeadNamespace + ":" + divName +")");
 //		if(drawECGCallCount == 0){
 //			drawECGCallCount++;
-			dataSingle = WAVEFORM_getSingleLeadData(CVRG_getLeadNum(), dataFull, labelFull);
+			dataSingle = WAVEFORM_getSingleLeadData(CVRG_getLeadNum());
 			ecg_graph = new Dygraph( 
 					WAVEFORM_getElementById(divName),
 					dataSingle,
@@ -137,7 +137,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 			);
 		//}
 		var newWidth = 700; 
-		var newHeight= 400;
+		var newHeight= 700;
 		ecg_graph.resize(newWidth, newHeight);
 		CVRG_setLabels(displayMinV2, displayMaxV2, yLabel);
 		CVRG_InitHorizontalLines(1, divName, singleLeadNamespace);

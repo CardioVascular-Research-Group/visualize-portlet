@@ -71,11 +71,12 @@ public class VisualizeGraphBacking implements Serializable {
 	private FileTree fileTree;
 	private boolean selectVisible = true, graphVisible = false, graphMultipleVisible=false;
 	private int iCurrentVisualizationOffset=0; // 12 lead displays always start at zero seconds (0 ms).
+	private String newMilliSec;
 	private int iVisualizationWidthMS = 1200;
 	private int iDurationMilliSeconds = 1200; // 1.2 second of data 
 	private int iGraphWidthPixels = 1200; //width of the longest graph which will use this data. Sets the maximum amount of data compression allowable.
 	private String[] saGraphTitle= {"I","II","III","aVR","aVL","aVF","V1","V2","V3","V4","V5","V6","VX","VY","VZ"}; // default values, should be replaced by the this.setGraphTitle() method, though usually the values are the same.
-	private JSONObject dataJson;
+	private JSONObject dataJson = null;
 
 
 	private User userModel;
@@ -84,8 +85,10 @@ public class VisualizeGraphBacking implements Serializable {
     	System.out.println("*************** VisualizeGraphBacking.java, initialize() **********************");
     	System.out.println("*************** selected record:" + visualizeSharedBacking.getSharedStudyEntry().getRecordName() + " in file:" + visualizeSharedBacking.getSharedStudyEntry().getDataFile());
 
-		userModel = ResourceUtility.getCurrentUser();
-		view12LeadsGraph();
+    	if(dataJson == null){
+			userModel = ResourceUtility.getCurrentUser();
+			view12LeadsGraph();
+    	}
 //		if(selectVisible) {
 //			fileTree = new FileTree();
 //			fileTree.initialize(userModel.getScreenName());
@@ -155,11 +158,20 @@ public class VisualizeGraphBacking implements Serializable {
      * 
      */
     public String view12LeadsGraph(){
-    	System.out.println("+++ VisualizeGraphBacking.java, view12LeadsGraph() +++ ");
-    	System.out.println("+ graphVisible = " + isGraphVisible());
-    	System.out.println("+ graphMultipleVisible = " + isGraphMultipleVisible());
-//    	setVisibleFragment(2); // show 12 lead graph page fragment.
-    	generic12leadOnloadCallback();
+    	System.out.println("+ VisualizeGraphBacking.java, view12LeadsGraph() +++ ");
+//    	System.out.println("++ graphVisible = " + isGraphVisible());
+//    	System.out.println("++ graphMultipleVisible = " + isGraphMultipleVisible());
+//    	generic12leadOnloadCallback();
+    	
+		if(visualizeSharedBacking.getSharedStudyEntry() != null){
+			int iaAnnCount[][] = fetchAnnotationArray();			
+//			panZeroSec();
+			iCurrentVisualizationOffset = 0;	
+			int iLeadCount = fetchDisplayData();
+			setGraphTitle(iaAnnCount, iLeadCount);
+		}
+    	System.out.println("+ Exiting view12LeadsGraph() +++ ");
+
 		return "viewB_Display12Leads.xhtml";
     }
 
@@ -264,7 +276,15 @@ public class VisualizeGraphBacking implements Serializable {
 	 */
 	public void setCurrentVisualizationOffset(int currentVisualizationOffset) {
 		//this.currentVisualizationOffset = currentVisualizationOffset;
-		g12leadPanToTime(currentVisualizationOffset);
+		panToTime(currentVisualizationOffset);
+	}
+
+	public String getNewMilliSec() {
+		return newMilliSec;
+	}
+
+	public void setNewMilliSec(String newMilliSec) {
+		this.newMilliSec = newMilliSec;
 	}
 
 	public int getVisualizationWidthMS() {
@@ -301,73 +321,111 @@ public class VisualizeGraphBacking implements Serializable {
 	 * 
 	 * @param event
 	 */
-	public void generic12leadOnloadCallback() {
-		System.out.println("-Entering function generic12leadOnCallback graphedStudyEntry:" + visualizeSharedBacking.getSharedStudyEntry().getRecordName());
-		if(visualizeSharedBacking.getSharedStudyEntry() != null){
-//			AnnotationUtility annUtil = new AnnotationUtility(com.liferay.util.portlet.PortletProps.get("dbUser"),
-//					com.liferay.util.portlet.PortletProps.get("dbPassword"), 
-//					com.liferay.util.portlet.PortletProps.get("dbURI"),	
-//					com.liferay.util.portlet.PortletProps.get("dbDriver"), 
-//					com.liferay.util.portlet.PortletProps.get("dbMainDatabase"));
-//			int iaAnnCount[][] = annUtil.getAnnotationCountPerLead(userModel.getScreenName(), 
-//					selectedStudyObject.getStudy(),
-//					selectedStudyObject.getSubjectID(),
-//					selectedStudyObject.getRecordName());
-	
-			int iaAnnCount[][] = fetchAnnotationArray();			
-//			g12leadPanZeroSec();
-			iCurrentVisualizationOffset = 0;	
-			int iLeadCount = fetchDisplayData();
-			setGraphTitle(iaAnnCount, iLeadCount);
-
-		}
-		System.out.println("Exiting function generic12leadOnCallback");
-//		}else{
-//		    FacesContext msgs = FacesContext.getCurrentInstance();  
-//		    msgs.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Study not found.", "The selected study was not found or else no study was selected."));
-//
+//	public void generic12leadOnloadCallback() {
+//		System.out.println("-Entering function generic12leadOnCallback graphedStudyEntry:" + visualizeSharedBacking.getSharedStudyEntry().getRecordName());
+//		if(visualizeSharedBacking.getSharedStudyEntry() != null){
+//			int iaAnnCount[][] = fetchAnnotationArray();			
+////			panZeroSec();
+//			iCurrentVisualizationOffset = 0;	
+//			int iLeadCount = fetchDisplayData();
+//			setGraphTitle(iaAnnCount, iLeadCount);
 //		}
-	}
+//		System.out.println("Exiting function generic12leadOnCallback");
+//	}
 	
-	
+	/** Creates the titles for the multi-lead graphs.
+	 * 
+	 * @param iaAnnCount
+	 * @param iLeadCount
+	 */
 	public void setGraphTitle(int[][] iaAnnCount, int iLeadCount){
-		System.out.println("Entering function setGraphTitle()");
+		System.out.print("--- Entering function setGraphTitle()");
 		ServerUtility util = new ServerUtility(false);
 //		int iLeadCount = iaAnnCount.length;
 		saGraphTitle = new String[iLeadCount+1];
 		for(int[] iaACnt: iaAnnCount){
 			String sName = util.guessLeadName(iaACnt[0]-1, iLeadCount);
-			saGraphTitle[iaACnt[0]-1] = sName + " (" +  iaACnt[1] + " annotations)";
+			if(iaACnt[1] == 0){
+				saGraphTitle[iaACnt[0]-1] = sName; // don't mention count when there are zero annotations
+			}else{
+				saGraphTitle[iaACnt[0]-1] = sName + " (" +  iaACnt[1] + " annotations)";
+			}
+			System.out.print(iaACnt[0]-1 + ":" + iaACnt[1] + ",");
 		}		
+		System.out.println("--- Exiting function setGraphTitle()");
 	}
 	
-	public void g12leadPanZeroSec() {
-		System.out.println("--Entering function g12leadPanZeroSec()");
+	public void panZeroSec() {
+		System.out.println("--Entering function panZeroSec()");
 		iCurrentVisualizationOffset = 0;	
 		fetchDisplayData();
-		System.out.println("--Exiting function g12leadPanZeroSec()");
+		System.out.println("--Exiting function panZeroSec()");
 	}
-	public void g12leadPanRight() {
-		System.out.println("Entering function g12leadPanRight");
+	public void panRight() {
+		System.out.println("--Entering function panRight");
 		iCurrentVisualizationOffset += iVisualizationWidthMS;	
 		fetchDisplayData();
+		System.out.println("--Exiting function panRight");
 	}
-	public void g12leadPanLeft() {
-		System.out.println("Entering function g12leadPanLeft");
+	public void panLeft() {
+		System.out.println("--Entering function panLeft");
 		iCurrentVisualizationOffset -= iVisualizationWidthMS;	
 		fetchDisplayData();
-
+		System.out.println("--Exiting function panLeft");
 	}
-	public void g12leadPanEnd() {
-		System.out.println("Entering function g12leadPanRight");
+	public void panEnd() {
+		System.out.println("--Entering function panRight");
 		int msInFullECG = visualizeSharedBacking.getSharedStudyEntry().getMsecDuration();  //(int)((NumPts/sampRate)*1000.0); // number of milliseconds in full ECG file. 
 		int lastDataOffset = msInFullECG - iVisualizationWidthMS + 1; // one graph width before the end of the data.
 		iCurrentVisualizationOffset = lastDataOffset; 
 		fetchDisplayData();
+		System.out.println("--Exiting function panRight");
 	}
 
-	public void g12leadPanToTime(int iStartPoint) {
-		System.out.println("Entering function g12leadPanToTime");
+	public void panToMilliSec(){
+		System.out.println("-Entering function panToMilliSec, newMilliSec: \"" + getNewMilliSec() + "\"");
+		int iStartPoint = parseToMilliSec(getNewMilliSec());
+		if(iStartPoint ==-1){
+			System.err.println("Unable to parse requested new time: \""+ getNewMilliSec() + "\"");
+		}else{
+			if(iStartPoint <= visualizeSharedBacking.getSharedStudyEntry().getMsecDuration()){
+				panToTime(iStartPoint);
+			}else{
+				String msg = iStartPoint + " is too large, this ECG contains " + (visualizeSharedBacking.getSharedStudyEntry().getMsecDuration()/1000.0) + " seconds";
+				System.err.println(msg);
+			}
+		}
+		System.out.println("-Exiting function panToMilliSec");
+	}
+	
+	private int parseToMilliSec(String sNewMilliSec){
+		int newScrollTimeMS=-1;
+		Double newTime = 0.0;
+		String sSec2="";
+		boolean success =  false;
+		try{
+			newTime = Double.parseDouble(sNewMilliSec);
+			success = true;
+		}catch (NumberFormatException e){ // try to change it from "A.AAA x 10^BB" format to "A.AAAeBB" 
+			String expr = "\\s*[xX\\*]\\s*10\\s*\\^\\s*";
+			sSec2 = sNewMilliSec.replaceAll(expr, "e");
+			try{
+				newTime = Double.parseDouble(sSec2);
+			}catch (NumberFormatException e2){
+				String msg = "\"" + sNewMilliSec + "\" is not a recongnizable number. Please enter seconds in one of the following formats, \"123.45\", \"1.2345e2\" or \"1.2345 x 10^2\" ";
+			    FacesContext fcMsg = FacesContext.getCurrentInstance();  
+			    fcMsg.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Pan to Time.", msg));
+			}
+			success = true;
+		}
+		if(success){
+			newScrollTimeMS = (int) (newTime*1000);
+		}
+		return newScrollTimeMS;
+	}
+	
+	public void panToTime(int iStartPoint) {
+		System.out.println("--Entering function panToTime, iStartPoint:" + iStartPoint);
 		int msInFullECG = visualizeSharedBacking.getSharedStudyEntry().getMsecDuration();  //(int)((NumPts/sampRate)*1000.0); // number of milliseconds in full ECG file. 
 		int lastDataOffset = msInFullECG - iVisualizationWidthMS + 1; // one graph width before the end of the data.
 		if(iStartPoint>lastDataOffset) {// don't allow view frame to pan past the end of the data.
@@ -375,6 +433,7 @@ public class VisualizeGraphBacking implements Serializable {
 		}
 		iCurrentVisualizationOffset = iStartPoint; 
 		fetchDisplayData();
+		System.out.println("--Exiting function panToTime");
 	}
 
 	
@@ -383,6 +442,7 @@ public class VisualizeGraphBacking implements Serializable {
 		iGraphWidthPixels = 2500;
 		fetchDisplayData();
 //		iGraphWidthPixels = 250;
+		System.out.println("Exiting function g12leadLoadHiRez");
 	}
 	
 	/** Fetch an array of all annotations on this ECG.
@@ -390,7 +450,7 @@ public class VisualizeGraphBacking implements Serializable {
 	 * @return
 	 */
 	private int[][] fetchAnnotationArray(){
-		System.out.println("---fetchAnnotationArray()----");
+		System.out.println("--- fetchAnnotationArray()----");
 		int iaAnnCount[][] = null;
 		if(visualizeSharedBacking.getSharedStudyEntry() != null){
 			AnnotationUtility annUtil = new AnnotationUtility(com.liferay.util.portlet.PortletProps.get("dbUser"),
@@ -398,23 +458,24 @@ public class VisualizeGraphBacking implements Serializable {
 					com.liferay.util.portlet.PortletProps.get("dbURI"),	
 					com.liferay.util.portlet.PortletProps.get("dbDriver"), 
 					com.liferay.util.portlet.PortletProps.get("dbMainDatabase"));
-			System.out.println("----AnnotationUtility using URI: " + annUtil.getURI());
+//			System.out.println("----AnnotationUtility using URI: " + annUtil.getURI());
 			
 			userModel = ResourceUtility.getCurrentUser();
 			String SN = userModel.getScreenName();
-			System.out.println("----userModel.getScreenName(): " + SN);
+//			System.out.println("----userModel.getScreenName(): " + SN);
 			String St = visualizeSharedBacking.getSharedStudyEntry().getStudy();
-			System.out.println("----visualizeSharedBacking.getSharedStudyEntry().getStudy(): " + St);
+//			System.out.println("----visualizeSharedBacking.getSharedStudyEntry().getStudy(): " + St);
 			String SID = visualizeSharedBacking.getSharedStudyEntry().getSubjectID();
-			System.out.println("----visualizeSharedBacking.getSharedStudyEntry().getSubjectID(): " + SID);
+//			System.out.println("----visualizeSharedBacking.getSharedStudyEntry().getSubjectID(): " + SID);
 			String RN = visualizeSharedBacking.getSharedStudyEntry().getRecordName();
-			System.out.println("----visualizeSharedBacking.getSharedStudyEntry().getRecordName(): " + RN);
+//			System.out.println("----visualizeSharedBacking.getSharedStudyEntry().getRecordName(): " + RN);
 			
 			iaAnnCount = annUtil.getAnnotationCountPerLead(SN, St, SID, RN);
 		}else{
-			System.err.println("---fetchAnnotationArray() SharedStudyEntry now found.");
+			System.err.println("--- fetchAnnotationArray() SharedStudyEntry not found.");
 		}
-		System.out.println("--- annotations count, 1st lead: " + iaAnnCount[0][1]);
+//		System.out.println("--- annotations count, 1st lead: " + iaAnnCount[0][1]);
+		System.out.println("--- exiting fetchAnnotationArray()");
 		return iaAnnCount;
 	}
 
@@ -422,23 +483,17 @@ public class VisualizeGraphBacking implements Serializable {
 	 * @return - lead count
 	 */
 	private int fetchDisplayData(){
-		System.out.println("--- fetchDisplayData() with iCurrentVisualizationOffset:" + iCurrentVisualizationOffset);
+		System.out.println("--- fetchDisplayData() with iCurrentVisualizationOffset:" + iCurrentVisualizationOffset + " and iDurationMilliSeconds:" + iDurationMilliSeconds);
 		boolean verbose = false;
-
-		String userID="";
-		String subjectID ="";
-		String[] saFileNameList;
 		boolean bTestPattern = false; // this will cause it to return 3 sine waves, and ignore all the other inputs.
-
-		VisualizationManager visMan = new VisualizationManager(verbose);		
-		userID = userModel.getScreenName();
-		subjectID = visualizeSharedBacking.getSharedStudyEntry().getSubjectID();
-		saFileNameList = visualizeSharedBacking.getSharedStudyEntry().getAllFilenames();
-	    		
+		String userID = userModel.getScreenName();
+		String subjectID = visualizeSharedBacking.getSharedStudyEntry().getSubjectID();
+		String[] saFileNameList = visualizeSharedBacking.getSharedStudyEntry().getAllFilenames();
 		long fileSize = visualizeSharedBacking.getSharedStudyEntry().getFileSize(); 
-		// These variables are probably fine with these values.
 
+		//fetch data and print elapsed time.
 		long startTime = System.currentTimeMillis();
+		VisualizationManager visMan = new VisualizationManager(verbose);		
 		VisualizationData VisData = visMan.fetchSubjectVisualizationData(userID, subjectID, saFileNameList, fileSize, 
 				iCurrentVisualizationOffset, iDurationMilliSeconds, iGraphWidthPixels, bTestPattern);
 		long estimatedTime = System.currentTimeMillis() - startTime;
@@ -447,8 +502,8 @@ public class VisualizeGraphBacking implements Serializable {
 		//	Check to see is the The Web Service is returning Data for the User Display.
 	    if (VisData == null) {
 		    FacesContext msgs = FacesContext.getCurrentInstance();  
-		    msgs.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "The Web Service.", "reports failure!"));
-		    System.out.println("--- get12leadOnloadCallback WARNING: The WebService failed! ");
+		    msgs.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "The ECG lookup Web Service.", "reports failure!"));
+		    System.out.println("--- get12leadOnloadCallback WARNING: The  ECG lookup WebService failed! ");
 	    } else { 
 			String dataForJavaScript = VisData.getECGDataSingleString();
 			dataForJavaScript = dataForJavaScript.replace("\n", "\\n");

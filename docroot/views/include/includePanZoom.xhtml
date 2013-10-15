@@ -2,24 +2,68 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
+	<p:panel id="ecgDataHidden">
+		<script>
+			alert("updating panel: ecgDataHidden");
+			data = '#{visualizeGraphBacking.data}';
+			saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
+			//renderData();
+		</script>
+	</p:panel>
+	
 	<p:panel id="dragPanelPanZoom" header="Data Frame"
 		styleClass="dragPanelPanZoom clearfix hoverShadow ">
-		<p:commandButton icon="ui-icon-seek-first" style="font-size: 8pt;"
-			value="First" title="Move to Beginning" alt="Move to Beginning"
-			update="panelMultipleGraph"
-			actionListener="#{visualizeGraphBacking.g12leadPanZeroSec}" />
-		<p:commandButton icon="ui-icon-seek-end" style="font-size: 8pt;"
-			value="Last" title="Move to End" alt="Move to End"
-			update="panelMultipleGraph"
-			actionListener="#{visualizeGraphBacking.g12leadPanEnd}" />
-		<p:commandButton icon="ui-icon-seek-prev" style="font-size: 8pt;"
-			value="Back" title="Move Back" alt="Move Back"
-			update="panelMultipleGraph"
-			actionListener="#{visualizeGraphBacking.g12leadPanLeft}" />
-		<p:commandButton icon="ui-icon-seek-next" style="font-size: 8pt;"
-			value="Next" title="Move Forward" alt="Move Forward"
-			update="panelMultipleGraph"
-			actionListener="#{visualizeGraphBacking.g12leadPanRight}" />
+		<p:commandButton id="moveToBegin" 
+			icon="ui-icon-seek-first" 
+			style="font-size: 8pt;"
+			value="First" 
+			title="Move to Beginning" 
+			alt="Move to Beginning"
+			update=":#{p:component('ecgDataHidden')}" 
+			oncomplete="renderData();"
+			actionListener="#{visualizeGraphBacking.panZeroSec}" />
+		<p:commandButton id="moveToLast" 
+			icon="ui-icon-seek-end" 
+			style="font-size: 8pt;"
+			value="Last" 
+			title="Move to End" 
+			alt="Move to End"
+			update=":#{p:component('ecgDataHidden')}" 
+			oncomplete="renderData();"
+			actionListener="#{visualizeGraphBacking.panEnd}" />
+		<p:commandButton id="moveBack"
+			icon="ui-icon-seek-prev" 
+			style="font-size: 8pt;"
+			value="Back" 
+			title="Move Back" 
+			alt="Move Back"
+			update=":#{p:component('ecgDataHidden')}" 
+			oncomplete="renderData();"
+			actionListener="#{visualizeGraphBacking.panLeft}" />
+		<p:commandButton  id="moveNext"
+			icon="ui-icon-seek-next" 
+			style="font-size: 8pt;"
+			value="Next" 
+			title="Move Forward" 
+			alt="Move Forward"
+			update=":#{p:component('ecgDataHidden')}" 
+			oncomplete="renderData();"
+			actionListener="#{visualizeGraphBacking.panRight}" />
+			
+		<p:inputText id="newMilliSec" 
+			size="10"
+			onkeypress="if (event.keyCode == 13) { $('.myButton').click(); return false; }"
+			value="#{visualizeGraphBacking.newMilliSec}"  />			
+		<p:commandButton  id="jumpTo"
+			icon="ui-icon-seek-next" 
+			style="font-size: 8pt;"
+			value="Jump to time (Seconds)" 
+			title="Jump directly to the time entered above." 
+			alt="Jump directly to the time entered above."
+			update=":#{p:component('ecgDataHidden')}" 
+			oncomplete="renderData();"
+			actionListener="#{visualizeGraphBacking.panToMilliSec}" />
+
 	</p:panel>
 	<!--
  	<p:draggable for="dragPanelPanZoom" handle=".ui-panel-titlebar" />

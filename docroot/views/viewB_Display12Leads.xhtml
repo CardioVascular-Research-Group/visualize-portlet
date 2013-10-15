@@ -7,91 +7,53 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 	<h:head />
 	<h:body>
+	
 		<f:event type="preRenderView"
 			listener="#{visualizeGraphBacking.initialize}" />
 		<!-- START OF TOP include_viewContentLeads -->
 		<!-- MOVE TO CSS -->
 		<style>
-.hoverShadow:hover {
-	border-radius: 5px;
-	box-shadow: 0 5px 10px rgba(80, 0, 0, .3);
-}
-
-.navigationButton {
-	width: 120px;
-}
-</style>
+			.hoverShadow:hover {
+				border-radius: 5px;
+				box-shadow: 0 5px 10px rgba(80, 0, 0, .3);
+			}
+			
+			.navigationButton {
+				width: 120px;
+			}
+		</style>
 		<!-- MOVE TO CSS -->
 
-		<f:verbatim>
-			<script>
-				//var OmniFaces=OmniFaces;
-				//var dataFull;
-				//var isSingleLead=false; // determines which graph refresh function to call after a pan or zoom.
-				var WF_minTime = 1, WF_maxTime = 5000;
-				function show12LeadData(minTime, maxTime, ECG) {
-					
-					var startTimeNormal = (new Date).getTime();
-						var namespace = '#{facesContext.externalContext.encodeNamespace('')}';
-						WF_minTime = minTime;
-						WF_maxTime = maxTime;
-						dataFull = WAVEFORM_parseCSV(ECG, namespace);
-						
-						// Turning on the Dygrahs Display
-						WAVEFORM_showGraphs(namespace);
-						setGraphLabel(12);
-					debugPrintTime("show12LeadData ", startTimeNormal);
-				}
-		
-				// This function is kept on the .xhtml page, because it contains code specific to this layout. 
-	             var WAVEFORM_showGraphs = function(namespace){
-	                 //alert("running WAVEFORM_showGraphs() in panelDisplayLeads.xhtml data.length:" + dataFull.length);
-	                 var graphDurationMS = 1200;
-	                 var graphWidthPx = 250;
-	                 var graphHeightPx = 150;
-	                 var calibrationCount = 3;
-	                 populateGraphsCalibrations(graphDurationMS, graphWidthPx, graphHeightPx, dataFull, namespace, calibrationCount)
-	             }
-	         </script>
-		</f:verbatim>
 
 
 		<h:panelGroup layout="block" styleClass="backgroundofContent">
-				<p:layout id="graphView"
+				<p:layout id="graphView" 
 					style=" min-height:710px; height:720px; top:20px">
-					<p:layoutUnit id="ecgGraphLayout" position="center"
+					<p:layoutUnit id="ecgGraphLayout" 
+						position="center"
 						style="min-width:400px; 
-										min-height:700px; 
-										width:90%; 
-										background-color:#fdf6e3; 
-										margin:1px auto;">
-
+								min-height:700px; 
+								width:90%; 
+								background-color:#fdf6e3; 
+								margin:1px auto;">
 						<h:panelGroup id="panelMultipleGraph" autoUpdate="true">
 							<script>
-								startDebugTable();
-								var startTimeParseData = (new Date).getTime();
-									var data = '#{visualizeGraphBacking.data}';
-									var dataJsonParse = JSON.parse(data);
-									data = null;
-								debugPrintTime("JSON.parse(data) ", startTimeParseData);
-									//show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
-								var startTimeParseTitle = (new Date).getTime();
-									var saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
-									var saGraphTitleArray = JSON.parse(saGraphTitle);
-									//alert("saGraphTitleArray[0]: " + saGraphTitleArray[0] + "  saGraphTitleArray[1]: " + saGraphTitleArray[1] );
-								debugPrintTime("JSON.parse(saGraphTitle) ", startTimeParseTitle);
+								namespaceGlobal ='#{facesContext.externalContext.encodeNamespace('')}';
 							</script>
-
 							<ui:include src="include/12Lead_DIV.xhtml" />
 						</h:panelGroup>
 						<h:panelGroup id="testSuite_div" layout="block"></h:panelGroup>
 					</p:layoutUnit>
 
-					<p:layoutUnit id="viewChangeButtons" position="east"
-						resizable="true" size="150" minSize="50" maxSize="550">
-						<h:form>
+					<p:layoutUnit id="viewChangeButtons" 
+						position="east"
+						resizable="true" 
+						size="130" 
+						minSize="50" 
+						maxSize="550">
+						<h:form id="multiLeadForm">
 							<p:remoteCommand name="calledOnLoad"
-								oncomplete="show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);"
+								oncomplete="renderData();"
 								autoRun="true">
 							</p:remoteCommand>
 					
@@ -116,8 +78,8 @@
 	
 							<p:button id="voltResetButtonMulti" value="reset" type="button"
 								icon="ui-icon-circle-plus" styleClass="navigationButton"
-								title="Reset all graphs to zero volts at the center, using the standard voltage scale (+/- 2000uV)"
-								onclick="setVoltageZoomMulti(-2000,2000);return false;"></p:button>
+								title="Reset all graphs to zero volts at the center, using the standard voltage scale (+/- 2000uV) and reset graph size."
+								onclick="resetMultiGraphDimensions();return false;"></p:button>
 	
 							<p:button id="runTests" value="Run Test Suite" type="button"
 								styleClass="navigationButton"
@@ -129,9 +91,10 @@
 								styleClass="navigationButton"
 								title="Stretch the graphs to fill the content area."
 								onclick="stretchToContentMulti();return false;"></p:button>
-							<!-- 						<ui:include src="include/includePanZoom.xhtml" />								 -->
+
+							<ui:include src="include/includePanZoom.xhtml" />								
 						</h:form>
-					</p:layoutUnit>
+					</p:layoutUnit>	
 				</p:layout>
 		</h:panelGroup>
 	</h:body>
