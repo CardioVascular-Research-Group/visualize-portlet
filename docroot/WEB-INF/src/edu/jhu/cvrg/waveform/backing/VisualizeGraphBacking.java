@@ -386,13 +386,17 @@ public class VisualizeGraphBacking implements Serializable {
 		System.out.println("-Entering function panToMilliSec, newMilliSec: \"" + getNewMilliSec() + "\"");
 		int iStartPoint = parseToMilliSec(getNewMilliSec());
 		if(iStartPoint ==-1){
-			System.err.println("Unable to parse requested new time: \""+ getNewMilliSec() + "\"");
+			String message = "\"" + getNewMilliSec()  + "\" is not a recongnizable number. Please enter seconds in one of the following formats, \"123.45\", \"1.2345e2\" or \"1.2345 x 10^2\" ";
+			System.err.println("Unable to parse requested new time: "+ message);
+//		    FacesContext fc = FacesContext.getCurrentInstance();  
+//		    FacesMessage fcMsg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Pan to Time.", message);
+//		    fc.addMessage(null, fcMsg);
 		}else{
 			if(iStartPoint <= visualizeSharedBacking.getSharedStudyEntry().getMsecDuration()){
 				panToTime(iStartPoint);
 			}else{
-				String msg = iStartPoint + " is too large, this ECG contains " + (visualizeSharedBacking.getSharedStudyEntry().getMsecDuration()/1000.0) + " seconds";
-				System.err.println(msg);
+				String message = iStartPoint + " is too large, this ECG contains " + (visualizeSharedBacking.getSharedStudyEntry().getMsecDuration()/1000.0) + " seconds";
+				System.err.println(message);
 			}
 		}
 		System.out.println("-Exiting function panToMilliSec");
@@ -411,12 +415,16 @@ public class VisualizeGraphBacking implements Serializable {
 			sSec2 = sNewMilliSec.replaceAll(expr, "e");
 			try{
 				newTime = Double.parseDouble(sSec2);
+				success = true;
 			}catch (NumberFormatException e2){
-				String msg = "\"" + sNewMilliSec + "\" is not a recongnizable number. Please enter seconds in one of the following formats, \"123.45\", \"1.2345e2\" or \"1.2345 x 10^2\" ";
-			    FacesContext fcMsg = FacesContext.getCurrentInstance();  
-			    fcMsg.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Pan to Time.", msg));
+				newScrollTimeMS=-1;
+				success = false;
+				String message = "\"" + sNewMilliSec + "\" is not a recongnizable number. Please enter seconds in one of the following formats, \"123.45\", \"1.2345e2\" or \"1.2345 x 10^2\" ";
+				System.err.println(message);
+//				FacesContext fc = FacesContext.getCurrentInstance();  
+//			    FacesMessage fcMsg = new FacesMessage(FacesMessage.SEVERITY_WARN, "Pan to Time.", message);
+//			    fc.addMessage(null, fcMsg);
 			}
-			success = true;
 		}
 		if(success){
 			newScrollTimeMS = (int) (newTime*1000);

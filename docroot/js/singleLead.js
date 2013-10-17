@@ -136,8 +136,8 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 					}
 			);
 		//}
-		var newWidth = 700; 
-		var newHeight= 700;
+		var newWidth = 600; 
+		var newHeight= 600;
 		ecg_graph.resize(newWidth, newHeight);
 		CVRG_setLabels(displayMinV2, displayMaxV2, yLabel);
 		CVRG_InitHorizontalLines(1, divName, singleLeadNamespace);
@@ -178,7 +178,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
         // the screen size in uses
         var voltCoeff = (displayMaxV2-displayMinV2)/100; // converts percentage scroll bar to Voltage scale
     
-        CVRG_zoomGraphY( (voltMinInput.value-50)*voltCoeff, (voltMaxInput.value-50)*voltCoeff);
+        CVRG_zoomGraphY( (WAVEFORM_getElementById('voltMinInput').value-50)*voltCoeff, (WAVEFORM_getElementById('voltMaxInput').value-50)*voltCoeff);
     };
     
     var zoomVoltage = function(){
@@ -213,11 +213,11 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 			valueRange: [displayMinV2, displayMaxV2]
 		});
 
-		sliderVoltRangeSingle.minValue = displayMinV2;
-		sliderVoltRangeSingle.maxValue = displayMaxV2;
-		voltMinInput.value = displayMinV2;
-		voltMaxInput.value = displayMaxV2;
-		voltCenterInput.value = 00;
+//		WAVEFORM_getElementById('sliderVoltCenterSingle').minValue = displayMinV2;
+//		WAVEFORM_getElementById('sliderVoltCenterSingle').maxValue = displayMaxV2;
+//		WAVEFORM_getElementById('voltMinInput').value = displayMinV2; // record the current voltage limits.
+//		WAVEFORM_getElementById('voltMaxInput').value = displayMaxV2;
+		WAVEFORM_getElementById('voltCenterInput').value = 0; // center the slider
     };
     
     var centerScaleVoltage = function(){
@@ -242,11 +242,11 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 			valueRange: [displayMinV2, displayMaxV2]
 		});
 
-		sliderVoltRangeSingle.minValue = displayMinV2;
-		sliderVoltRangeSingle.maxValue = displayMaxV2;
-		voltMinInput.value = displayMinV2;
-		voltMaxInput.value = displayMaxV2;
-		voltCenterInput.value = 00;
+//		WAVEFORM_getElementById('sliderVoltRangeSingle').minValue = displayMinV2;
+//		WAVEFORM_getElementById('sliderVoltRangeSingle').maxValue = displayMaxV2;
+//		WAVEFORM_getElementById('voltMinInput').value = displayMinV2;
+//		WAVEFORM_getElementById('voltMaxInput').value = displayMaxV2;
+		WAVEFORM_getElementById('voltCenterInput').value = 0;
     };
     
     var getDataMinMax = function (){
@@ -304,9 +304,9 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		alert("displayMinV2:" + displayMinV2 + "VoltageMin:" + yRanges[0][0] );
 		displayMinV2 = yRanges[0][0];
 		displayMaxV2 = yRanges[0][1];
-		voltMinInput.value = 0;
-		voltMinInput.value = 100;
-		voltCenterInput.value = 0;
+		WAVEFORM_getElementById('voltMinInput').value = 0;
+		WAVEFORM_getElementById('voltMinInput').value = 100;
+		WAVEFORM_getElementById('voltCenterInput').value = 0;
 	};
 
 	// Adds the annotation's details to the list.  Also generates a unique ID for each annotation so that Javascript can bold/unbold. 

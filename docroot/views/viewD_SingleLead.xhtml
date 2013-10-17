@@ -63,7 +63,7 @@
 
 							<p:slider id="sliderVoltCenterSingle"
 								for="#{facesContext.externalContext.encodeNamespace(':voltCenterInput')}"
-								type="vertical" style="height:700px" minValue="-50"
+								type="vertical" style="height:400px" minValue="-50"
 								maxValue="50" onSlideEnd="zoomVoltage()" />
 							<h:panelGroup id="ecgSingle_div" layout="block" class="graph"
 								style="border:1">
@@ -113,7 +113,7 @@
 							title="Reset the graph to zero volts at the center, using the standard voltage scale (+/- 2000uV)"
 							onclick="setVoltageZoom(-2000,2000);return false;" />
 					</h:form>
-					<ui:include src="include/includePanZoom.xhtml" />
+					<!--  <ui:include src="include/includePanZoom.xhtml" /> -->
 				</p:layoutUnit>
 			</p:layout>
 		</h:panelGroup>

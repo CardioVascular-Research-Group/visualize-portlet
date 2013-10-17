@@ -4,7 +4,7 @@
 	xmlns:p="http://primefaces.org/ui">
 	<p:panel id="ecgDataHidden">
 		<script>
-			alert("updating panel: ecgDataHidden");
+			// alert("updating panel: ecgDataHidden");
 			data = '#{visualizeGraphBacking.data}';
 			saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
 			//renderData();
@@ -62,8 +62,7 @@
 			alt="Jump directly to the time entered above."
 			update=":#{p:component('ecgDataHidden')}" 
 			oncomplete="renderData();"
-			actionListener="#{visualizeGraphBacking.panToMilliSec}" />
-
+			actionListener="#{visualizeGraphBacking.panToMilliSec}" />			
 	</p:panel>
 	<!--
  	<p:draggable for="dragPanelPanZoom" handle=".ui-panel-titlebar" />

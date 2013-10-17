@@ -20,21 +20,21 @@ limitations under the License.
 */
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+//import java.util.HashMap;
+//import java.util.Map;
 
-import javax.annotation.PostConstruct;
+//import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
+//import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ComponentSystemEvent;
 
 
-import org.json.JSONException;
+//import org.json.JSONException;
 import org.json.JSONObject;
 //import org.omnifaces.util.Ajax;
 import org.primefaces.event.SelectEvent;
@@ -42,13 +42,13 @@ import org.primefaces.event.UnselectEvent;
 
 import com.liferay.portal.model.User;
 
-import edu.jhu.cvrg.waveform.utility.AnnotationUtility;
+//import edu.jhu.cvrg.waveform.utility.AnnotationUtility;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
-import edu.jhu.cvrg.waveform.main.VisualizationManager;
+//import edu.jhu.cvrg.waveform.main.VisualizationManager;
 import edu.jhu.cvrg.waveform.model.FileTree;
 import edu.jhu.cvrg.waveform.model.StudyEntry;
-import edu.jhu.cvrg.waveform.model.VisualizationData;
-import edu.jhu.cvrg.waveform.utility.ServerUtility;
+//import edu.jhu.cvrg.waveform.model.VisualizationData;
+//import edu.jhu.cvrg.waveform.utility.ServerUtility;
 
 @ManagedBean(name = "visualizeBacking")
 @ViewScoped

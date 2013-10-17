@@ -91,7 +91,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	//		data = null;
 		debugPrintTime("JSON.parse(data) ", startTimeParseData);
 		
-		alert("dataJsonParse.minTime, dataJsonParse.maxTime: " + dataJsonParse.minTime + ", " + dataJsonParse.maxTime);
+//		alert("dataJsonParse.minTime, dataJsonParse.maxTime: " + dataJsonParse.minTime + ", " + dataJsonParse.maxTime);
 			//show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
 		var startTimeParseTitle = (new Date).getTime();
 //			var saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
@@ -787,7 +787,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		resizeAllSliders(graphHeight);
 		
 		// uses the new graph container's height after graphs have been resized.
-		var gcHeight = parseInt(document.getElementById(namespaceGlobal + ":Container_12LeadDivOutside").clientHeight); 
+//		var gcHeight = parseInt(document.getElementById(namespaceGlobal + ":Container_12LeadDivOutside").clientHeight); 
+		var gcHeight = graphHeight * 3;
 		document.getElementById(namespaceGlobal + ":voltCenterALL").style.height = parseInt(gcHeight) + "px";
 	};
 	
