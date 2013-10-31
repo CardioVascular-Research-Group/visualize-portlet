@@ -9,7 +9,7 @@
 	<h:body>
 
 		<f:event type="preRenderView"
-			listener="#{visualizeBacking.initialize}" />
+			listener="#{visualizeBacking.init}" />
 		<style>
 .visualizeLayout {
 	min-height: 550px;
@@ -51,31 +51,47 @@
 							<h:panelGroup id="analyzeTreeHolder" layout="block"
 								styleClass="selectFieldset">
 
-								<p:tree id="docTree" dynamic="true"
+								<p:tree id="docTree" 
+									dynamic="true"
 									selection="#{visualizeBacking.fileTree.selectedNodes}"
 									selectionMode="multiple"
-									value="#{visualizeBacking.fileTree.treeRoot}" var="node">
-									<p:treeNode expandedIcon="ui-icon-folder-open"
-										collapsedIcon="ui-icon-folder-collapsed">
-										<h:outputText value="#{node}" />
+									value="#{visualizeBacking.fileTree.treeRoot}" 
+									var="node">
+									<p:ajax event="select" listener="#{visualizeBacking.folderSelect}" update="docTree"/>
+									<p:ajax event="unselect" listener="#{visualizeBacking.folderUnSelect}" update="docTree"/>
+									
+									<p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
+										<h:outputText value="#{node.subjectID}" />
 									</p:treeNode>
+									
+									<p:treeNode type="document" icon="ui-icon ui-icon-document">
+										<h:outputText value="#{node.subjectID}"/>
+									</p:treeNode>
+									
 								</p:tree>
-
-								<p:commandButton id="btnDisplay" value="Click to Display Files"
-									styleClass="displayButton" update="availableStudy"
+								<p:commandButton id="btnDisplay" 
+									value="Click to Display Files"
+									styleClass="displayButton" 
+									update="availableStudy"
 									actionListener="#{visualizeBacking.displaySelectedMultiple}"
-									icon="ui-icon-disk" title="ViewA_Selection" />
+									icon="ui-icon-disk" 
+									title="ViewA_Selection" />
 
 							</h:panelGroup>
 
 							<!-- 900px wide -->
-							<p:dataTable id="availableStudy" var="studyHolder"
-								styleClass="visualizeDataTable" sortMode="multiple"
+							<p:dataTable id="availableStudy" 
+								var="studyHolder"
+								styleClass="visualizeDataTable" 
+								sortMode="multiple"
 								rowKey="#{studyHolder.subjectID}"
 								value="#{visualizeBacking.studyEntryList}"
 								selection="#{visualizeBacking.selectedStudyObject}"
-								selectionMode="single" paginator="true" rows="5"
-								resizableColumns="true" paginatorAlwaysVisible="false"
+								selectionMode="single" 
+								paginator="true" 
+								rows="5"
+								resizableColumns="true" 
+								paginatorAlwaysVisible="false"
 								paginatorPosition="top"
 								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 								rowsPerPageTemplate="5,10,15,20">

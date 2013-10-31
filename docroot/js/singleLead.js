@@ -23,7 +23,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 //CVRG_sSecondSuffix = sSecondSuffix;
 //CVRG_timeLabelPrefix = timeLabelPrefix; 
 
-	var WAVEFORM_getSingleLeadData = function(leadNum2){
+	var SINGLELEAD_getSingleLeadData = function(leadNum2){
 		var singleDataCol = [];
 		var fields = [];
 		
@@ -68,19 +68,16 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	};
 
 
-//	WAVEFORM_getElementById(divName),
-//	WAVEFORM_getIdwNamespace(divName),
-	//parent.dataFull, 
 	/** Single Lead Dygraph Display Mike Shipway 6/4/2013.
 	 * 
 	 * @returns
 	 */	
-	var SINGLELEAD_drawECGgraph = function(divName, namespace){
+	var SINGLELEAD_drawECGgraph = function(divName, namespace, dateStartMS, dateWidthMS){
 		singleLeadNamespace = namespace;
-//		alert("running CVRG_drawECGgraphSingle("+ singleLeadNamespace + ":" + divName +")");
+		//alert("running SINGLELEAD_drawECGgraph("+ singleLeadNamespace + ":" + divName +")");
 //		if(drawECGCallCount == 0){
 //			drawECGCallCount++;
-			dataSingle = WAVEFORM_getSingleLeadData(CVRG_getLeadNum());
+			dataSingle = SINGLELEAD_getSingleLeadData(CVRG_getLeadNum());
 			ecg_graph = new Dygraph( 
 					WAVEFORM_getElementById(divName),
 					dataSingle,
@@ -108,9 +105,9 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 						annotationDblClickHandler: CVRG_annotationDblClickHandler, 
 						annotationMouseOverHandler:CVRG_annotationMouseOverHandler, 
 						annotationMouseOutHandler: CVRG_annotationMouseOutHandler, 
-						drawCallback:              CVRG_drawCallbackSingle, 
-						pointClickCallback:        CVRG_pointClickCallbackSingle,
-						zoomCallback:              WAVEFORM_zoomCallbackSingle,
+						drawCallback:              SINGLELEAD_drawCallback, 
+						pointClickCallback:        SINGLELEAD_pointClickCallback,
+						zoomCallback:              SINGLELEAD_zoomCallback,
 						underlayCallback:          SINGLELEAD_underlayCallback,
 
 						highlightCallback: CVRG_highlightCallbackSingle,
@@ -127,7 +124,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 			            rangeSelectorPlotFillColor: 'lightblue',
 			            connectSeparatedPoints: false,
 			            drawGapEdgePoints: true,
-						//dateWindow: [0,2500], // Start and End times in milliseconds
+						dateWindow: [dateStartMS, (dateStartMS+dateWidthMS)], // Start and End times in milliseconds
 						interactionModel : {  // custom interation model definition parameter (Implemented in interval.js)
 							'mousedown' : CVRG_mousedown2,
 							'mousemove' : CVRG_mousemove2,
@@ -136,23 +133,23 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 					}
 			);
 		//}
-		var newWidth = 600; 
-		var newHeight= 600;
+		var newWidth = 800; 
+		var newHeight= 400;
 		ecg_graph.resize(newWidth, newHeight);
 		CVRG_setLabels(displayMinV2, displayMaxV2, yLabel);
 		CVRG_InitHorizontalLines(1, divName, singleLeadNamespace);
 		CVRG_InitVerticalLines(divName, namespace);
 	};
 
-	var WAVEFORM_ShowAnnotationSingle = function() {
+	var SINGLELEAD_ShowAnnotationSingle = function() {
 		ecg_graph.setAnnotations(tempAnnotations);
 	};
 
-	/** CVRG_pointClickCallbackSingle(); 
+	/** SINGLELEAD_pointClickCallback(); 
 	//event -  the event object for the click 
 	// p  - a point on one of the graphs that was clicked. 
 	**/
-	var CVRG_pointClickCallbackSingle = function(event, p) {
+	var SINGLELEAD_pointClickCallback = function(event, p) {
 		CVRG_unhighlightCrosshairs(1);
 		// Check if the point is already annotated.
 		if (p.annotation){
@@ -165,7 +162,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		num++;
 	};
 	
-	function zoomTime() {
+	var zoomTime = function() {
 		CVRG_unhighlightCrosshairs(1);
 		// the screen size in uses
 		var zoomCoefficient = (2500 / 100);
@@ -173,7 +170,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		CVRG_zoomGraphX( timeMinInput.value*zoomCoefficient+startPositionLeft , timeMaxInput.value*zoomCoefficient+startPositionLeft  );
 	};
 	
-    function zoomVoltageOld() {
+    var zoomVoltageOld = function() {
     	CVRG_unhighlightCrosshairs(1);
         // the screen size in uses
         var voltCoeff = (displayMaxV2-displayMinV2)/100; // converts percentage scroll bar to Voltage scale
@@ -290,27 +287,27 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	 * @param yRanges
 	 * @returns
 	 */
-	var CVRG_zoomCallback2 = function (minDate, maxDate, yRanges) {
-		CVRG_unhighlightCrosshairs(1);
-		var bDots = CVRG_bShowDots();
-		var newTimeLabel = CVRG_getnewTimeLabel();
-		ecg_graph.updateOptions({
-//			isZoomedIgnoreProgrammaticZoom: true,
-//			dateWindow: [minTime, maxTime],
-			valueRange: [yRanges[0][0], yRanges[0][1]],
-			drawPoints: bDots,
-			xlabel: newTimeLabel
-		});
-		alert("displayMinV2:" + displayMinV2 + "VoltageMin:" + yRanges[0][0] );
-		displayMinV2 = yRanges[0][0];
-		displayMaxV2 = yRanges[0][1];
-		WAVEFORM_getElementById('voltMinInput').value = 0;
-		WAVEFORM_getElementById('voltMinInput').value = 100;
-		WAVEFORM_getElementById('voltCenterInput').value = 0;
-	};
+//	var CVRG_zoomCallback2 = function (minDate, maxDate, yRanges) {
+//		CVRG_unhighlightCrosshairs(1);
+//		var bDots = CVRG_bShowDots();
+//		var newTimeLabel = CVRG_getnewTimeLabel();
+//		ecg_graph.updateOptions({
+////			isZoomedIgnoreProgrammaticZoom: true,
+////			dateWindow: [minTime, maxTime],
+//			valueRange: [yRanges[0][0], yRanges[0][1]],
+//			drawPoints: bDots,
+//			xlabel: newTimeLabel
+//		});
+//		alert("displayMinV2:" + displayMinV2 + "VoltageMin:" + yRanges[0][0] );
+//		displayMinV2 = yRanges[0][0];
+//		displayMaxV2 = yRanges[0][1];
+//		WAVEFORM_getElementById('voltMinInput').value = 0;
+//		WAVEFORM_getElementById('voltMinInput').value = 100;
+//		WAVEFORM_getElementById('voltCenterInput').value = 0;
+//	};
 
 	// Adds the annotation's details to the list.  Also generates a unique ID for each annotation so that Javascript can bold/unbold. 
-	var CVRG_drawCallbackSingle = function(ecg_graph) {
+	var SINGLELEAD_drawCallback = function(ecg_graph) {
 		//var leadCount = ecg_graph.rawData_[0].length-1;
 		//CVRG_InitHorizontalLines(leadCount, "ecg_div");
 		//CVRG_InitVerticalLines("ecg_div", namespace);
@@ -341,19 +338,6 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 //		});
 
 	};
-
-	/** Prepends the namespace from the portlet environment to the element's ID, then returns the element thus found.
-	 *  @param  elementID
-	 *  
-	 *  @returns - the DOM element
-	 */
-	var WAVEFORM_getElementById = function(elementID){
-		return document.getElementById(singleLeadNamespace + ":" + elementID);
-	};
-	
-	var WAVEFORM_getIdwNamespace = function(elementID){
-		return singleLeadNamespace + ":" + elementID;
-	};
 	
 	/** A function to call when the zoom window is changed (either by zooming in or out). minDate and maxDate are milliseconds since epoch. yRanges is an array of [bottom, top] pairs, one for each y-axis.
 	 * 
@@ -362,7 +346,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	 * @param yRanges
 	 * @returns
 	 */
-	var WAVEFORM_zoomCallbackSingle = function (minDate, maxDate, yRanges) {
+	var SINGLELEAD_zoomCallback = function (minDate, maxDate, yRanges) {
 		var bDots = CVRG_bShowDots();
 //		var newTimeLabel = CVRG_getnewTimeLabel();
 		ecg_graph.updateOptions({
@@ -396,4 +380,18 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	
 	var SINGLELEAD_underlayCallback = function(canvas, area, g){
 		WAVEFORM_showHighLightQueue(canvas, area, g);		
-	}
+	};
+
+	/** Prepends the namespace from the portlet environment to the element's ID, then returns the element thus found.
+	 *  @param  elementID
+	 *  
+	 *  @returns - the DOM element
+	 */
+	var WAVEFORM_getElementById = function(elementID){
+		return document.getElementById(singleLeadNamespace + ":" + elementID);
+	};
+	
+	var WAVEFORM_getIdwNamespace = function(elementID){
+		return singleLeadNamespace + ":" + elementID;
+	};
+	

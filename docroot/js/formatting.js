@@ -230,6 +230,9 @@
 	// parameter:
 	//     ms - time in milliseconds.
 	var CVRG_xAxisLabelFormatter = function(ms) {
+		if(ms < WF_minTime){
+			ms = (ms + 400.0) - (WF_minTime/1);// so the calibration pulse will have it's own zero time reference.
+		}
 		var shift = Math.pow(10, 5);
 		var intMS = Math.round(ms * shift) / shift;
 		var dSec = intMS/1000;
@@ -263,7 +266,7 @@
 	 */ 
 	var CVRG_xValueFormatter2 = function(val, opts, series_name, dygraph){
 		if(val < WF_minTime){
-			var calTime = (val + 400.0) + (WF_minTime/1);// so the calibration pulse will have it's own zero time reference.
+			var calTime = (val + 400.0) - (WF_minTime/1);// so the calibration pulse will have it's own zero time reference.
 			var temp = "Calibration Pulse " + calTime + "mSec"; 
 			return temp;
 		}else{

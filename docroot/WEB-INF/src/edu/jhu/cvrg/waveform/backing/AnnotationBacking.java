@@ -109,18 +109,18 @@ public class AnnotationBacking implements Serializable {
 		// Ajax.oncomplete("alert('AnnotationBacking.showAnnotationForLead: ')");
 		RequestContext context = RequestContext.getCurrentInstance();
 		//AnnotationUtility RetrieveECGDatabase = new AnnotationUtility();
-		AnnotationUtility RetrieveECGDatabase = new AnnotationUtility(com.liferay.util.portlet.PortletProps.get("dbUser"),
-                com.liferay.util.portlet.PortletProps.get("dbPassword"),
-                com.liferay.util.portlet.PortletProps.get("dbURI"),     
-                com.liferay.util.portlet.PortletProps.get("dbDriver"),
-                com.liferay.util.portlet.PortletProps.get("dbMainDatabase"));
+		AnnotationUtility RetrieveECGDatabase = new AnnotationUtility(ResourceUtility.getDbUser(),
+                ResourceUtility.getDbPassword(),
+                ResourceUtility.getDbURI(),     
+                ResourceUtility.getDbDriver(),
+                ResourceUtility.getDbMainDatabase());
 		
 		setLeadName(visualizeSharedBacking.getSelectedLeadName());
 		setLeadnum(Integer.parseInt(visualizeSharedBacking.getSelectedLeadNumber()));
 		setComment(""); // make sure it is blank
 		
-        System.out.println("AnnotationBacking.showAnnotationForLead LeadName: " + getLeadName());
-        System.out.println("AnnotationBacking.showAnnotationForLead Leadnum: " + getLeadnum());
+//        System.out.println("AnnotationBacking.showAnnotationForLead LeadName: " + getLeadName());
+//        System.out.println("AnnotationBacking.showAnnotationForLead Leadnum: " + getLeadnum());
         showAnnotations(context, RetrieveECGDatabase);  
 	}
 	
@@ -192,12 +192,11 @@ public class AnnotationBacking implements Serializable {
 		String passedAnnotationID = (String) map.get("annotationID");
 		int leadIndex = getLeadnum();
 
-		AnnotationUtility RetrieveECGDatabase = new AnnotationUtility(
-				com.liferay.util.portlet.PortletProps.get("dbUser"),
-                com.liferay.util.portlet.PortletProps.get("dbPassword"),
-                com.liferay.util.portlet.PortletProps.get("dbURI"),     
-                com.liferay.util.portlet.PortletProps.get("dbDriver"),
-                com.liferay.util.portlet.PortletProps.get("dbMainDatabase"));
+		AnnotationUtility RetrieveECGDatabase = new AnnotationUtility(ResourceUtility.getDbUser(),
+                ResourceUtility.getDbPassword(),
+                ResourceUtility.getDbURI(),     
+                ResourceUtility.getDbDriver(),
+                ResourceUtility.getDbMainDatabase());
 
 		AnnotationData retrievedAnnotation = RetrieveECGDatabase.getAnnotationByID(userLifeRayModel.getScreenName(), visualizeSharedBacking.getSharedStudyEntry().getStudy(), 
 						visualizeSharedBacking.getSharedStudyEntry().getSubjectID(), String.valueOf(leadIndex), 
@@ -309,11 +308,11 @@ public class AnnotationBacking implements Serializable {
 			System.out.println("saveAnnotationSetFlag(), nodeID: " + getNodeID());
 
 //		    AnnotationUtility RetrieveECGDatabase = new AnnotationUtility();
-			AnnotationUtility RetrieveECGDatabase = new AnnotationUtility(com.liferay.util.portlet.PortletProps.get("dbUser"),
-	                com.liferay.util.portlet.PortletProps.get("dbPassword"),
-	                com.liferay.util.portlet.PortletProps.get("dbURI"),     
-	                com.liferay.util.portlet.PortletProps.get("dbDriver"),
-	                com.liferay.util.portlet.PortletProps.get("dbMainDatabase"));
+			AnnotationUtility RetrieveECGDatabase = new AnnotationUtility(ResourceUtility.getDbUser(),
+	                ResourceUtility.getDbPassword(),
+	                ResourceUtility.getDbURI(),     
+	                ResourceUtility.getDbDriver(),
+	                ResourceUtility.getDbMainDatabase());
 			
 //			 * Required values that need to be filled in are:
 //				 * 
@@ -394,7 +393,7 @@ public class AnnotationBacking implements Serializable {
 			System.out.println("saveAnnotationSetFlag(), Complete.");
 			
 			showAnnotations(context, RetrieveECGDatabase); // clears current annotations and reloads all, including the new one.
-			context.execute("WAVEFORM_ShowAnnotationSingle()"); // need to redisplay all the annotations.
+			context.execute("SINGLELEAD_ShowAnnotationSingle()"); // need to redisplay all the annotations.
 		}
 	
 
@@ -449,7 +448,7 @@ public class AnnotationBacking implements Serializable {
 					fullAnnotation = retrievedAnnotationList[i].getAnnotation();
 					setComment(retrievedAnnotationList[i].getComment() );
 					annotationID = retrievedAnnotationList[i].getUniqueID();
-					System.out.println("RetrieveAnnotation loop x:" + firstX + " y:" + firstY + " flagCount: " + flagCount + " ontologyId:" + ontologyId + " fullAnnotation:\"" + fullAnnotation + "\" annotationID:\"" + annotationID + "\"");
+//					System.out.println("RetrieveAnnotation loop x:" + firstX + " y:" + firstY + " flagCount: " + flagCount + " ontologyId:" + ontologyId + " fullAnnotation:\"" + fullAnnotation + "\" annotationID:\"" + annotationID + "\"");
 
 					Double xPosition = Double.valueOf(firstX);
 					Integer numOccurances = Integer.valueOf(1);
@@ -478,7 +477,7 @@ public class AnnotationBacking implements Serializable {
 						if(firstX != (-999999999)){
 							flagLabel = String.valueOf(flagCount+1);   // label of Annotation
 
-							System.out.println("Single point: " + flagLabel + " x: " + firstX);
+							//System.out.println("Single point: " + flagLabel + " x: " + firstX);
 							int finalHeight = heightMultiplier * 15;
 							// 	add annotaion from JAVA to JavaScript Dygraph 
 							context.execute("CVRG_addAnnotationHeight('" + series + "' , '" +  firstX + "', '" +  firstY + "','" 
@@ -516,19 +515,19 @@ public class AnnotationBacking implements Serializable {
 
 
 						// START add annotaion from JAVA to JavaScript Dygraph 
-						System.out.println("x: " + firstX);
+						//System.out.println("x: " + firstX);
 						context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  firstX + "', '" +  firstY + "','" 
 								+ flagLabelFirst + "','" + ontologyId + "','" + fullAnnotation + "',' " 
 								+ finalHeight + "','" + width + "','" + annotationID + "')");
 
 						//  Sets the center flag
-						System.out.println( "centerX: " +  centerX);
+						//System.out.println( "centerX: " +  centerX);
 						context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  centerX + "', '" +  centerY + "','" 
 								+ flagLabelCenter  + "','" + ontologyId + "','" + fullAnnotation + "',' " 
 								+ finalHeight + "','" + widthInterval + "','" + annotationID + "')");
 
 						// END X
-						System.out.println( "secondX: " + secondX);
+						//System.out.println( "secondX: " + secondX);
 						context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  secondX + "', '" +  secondY + "','" 
 								+ flagLabelLast + "','" + ontologyId + "','" + fullAnnotation + "',' " 
 								+ finalHeight + "','" + width + "','" + annotationID + "')");
@@ -543,7 +542,7 @@ public class AnnotationBacking implements Serializable {
 				}
 
 //				context.execute("CVRG_showAnnotations()");
-//				context.execute("WAVEFORM_ShowAnnotationSingle()");
+//				context.execute("SINGLELEAD_ShowAnnotationSingle()");
 			}
 		}
 
@@ -619,7 +618,7 @@ public class AnnotationBacking implements Serializable {
 
 
 		public void setLeadName(String leadName) {
-			System.out.println( "AnnotationBacking.setLeadName() called with:" + leadName);
+//			System.out.println( "AnnotationBacking.setLeadName() called with:" + leadName);
 			this.leadName = leadName;
 		}
 
@@ -683,7 +682,7 @@ public class AnnotationBacking implements Serializable {
 		}
 
 		public void setLeadnum(int leadnum) {
-			System.out.println( "AnnotationBacking.setLeadnum() called with:" + leadnum);
+//			System.out.println( "AnnotationBacking.setLeadnum() called with:" + leadnum);
 			this.leadnum = leadnum;
 		}
 

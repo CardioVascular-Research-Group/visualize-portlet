@@ -8,24 +8,27 @@
 	<h:head />
 	<h:body>
 		<style>
-.navigationButton {
-	width: 120px;
-}
-</style>
+			.navigationButton {
+				width: 120px;
+			}
+		</style>
 
 		<f:event type="preRenderView"
 			listener="#{annotationBacking.initialize}" />
 		<h:form id="drawGraph_loadAnnotations">
 			<p:remoteCommand name="calledOnLoad"
-				oncomplete="renderGraphAndAnnotations();" autoRun="true">
+				oncomplete="isMultigraph=false;renderSingleGraphAndAnnotations();" autoRun="true">
 			</p:remoteCommand>
 		</h:form>
 		<script>
-			var renderGraphAndAnnotations = function(){
-				//alert("renderGraphAndAnnotations() called.");
+			var renderSingleGraphAndAnnotations = function(){
+				//alert("renderSingleGraphAndAnnotations() called.");
 				var namespace = '#{facesContext.externalContext.encodeNamespace('')}';
-				SINGLELEAD_drawECGgraph('ecgSingle_div', namespace);
-				WAVEFORM_ShowAnnotationSingle();
+				var offsetMS = '#{visualizeGraphBacking.currentVisualizationOffset}';
+				var widthMS = '#{visualizeGraphBacking.durationMilliSeconds}';
+				// add 400 ms to account for the calibration.
+				SINGLELEAD_drawECGgraph('ecgSingle_div', namespace, (offsetMS), (widthMS+400));
+				SINGLELEAD_ShowAnnotationSingle();				
 			}
 		</script>
 
@@ -112,8 +115,16 @@
 							icon="ui-icon-circle-plus" styleClass="navigationButton"
 							title="Reset the graph to zero volts at the center, using the standard voltage scale (+/- 2000uV)"
 							onclick="setVoltageZoom(-2000,2000);return false;" />
+							
+						<ui:include src="include/includePanZoom.xhtml" />
+						<h:selectOneMenu id="singleLeadWidth" value="#{visualizeGraphBacking.durationMilliSeconds}" >
+						   	<f:selectItem itemValue="1200" itemLabel="1.2 Sec" />
+						   	<f:selectItem itemValue="2500" itemLabel="2.5 Sec" />
+						   	<f:selectItem itemValue="5000" itemLabel="5.0 Sec" />
+						   	<f:selectItem itemValue="10000" itemLabel="10 Sec"/>
+							<f:selectItem itemValue="15000" itemLabel="15 Sec"/>
+						</h:selectOneMenu>
 					</h:form>
-					<!--  <ui:include src="include/includePanZoom.xhtml" /> -->
 				</p:layoutUnit>
 			</p:layout>
 		</h:panelGroup>

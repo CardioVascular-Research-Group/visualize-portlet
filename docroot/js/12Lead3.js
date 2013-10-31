@@ -4,6 +4,7 @@ revision 0.1 : April 6, 2011 - initial version Michael Shipway
 Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 *************************/
 	var namespaceGlobal = "";
+	var isMultigraph=true;
 //	var data = [];
 	var graphSet = [];
 	var graphCalSet = [];
@@ -59,54 +60,68 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	var saGraphTitle = [];
 	var saGraphTitleArray=[];
 	
-	function show12LeadData(minTime, maxTime, ECG) {
+	
+//	function show12LeadData(minTime, maxTime, ECG) {
+	function show12LeadData() {
 		//alert("running show12LeadData()");
 		var startTimeNormal = (new Date).getTime();
 //			var namespace = '#{facesContext.externalContext.encodeNamespace('')}';
-			var namespace = "n/a";
-			WF_minTime = minTime;
-			WF_maxTime = maxTime;
-			dataFull = WAVEFORM_parseCSV(ECG, namespace);
+//			var namespace = "n/a";
+//			WF_minTime = minTime;
+//			WF_maxTime = maxTime;
+//			dataFull = WAVEFORM_parseCSV(ECG, namespace);
 			
 			// Turning on the Dygrahs Display
-			WAVEFORM_showGraphs(namespace);
+			WAVEFORM_showGraphs();
 			setGraphLabel(12);
-		debugPrintTime("show12LeadData ", startTimeNormal);
+		// debugPrintTime("show12LeadData ", startTimeNormal);
 	};
 
 	// This function is kept on the .xhtml page, because it contains code specific to this layout. 
-     var WAVEFORM_showGraphs = function(namespace){
+     var WAVEFORM_showGraphs = function(){
          //alert("running WAVEFORM_showGraphs() in panelDisplayLeads.xhtml data.length:" + dataFull.length);
          var graphDurationMS = 1200;
          var graphWidthPx = 250;
          var graphHeightPx = 150;
          var calibrationCount = 3;
-         populateGraphsCalibrations(graphDurationMS, graphWidthPx, graphHeightPx, dataFull, namespace, calibrationCount);
+         populateGraphsCalibrations(graphDurationMS, graphWidthPx, graphHeightPx, dataFull, calibrationCount);
      };
 	
 	var parseJSONdata = function(){					
 		var startTimeParseData = (new Date).getTime();
 //			var data = '#{visualizeGraphBacking.data}';
+		if(data.length>0){
 			dataJsonParse = JSON.parse(data);
+			WF_minTime = dataJsonParse.minTime;
+			WF_maxTime = dataJsonParse.maxTime;
+			dataFull = WAVEFORM_parseCSV(dataJsonParse.ECG);
 	//		data = null;
-		debugPrintTime("JSON.parse(data) ", startTimeParseData);
+		// debugPrintTime("JSON.parse(data) ", startTimeParseData);
 		
-//		alert("dataJsonParse.minTime, dataJsonParse.maxTime: " + dataJsonParse.minTime + ", " + dataJsonParse.maxTime);
+//		alert("parseJSONdata() dataJsonParse.minTime, dataJsonParse.maxTime: " + dataJsonParse.minTime + ", " + dataJsonParse.maxTime);
 			//show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
 		var startTimeParseTitle = (new Date).getTime();
 //			var saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
 			saGraphTitleArray = JSON.parse(saGraphTitle);
 //			alert("saGraphTitleArray[0]: " + saGraphTitleArray[0] + "  saGraphTitleArray[1]: " + saGraphTitleArray[1] );
-		debugPrintTime("JSON.parse(saGraphTitle) ", startTimeParseTitle);
+		// debugPrintTime("JSON.parse(saGraphTitle) ", startTimeParseTitle);
+		}else{
+			alert("parseJSONdata() data variable is empty.");
+		}
 	};
 
 	var renderData =  function(){
 //		saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
-	//  alert("saGraphTitle: " + saGraphTitle);
-		startDebugTable();
+//	  alert("renderData() saGraphTitle: " + saGraphTitle);
+		// startDebugTable();
 		parseJSONdata();
-		show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
-		endDebugTable();
+		if(isMultigraph){
+//			show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
+			show12LeadData();
+		}else{
+			renderSingleGraphAndAnnotations();
+		}
+		// endDebugTable();
 	};
 
     /** Event handler for when the mouse is over any graph. 
@@ -195,7 +210,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 				dateWindow: range
 			} );
 		}
-		debugPrintTime("ZoomGraphX", startTimeZoomGraphX);
+		// debugPrintTime("ZoomGraphX", startTimeZoomGraphX);
 	}; 
 
 	var createXLine = function(lineIdName){
@@ -218,20 +233,19 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	 * 
 	 */
 	var populateGraphsCalibrations = function(graphDurationMS, graphWidthPx, graphHeightPx, 
-											dataFull, namespace, calibrationCount){
-//		namespaceGlobal = namespace;
+											dataFull, calibrationCount){
 		
 	var startTime1 = (new Date).getTime();
 		populate12Graphs(graphDurationMS, graphWidthPx, graphHeightPx, 
 						dataFull, namespaceGlobal);
-	debugPrintTime("Current", startTime1);
+	// debugPrintTime("Current", startTime1);
 		
 		var graphDivName = namespaceGlobal + ":" + graphDivCalPrefix;
 		var labelDivName = namespaceGlobal + ":" + labelCalPrefix;
 		
 	var startTimeCal = (new Date).getTime();
         makeCalibrationMarks(calibrationCount, graphHeightPx, graphDivName, labelDivName);
-	debugPrintTime("Calibration", startTimeCal);
+	// debugPrintTime("Calibration", startTimeCal);
 	};
 	
 	
@@ -583,7 +597,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
      * 2. [ value, stddev ]
      * 3. [ low value, center value, high value ]
      */
-    var WAVEFORM_parseCSV = function(data, namespace) {
+    var WAVEFORM_parseCSV = function(data) {
 //    	var ret = [];
     	//dataFull = ""; // clear data variable.
 //    	namespaceGlobal = namespace;
@@ -641,7 +655,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 //    	var instruction = document.getElementById(instructionName);
 //    	instruction.innerHTML = "Done";
 
-    	debugPrintTime("ParseCSV", startTimeParseCSV);
+    	// debugPrintTime("ParseCSV", startTimeParseCSV);
     	
     	return dataFull;
     };
@@ -810,34 +824,34 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 					populate12Graphs(graphDurationMS, graphWidthPx, graphHeightPx, 
 								dataFull, namespaceGlobal);
 				}
-			debugPrintTime("Original *10 ", startTime10);
+			// debugPrintTime("Original *10 ", startTime10);
 			
 	        //************************************************************	        
 			var startTimeResize = (new Date).getTime();
 				resizeAllGraphs(graphWidthPx, graphHeightPx);
-			debugPrintTime("Resize all 12 ", startTimeResize);
+			// debugPrintTime("Resize all 12 ", startTimeResize);
 	        //************************************************************	        
 			var startTimeDelayOptions = (new Date).getTime();
 	
 				for(var i=0;i<10;i++){
 //					var startTimeCLear = (new Date).getTime();
 //					clearGraphs();
-//					debugPrintTime("Clearing Graphs", startTimeCLear);
+//					// debugPrintTime("Clearing Graphs", startTimeCLear);
 
 					populate12GraphsNoOptions(graphDurationMS, graphWidthPx, graphHeightPx, 
 								dataFull, namespaceGlobal);
 				}
-			debugPrintTime("12 Graphs minimal options *10 . . . ", startTimeDelayOptions);
+			// debugPrintTime("12 Graphs minimal options *10 . . . ", startTimeDelayOptions);
 			
 			var startTimeDelayOptions = (new Date).getTime();
 				for(var i=0;i<10;i++){
 					setAllOptions(namespaceGlobal);
 				}
-			debugPrintTime("Set all options. *10", startTimeDelayOptions);
+			// debugPrintTime("Set all options. *10", startTimeDelayOptions);
 	        //************************************************************	        
 			var startTimeResize = (new Date).getTime();
 				resizeAllGraphs(graphWidthPx, graphHeightPx);
-			debugPrintTime("Resize all 12 ", startTimeResize);
+			// debugPrintTime("Resize all 12 ", startTimeResize);
 			//************************************************************
 
 			
@@ -857,7 +871,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	
 					populate12GraphEmpty(graphDurationMS, graphWidthPx, graphHeightPx, singleDataColTest);
 				}
-			debugPrintTime("Empty   *10", startTimeEmpty10);
+			// debugPrintTime("Empty   *10", startTimeEmpty10);
 			
 			//************************************************************
 			var startTimeSingle = (new Date).getTime();
@@ -869,7 +883,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 					populateOneGraph(graphDurationMS, graphWidthPx, graphHeightPx, 
 								dataFull, namespaceGlobal);
 				}
-			debugPrintTime("Single Graph *10", startTimeSingle);
+			// debugPrintTime("Single Graph *10", startTimeSingle);
 
 	        //************************************************************	        
 			var startTimeNoOptions = (new Date).getTime();
@@ -882,11 +896,11 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 					populate12GraphsNoOptions(graphDurationMS, graphWidthPx, graphHeightPx, 
 								dataFull, namespaceGlobal);
 				}
-			debugPrintTime("12 Graphs w/o options", startTimeNoOptions);
+			// debugPrintTime("12 Graphs w/o options", startTimeNoOptions);
 			
 
 //	        //************************************************************	     
-			endDebugTable();
+			// endDebugTable();
 			
 			return false;
 	};

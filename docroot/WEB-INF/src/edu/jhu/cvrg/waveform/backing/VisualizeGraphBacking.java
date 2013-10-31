@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+//import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -73,22 +74,23 @@ public class VisualizeGraphBacking implements Serializable {
 	private int iCurrentVisualizationOffset=0; // 12 lead displays always start at zero seconds (0 ms).
 	private String newMilliSec;
 	private int iVisualizationWidthMS = 1200;
-	private int iDurationMilliSeconds = 2400; // 2.4 second of data 
+	private int iDurationMilliSeconds = 2500; // 2.5 second of data 
 	private int iGraphWidthPixels = 1200; //width of the longest graph which will use this data. Sets the maximum amount of data compression allowable.
 	private String[] saGraphTitle= {"I","II","III","aVR","aVL","aVF","V1","V2","V3","V4","V5","V6","VX","VY","VZ"}; // default values, should be replaced by the this.setGraphTitle() method, though usually the values are the same.
 	private JSONObject dataJson = null;
 
 
-	private User userModel;
+	//private User userModel;
 	
 	public void initialize(ComponentSystemEvent event) {
     	System.out.println("*************** VisualizeGraphBacking.java, initialize() **********************");
     	System.out.println("*************** selected record:" + visualizeSharedBacking.getSharedStudyEntry().getRecordName() + " in file:" + visualizeSharedBacking.getSharedStudyEntry().getDataFile());
-
+    	
     	if(dataJson == null){
-			userModel = ResourceUtility.getCurrentUser();
+			//userModel = ResourceUtility.getCurrentUser();
 			view12LeadsGraph();
     	}
+    	System.out.println("*************** DONE, initialize() **********************");
 //		if(selectVisible) {
 //			fileTree = new FileTree();
 //			fileTree.initialize(userModel.getScreenName());
@@ -129,7 +131,7 @@ public class VisualizeGraphBacking implements Serializable {
      */
     public String viewSingleGraph2(){
     	FacesContext context = FacesContext.getCurrentInstance();
-		Map map = context.getExternalContext().getRequestParameterMap();
+		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
 		String passedLeadName = (String) map.get("sLeadName");
 		String passedLeadNumber = (String) map.get("sLeadNumber");
 		
@@ -137,6 +139,7 @@ public class VisualizeGraphBacking implements Serializable {
 		visualizeSharedBacking.setSelectedLeadNumber(passedLeadNumber);
 //		visualizeSharedBacking.getSharedAnnotationBacking().showAnnotationForLead();
     	System.out.println("+++ VisualizeGraphBacking.java, viewSingleGraph2() passedLeadName: " + passedLeadName + " passedLeadNumber: " + passedLeadNumber + " +++ ");
+//		return "viewD_Test2";
 		return "viewD_SingleLead";
     }
 
@@ -293,6 +296,7 @@ public class VisualizeGraphBacking implements Serializable {
 
 	public void setVisualizationWidthMS(int visualizationWidthMS) {
 		this.iVisualizationWidthMS = visualizationWidthMS;
+		System.out.println("visualizationWidthMS set to " + visualizationWidthMS);
 	}
 
 	public int getDurationMilliSeconds() {
@@ -460,30 +464,38 @@ public class VisualizeGraphBacking implements Serializable {
 	private int[][] fetchAnnotationArray(){
 		System.out.println("--- fetchAnnotationArray()----");
 		int iaAnnCount[][] = null;
-		if(visualizeSharedBacking.getSharedStudyEntry() != null){
-			AnnotationUtility annUtil = new AnnotationUtility(com.liferay.util.portlet.PortletProps.get("dbUser"),
-					com.liferay.util.portlet.PortletProps.get("dbPassword"), 
-					com.liferay.util.portlet.PortletProps.get("dbURI"),	
-					com.liferay.util.portlet.PortletProps.get("dbDriver"), 
-					com.liferay.util.portlet.PortletProps.get("dbMainDatabase"));
-//			System.out.println("----AnnotationUtility using URI: " + annUtil.getURI());
-			
-			userModel = ResourceUtility.getCurrentUser();
-			String SN = userModel.getScreenName();
-//			System.out.println("----userModel.getScreenName(): " + SN);
-			String St = visualizeSharedBacking.getSharedStudyEntry().getStudy();
-//			System.out.println("----visualizeSharedBacking.getSharedStudyEntry().getStudy(): " + St);
-			String SID = visualizeSharedBacking.getSharedStudyEntry().getSubjectID();
-//			System.out.println("----visualizeSharedBacking.getSharedStudyEntry().getSubjectID(): " + SID);
-			String RN = visualizeSharedBacking.getSharedStudyEntry().getRecordName();
-//			System.out.println("----visualizeSharedBacking.getSharedStudyEntry().getRecordName(): " + RN);
-			
-			iaAnnCount = annUtil.getAnnotationCountPerLead(SN, St, SID, RN);
-		}else{
-			System.err.println("--- fetchAnnotationArray() SharedStudyEntry not found.");
+		try {
+//			System.out.println("---- visualizeSharedBacking.getSharedStudyEntry(): " + visualizeSharedBacking.getSharedStudyEntry());
+			System.out.println("---- dbUser: " + ResourceUtility.getDbUser() );
+			if(visualizeSharedBacking.getSharedStudyEntry() != null){
+				AnnotationUtility annUtil = new AnnotationUtility(ResourceUtility.getDbUser(),
+		                ResourceUtility.getDbPassword(),
+		                ResourceUtility.getDbURI(),     
+		                ResourceUtility.getDbDriver(),
+		                ResourceUtility.getDbMainDatabase());
+			System.out.println("----AnnotationUtility using URI: " + annUtil.getURI());
+				
+				//userModel = ResourceUtility.getCurrentUser();
+				String SN = ResourceUtility.getCurrentUser().getScreenName();
+			System.out.println("---- userModel.getScreenName(): " + SN);
+				String St = visualizeSharedBacking.getSharedStudyEntry().getStudy();
+			System.out.println("---- visualizeSharedBacking.getSharedStudyEntry().getStudy(): " + St);
+				String SID = visualizeSharedBacking.getSharedStudyEntry().getSubjectID();
+			System.out.println("---- visualizeSharedBacking.getSharedStudyEntry().getSubjectID(): " + SID);
+				String RN = visualizeSharedBacking.getSharedStudyEntry().getRecordName();
+			System.out.println("---- visualizeSharedBacking.getSharedStudyEntry().getRecordName(): " + RN);
+				
+				iaAnnCount = annUtil.getAnnotationCountPerLead(SN, St, SID, RN);
+			}else{
+				System.err.println("--- fetchAnnotationArray() SharedStudyEntry not found.");
+			}
+		System.out.println("--- annotations count, 1st lead: " + iaAnnCount[0][1]);
+			System.out.println("--- exiting fetchAnnotationArray()");
+		} catch (Exception e) {
+			System.err.println("Localized message: " + e.getLocalizedMessage());
+			System.err.println("Detailed error message: " + e.getMessage());
+			e.printStackTrace();
 		}
-//		System.out.println("--- annotations count, 1st lead: " + iaAnnCount[0][1]);
-		System.out.println("--- exiting fetchAnnotationArray()");
 		return iaAnnCount;
 	}
 
@@ -494,14 +506,27 @@ public class VisualizeGraphBacking implements Serializable {
 		System.out.println("--- fetchDisplayData() with iCurrentVisualizationOffset:" + iCurrentVisualizationOffset + " and iDurationMilliSeconds:" + iDurationMilliSeconds);
 		boolean verbose = false;
 		boolean bTestPattern = false; // this will cause it to return 3 sine waves, and ignore all the other inputs.
-		String userID = userModel.getScreenName();
+//		if(userModel==null){
+//			userModel = ResourceUtility.getCurrentUser();
+//		}
+//		System.out.println("---- userModel==null: " + (userModel==null));
+		String userID = ResourceUtility.getCurrentUser().getScreenName();
+		System.out.println("---- userID: " + userID);
+		System.out.println("---- visualizeSharedBacking==null: " + (visualizeSharedBacking==null));
+		System.out.println("---- visualizeSharedBacking.getSharedStudyEntry()==null: " + (visualizeSharedBacking.getSharedStudyEntry()==null));
 		String subjectID = visualizeSharedBacking.getSharedStudyEntry().getSubjectID();
+		System.out.println("---- userID: " + userID + " subjectID: " + subjectID);
+		
 		String[] saFileNameList = visualizeSharedBacking.getSharedStudyEntry().getAllFilenames();
-		long fileSize = visualizeSharedBacking.getSharedStudyEntry().getFileSize(); 
+		System.out.println("---- saFileNameList.length: " + saFileNameList.length);
+		System.out.println("---- saFileNameList[0]: " + saFileNameList[0]);
+		long fileSize = visualizeSharedBacking.getSharedStudyEntry().getFileSize();
+		System.out.println("---- fileSize: " + fileSize);
 
 		//fetch data and print elapsed time.
 		long startTime = System.currentTimeMillis();
-		VisualizationManager visMan = new VisualizationManager(verbose);		
+		VisualizationManager visMan = new VisualizationManager(verbose);	
+		System.out.println("---- visMan==null: " + (visMan==null));
 		VisualizationData VisData = visMan.fetchSubjectVisualizationData(userID, subjectID, saFileNameList, fileSize, 
 				iCurrentVisualizationOffset, iDurationMilliSeconds, iGraphWidthPixels, bTestPattern);
 		long estimatedTime = System.currentTimeMillis() - startTime;
@@ -587,6 +612,4 @@ public class VisualizeGraphBacking implements Serializable {
 			VisualizeSharedBacking visualizeSharedBacking) {
 		this.visualizeSharedBacking = visualizeSharedBacking;
 	}
-
-
 }

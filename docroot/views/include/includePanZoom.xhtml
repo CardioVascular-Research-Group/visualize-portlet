@@ -2,14 +2,6 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
-	<p:panel id="ecgDataHidden">
-		<script>
-			// alert("updating panel: ecgDataHidden");
-			data = '#{visualizeGraphBacking.data}';
-			saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}'
-			//renderData();
-		</script>
-	</p:panel>
 	
 	<p:panel id="dragPanelPanZoom" header="Data Frame"
 		styleClass="dragPanelPanZoom clearfix hoverShadow ">
@@ -68,4 +60,12 @@
  	<p:draggable for="dragPanelPanZoom" handle=".ui-panel-titlebar" />
 	<p:resizable for="dragPanelPanZoom" handles="e,w,n,s,se,sw,ne,nw" />
  -->
+	<p:panel id="ecgDataHidden">
+		<script>
+			//alert("updating panel: ecgDataHidden");
+			data = '#{visualizeGraphBacking.data}';
+			//alert('updating panel: ecgDataHidden, data: ' + data);
+			saGraphTitle = '#{visualizeGraphBacking.saGraphTitle}';
+		</script>
+	</p:panel>
 </ui:composition>

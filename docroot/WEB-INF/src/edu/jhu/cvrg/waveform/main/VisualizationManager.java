@@ -46,6 +46,7 @@ public class VisualizationManager {
 			String[] saFileNameList, long fileSize, 
 			int offsetMilliSeconds, int durationMilliSeconds, 
 			int graphWidthPixels, boolean bTestPattern) {
+		System.out.println("--- -- fetchSubjectVisualizationData() saFileNameList[0]: " + saFileNameList[0] +  " offsetMilliSeconds: " + offsetMilliSeconds + " durationMilliSeconds: " + durationMilliSeconds );
 
 		String ftpURL = ResourceUtility.getFtpHost(); // web address of the data file repository 
 		String fUser = ResourceUtility.getFtpUser(); // ftp userID
