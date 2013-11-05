@@ -63,8 +63,8 @@
 }
 
 .label {
-	text-align: right;
-	height: 20px;
+	text-align: center;
+	height: 35px;
 }
 
 .graph {
@@ -92,8 +92,8 @@
 }
 */
 .labelCal {
-	text-align: right;
-	height: 20px;
+	text-align: center;
+	height: 35px;
 }
 /*
 .ylabelCal2{

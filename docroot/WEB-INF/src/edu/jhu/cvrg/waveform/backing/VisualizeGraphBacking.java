@@ -121,6 +121,7 @@ public class VisualizeGraphBacking implements Serializable {
     public String viewSingleGraph(){
     	System.out.println("+++ VisualizeGraphBacking.java, viewSingleGraph() +++ ");
 //    	setVisibleFragment(2); // show 12 lead graph page fragment.
+    	setGraphMultipleVisible(false);
 		return "viewD_SingleLead";
 //		return "viewD_Test";
     }
@@ -140,6 +141,7 @@ public class VisualizeGraphBacking implements Serializable {
 //		visualizeSharedBacking.getSharedAnnotationBacking().showAnnotationForLead();
     	System.out.println("+++ VisualizeGraphBacking.java, viewSingleGraph2() passedLeadName: " + passedLeadName + " passedLeadNumber: " + passedLeadNumber + " +++ ");
 //		return "viewD_Test2";
+    	setGraphMultipleVisible(false);
 		return "viewD_SingleLead";
     }
 
@@ -174,7 +176,7 @@ public class VisualizeGraphBacking implements Serializable {
 			setGraphTitle(iaAnnCount, iLeadCount);
 		}
     	System.out.println("+ Exiting view12LeadsGraph() +++ ");
-
+    	setGraphMultipleVisible(true);
 		return "viewB_Display12Leads.xhtml";
     }
 
@@ -217,10 +219,11 @@ public class VisualizeGraphBacking implements Serializable {
     public String getDescription() {
     	description = "Subject:" + visualizeSharedBacking.getSharedStudyEntry().getRecordName() 
     			+ " / Lead count:" + visualizeSharedBacking.getSharedStudyEntry().getLeadCount() 
-    			+ " / Sampling-rate:" + visualizeSharedBacking.getSharedStudyEntry().getSamplingRate() + "Hz";
+    			+ " / Sampling-rate:" + visualizeSharedBacking.getSharedStudyEntry().getSamplingRate() + "Hz"
+    			+ " / ECG duration:" + visualizeSharedBacking.getSharedStudyEntry().getDurationSec();
 		return description;
 	}
-
+    
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -359,30 +362,52 @@ public class VisualizeGraphBacking implements Serializable {
 		System.out.println("--- Exiting function setGraphTitle()");
 	}
 	
+	/** refetches the displayed data.  Called if there is a change to the durationMilliSeconds.	 */
+	public void reloadData() {
+		System.out.println("--Entering function reloadData()");
+		fetchDisplayData();
+		System.out.println("--Exiting function reloadData()");
+	}
 	public void panZeroSec() {
 		System.out.println("--Entering function panZeroSec()");
-		iCurrentVisualizationOffset = 0;	
-		fetchDisplayData();
+//		iCurrentVisualizationOffset = 0;	
+//		fetchDisplayData();
+		panToTime(0);
 		System.out.println("--Exiting function panZeroSec()");
 	}
 	public void panRight() {
 		System.out.println("--Entering function panRight");
-		iCurrentVisualizationOffset += iVisualizationWidthMS;	
-		fetchDisplayData();
+		if(isGraphMultipleVisible()){
+			panToTime(iCurrentVisualizationOffset + iVisualizationWidthMS);
+		}else{
+			panToTime(iCurrentVisualizationOffset + iDurationMilliSeconds);
+		}
+//		fetchDisplayData();
 		System.out.println("--Exiting function panRight");
 	}
 	public void panLeft() {
 		System.out.println("--Entering function panLeft");
-		iCurrentVisualizationOffset -= iVisualizationWidthMS;	
-		fetchDisplayData();
+		if(isGraphMultipleVisible()){
+			panToTime(iCurrentVisualizationOffset - iVisualizationWidthMS);	
+		}else{
+			panToTime(iCurrentVisualizationOffset - iDurationMilliSeconds);
+		}
+//		if (iCurrentVisualizationOffset<0) iCurrentVisualizationOffset = 0; // don't start before the beginning.
+//		fetchDisplayData();
 		System.out.println("--Exiting function panLeft");
 	}
 	public void panEnd() {
 		System.out.println("--Entering function panRight");
-		int msInFullECG = visualizeSharedBacking.getSharedStudyEntry().getMsecDuration();  //(int)((NumPts/sampRate)*1000.0); // number of milliseconds in full ECG file. 
-		int lastDataOffset = msInFullECG - iVisualizationWidthMS + 1; // one graph width before the end of the data.
-		iCurrentVisualizationOffset = lastDataOffset; 
-		fetchDisplayData();
+		int lastDataOffset=0;
+		int msInFullECG = visualizeSharedBacking.getSharedStudyEntry().getMsecDuration();  //(int)((NumPts/sampRate)*1000.0); // number of milliseconds in full ECG file.
+		panToTime(msInFullECG);
+//		if(isGraphMultipleVisible()){
+//			lastDataOffset = msInFullECG - iVisualizationWidthMS + 1; // one graph width before the end of the data.
+//		}else{
+//			lastDataOffset = msInFullECG - iDurationMilliSeconds + 1; // one graph width before the end of the data.			
+//		}
+//		iCurrentVisualizationOffset = lastDataOffset; 
+//		fetchDisplayData();
 		System.out.println("--Exiting function panRight");
 	}
 
@@ -436,26 +461,51 @@ public class VisualizeGraphBacking implements Serializable {
 		return newScrollTimeMS;
 	}
 	
+	/** Pans display data to the StartPoint specified (in milliseconds).
+	 * Ajusts for out-of-range values, then calls fetchDisplayData.
+	 * 
+	 * @param iStartPoint - new start time of graph data in milliseconds.
+	 */
 	public void panToTime(int iStartPoint) {
 		System.out.println("--Entering function panToTime, iStartPoint:" + iStartPoint);
 		int msInFullECG = visualizeSharedBacking.getSharedStudyEntry().getMsecDuration();  //(int)((NumPts/sampRate)*1000.0); // number of milliseconds in full ECG file. 
-		int lastDataOffset = msInFullECG - iVisualizationWidthMS + 1; // one graph width before the end of the data.
-		if(iStartPoint>lastDataOffset) {// don't allow view frame to pan past the end of the data.
-			iStartPoint = lastDataOffset;
+		int maxAllowableOffset=0;
+		
+//		lastDataOffset = msInFullECG - iVisualizationWidthMS + 1; // one graph width before the end of the data.
+//		if(iStartPoint>lastDataOffset) {// don't allow view frame to pan past the end of the data.
+//			iStartPoint = lastDataOffset;
+//		}		
+//		iCurrentVisualizationOffset = iStartPoint;
+		
+		// don't allow view frame to pan past the end of the data.
+		// calculate largest allowable start point.
+		if(isGraphMultipleVisible()){
+			maxAllowableOffset = msInFullECG - iVisualizationWidthMS + 1; // one graph width before the end of the data.
+		}else{
+			maxAllowableOffset = msInFullECG - iDurationMilliSeconds + 1; // one graph width before the end of the data.			
 		}
-		iCurrentVisualizationOffset = iStartPoint; 
+		// check if starting point is too large.
+		if(iStartPoint < maxAllowableOffset){
+			iCurrentVisualizationOffset = iStartPoint;
+		}else{
+			iCurrentVisualizationOffset = maxAllowableOffset; 
+		}
+		
+		//check if starting point is too small.
+		if(iCurrentVisualizationOffset<0) iCurrentVisualizationOffset = 0;
+		
 		fetchDisplayData();
 		System.out.println("--Exiting function panToTime");
 	}
 
 	
-	public void g12leadLoadHiRez() {
-		System.out.println("Entering function g12leadLoadHiRez");
-		iGraphWidthPixels = 2500;
-		fetchDisplayData();
-//		iGraphWidthPixels = 250;
-		System.out.println("Exiting function g12leadLoadHiRez");
-	}
+//	public void g12leadLoadHiRez() {
+//		System.out.println("Entering function g12leadLoadHiRez");
+//		iGraphWidthPixels = 2500;
+//		fetchDisplayData();
+////		iGraphWidthPixels = 250;
+//		System.out.println("Exiting function g12leadLoadHiRez");
+//	}
 	
 	/** Fetch an array of all annotations on this ECG.
 	 * 

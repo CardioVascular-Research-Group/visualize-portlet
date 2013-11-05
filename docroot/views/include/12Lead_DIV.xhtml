@@ -7,31 +7,48 @@
 	<!-- 	<h:outputStylesheet name="/css/12_lead.css" /> -->
 
 	<style>
-.ylabelCal {
-	left: -5px;
-	top: 50%;
-	font-size: 8pt;
-	/* Safari */
-	-webkit-transform: rotate(-90deg);
-	/* Firefox */
-	-moz-transform: rotate(-90deg);
-	/* IE */
-	-ms-transform: rotate(-90deg);
-	/* Opera */
-	-o-transform: rotate(-90deg);
-	/* Internet Explorer
-	    filter: progid : DXImageTransform.Microsoft.BasicImage ( rotation = 3 );
-	     */
-	transform: rotate(-90deg);
-}
-</style>
+		.ylabelCal {
+			left: -5px;
+			top: 50%;
+			font-size: 8pt;
+			/* Safari */
+			-webkit-transform: rotate(-90deg);
+			/* Firefox */
+			-moz-transform: rotate(-90deg);
+			/* IE */
+			-ms-transform: rotate(-90deg);
+			/* Opera */
+			-o-transform: rotate(-90deg);
+			/* Internet Explorer
+			    filter: progid : DXImageTransform.Microsoft.BasicImage ( rotation = 3 );
+			     */
+			transform: rotate(-90deg);
+		}
+		
+		.toplabel {
+			font-weight:bold;
+			text-align: right;
+		}
+	</style>
 
 	<!-- Instruction label -->
 	<h:panelGrid layout="block" id="instruction12Lead"
-		styleClass="instruction12Lead" columns="2" width="800px">
-		<h:outputLabel id="Description"
-			value="#{visualizeGraphBacking.description}" />
-		<h:outputLabel id="instruction" value="[Click on a graph to expand]" />
+		styleClass="instruction12Lead" columns="2" width="800">
+		<h:panelGroup>
+			<h:outputLabel id="subjectLabel" styleClass="toplabel" value="Subject:" />
+			<h:outputText id="subjectValue" value="#{visualizeSharedBacking.sharedStudyEntry.getRecordName()}" />
+	
+			<h:outputLabel id="leadLabel" styleClass="toplabel" value=" / Lead count:" />
+			<h:outputText id="leadValue" value="#{visualizeSharedBacking.leadCount}" />
+	
+			<h:outputLabel id="rateLabel" styleClass="toplabel" value=" / Sampling-rate:" />
+			<h:outputText id="rateValue" value="#{visualizeSharedBacking.samplingRate}" />
+	
+			<h:outputLabel id="durationLabel" styleClass="toplabel" value=" / ECG duration:" />
+			<h:outputText id="durationValue" value="#{visualizeSharedBacking.durationSec}" />
+		</h:panelGroup>
+		
+		<h:outputLabel id="instruction" styleClass="toplabel" value="[Click on a graph to expand a single lead.-]" />
 	</h:panelGrid>
 
 	<!-- START 12 lead container -->
@@ -62,8 +79,7 @@
 						styleClass="graphCal"></h:panelGroup>
 					<h:outputText value="" />
 				</h:panelGrid>
-				<h:panelGroup layout="block" id="labelCal0" styleClass="labelCal"
-					style="text-align:center"></h:panelGroup>
+				<h:panelGroup layout="block" id="labelCal0" styleClass="labelCal"></h:panelGroup>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv0"
 				styleClass="ecgContainer">
@@ -78,9 +94,7 @@
 							title="graph loading indicator" alt="graph loading indicator" />
 					</h:panelGroup>
 					<h:outputText value="" />
-					<h:panelGroup layout="block" id="labelDiv0" styleClass="label"
-						style="text-align:center"></h:panelGroup>
-					<!-- 					<h:panelGroup layout="block" id="lineDiv0" class="crossHairVert"></h:panelGroup> -->
+					<h:panelGroup layout="block" id="labelDiv0" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv3"
@@ -96,9 +110,7 @@
 							title="graph loading indicator" alt="graph loading indicator" />
 					</h:panelGroup>
 					<h:outputText value="" />
-					<h:panelGroup layout="block" id="labelDiv3" styleClass="label"
-						style="text-align:center"></h:panelGroup>
-					<!-- 					<h:panelGroup layout="block" id="lineDiv3" class="crossHairVert"></h:panelGroup> -->
+					<h:panelGroup layout="block" id="labelDiv3" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv6"
@@ -114,9 +126,7 @@
 							title="graph loading indicator" alt="graph loading indicator" />
 					</h:panelGroup>
 					<h:outputText value="" />
-					<h:panelGroup layout="block" id="labelDiv6" styleClass="label"
-						style="text-align:center"></h:panelGroup>
-					<!-- 					<h:panelGroup layout="block" id="lineDiv6" class="crossHairVert"></h:panelGroup> -->
+					<h:panelGroup layout="block" id="labelDiv6" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv9"
@@ -132,9 +142,7 @@
 							title="graph loading indicator" alt="graph loading indicator" />
 					</h:panelGroup>
 					<h:outputText value="" />
-					<h:panelGroup layout="block" id="labelDiv9" styleClass="label"
-						style="text-align:center"></h:panelGroup>
-					<!-- 					<h:panelGroup layout="block" id="lineDiv9" class="crossHairVert"></h:panelGroup> -->
+					<h:panelGroup layout="block" id="labelDiv9" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 
@@ -148,8 +156,7 @@
 						styleClass="graphCal"></h:panelGroup>
 					<h:outputText value="" />
 				</h:panelGrid>
-				<h:panelGroup layout="block" id="labelCal1" styleClass="labelCal"
-					style="text-align:center"></h:panelGroup>
+				<h:panelGroup layout="block" id="labelCal1" styleClass="labelCal"></h:panelGroup>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv1"
 				styleClass="ecgContainer">
@@ -164,9 +171,7 @@
 							title="graph loading indicator" alt="graph loading indicator" />
 					</h:panelGroup>
 					<h:outputText value="" />
-					<h:panelGroup layout="block" id="labelDiv1" styleClass="label"
-						style="text-align:center"></h:panelGroup>
-					<!-- 					<h:panelGroup layout="block" id="lineDiv1" class="crossHairVert"></h:panelGroup> -->
+					<h:panelGroup layout="block" id="labelDiv1" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv4"
@@ -182,9 +187,7 @@
 							title="graph loading indicator" alt="graph loading indicator" />
 					</h:panelGroup>
 					<h:outputText value="" />
-					<h:panelGroup layout="block" id="labelDiv4" styleClass="label"
-						style="text-align:center"></h:panelGroup>
-					<!-- 					<h:panelGroup layout="block" id="lineDiv4" class="crossHairVert"></h:panelGroup> -->
+					<h:panelGroup layout="block" id="labelDiv4" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv7"
@@ -200,9 +203,7 @@
 							title="graph loading indicator" alt="graph loading indicator" />
 					</h:panelGroup>
 					<h:outputText value="" />
-					<h:panelGroup layout="block" id="labelDiv7" styleClass="label"
-						style="text-align:center"></h:panelGroup>
-					<!-- 					<h:panelGroup layout="block" id="lineDiv7" class="crossHairVert"></h:panelGroup> -->
+					<h:panelGroup layout="block" id="labelDiv7" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv10"
@@ -218,9 +219,7 @@
 							title="graph loading indicator" alt="graph loading indicator" />
 					</h:panelGroup>
 					<h:outputText value="" />
-					<h:panelGroup layout="block" id="labelDiv10" styleClass="label"
-						style="text-align:center"></h:panelGroup>
-					<!-- 					<h:panelGroup layout="block" id="lineDiv10" class="crossHairVert"></h:panelGroup> -->
+					<h:panelGroup layout="block" id="labelDiv10" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 
@@ -233,8 +232,7 @@
 						styleClass="graphCal"></h:panelGroup>
 					<h:outputText value="" />
 				</h:panelGrid>
-				<h:panelGroup layout="block" id="labelCal2" styleClass="labelCal"
-					style="text-align:center"></h:panelGroup>
+				<h:panelGroup layout="block" id="labelCal2" styleClass="labelCal"></h:panelGroup>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv2"
 				styleClass="ecgContainer">
@@ -249,9 +247,7 @@
 							title="graph loading indicator" alt="graph loading indicator" />
 					</h:panelGroup>
 					<h:outputText value="" />
-					<h:panelGroup layout="block" id="labelDiv2" styleClass="label"
-						style="text-align:center"></h:panelGroup>
-					<!-- 					<h:panelGroup layout="block" id="lineDiv2" class="crossHairVert"></h:panelGroup> -->
+					<h:panelGroup layout="block" id="labelDiv2" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv5"
@@ -267,9 +263,7 @@
 							title="graph loading indicator" alt="graph loading indicator" />
 					</h:panelGroup>
 					<h:outputText value="" />
-					<h:panelGroup layout="block" id="labelDiv5" styleClass="label"
-						style="text-align:center"></h:panelGroup>
-					<!-- 					<h:panelGroup layout="block" id="lineDiv5" class="crossHairVert"></h:panelGroup> -->
+					<h:panelGroup layout="block" id="labelDiv5" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv8"
@@ -285,9 +279,7 @@
 							title="graph loading indicator" alt="graph loading indicator" />
 					</h:panelGroup>
 					<h:outputText value="" />
-					<h:panelGroup layout="block" id="labelDiv8" styleClass="label"
-						style="text-align:center"></h:panelGroup>
-					<!-- 					<h:panelGroup layout="block" id="lineDiv8" class="crossHairVert"></h:panelGroup> -->
+					<h:panelGroup layout="block" id="labelDiv8" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 			<h:panelGroup layout="block" id="ContainerDiv11"
@@ -303,9 +295,7 @@
 							title="graph loading indicator" alt="graph loading indicator" />
 					</h:panelGroup>
 					<h:outputText value="" />
-					<h:panelGroup layout="block" id="labelDiv11" styleClass="label"
-						style="text-align:center"></h:panelGroup>
-					<!-- 					<h:panelGroup layout="block" id="lineDiv11" class="crossHairVert"></h:panelGroup> -->
+					<h:panelGroup layout="block" id="labelDiv11" styleClass="label"></h:panelGroup>
 				</h:panelGrid>
 			</h:panelGroup>
 		</h:panelGrid>

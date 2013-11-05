@@ -67,7 +67,7 @@
 	};	
 
 	var CVRG_xTickerSingle = function(minTms, maxTms, pixels, axis_props, self, forced_vals) {
-		var pixelsPerTick = 20; 
+		var pixelsPerTick = 30; 
 		var msecLargeTime = 200; 
 		var msecSmallTime = 40;
 
@@ -90,10 +90,13 @@
 	 * Add ticks when the x axis has numbers on it (instead of dates)
 	 * @param minV - minimum value of the window on this axis
 	 * @param maxV - maximum value of the window on this axis
+	 * @param pixels - the length of the axis in pixels.
+	 * @param axis_props - properties array of this axis, if any. 
+	 *             Provides access to chart- and axis-specific options. 
+	 *             It can be used to access number/date formatting code/options, check for a log scale, etc.
 	 * @param self - the Dygraph object for which an axis is being constructed.
-	 * @param axis_props - properties array of this axis, if any.
 	 * @param vals - Array of {label, value} tuples.
-	 * @param pixelsPerLabelAttribute - either "pixelsPerXLabel" or "pixelsPerYLabel"
+	 * @param pixelsPerTick - either "pixelsPerXLabel" or "pixelsPerYLabel"
 	 * @param msecLargeTime=500; // time span between the dark grid lines 1/5 second (5 millimeter)on paper ECG, equal to 5 small time blocks
 	 * @param var msecSmallTime=100;  // time span between the light grid lines 1/25 second (1 mm) on paper ECG
 	 * 
@@ -230,14 +233,15 @@
 	// parameter:
 	//     ms - time in milliseconds.
 	var CVRG_xAxisLabelFormatter = function(ms) {
+		var label = "";
 		if(ms < WF_minTime){
 			ms = (ms + 400.0) - (WF_minTime/1);// so the calibration pulse will have it's own zero time reference.
+		}else{
+			var shift = Math.pow(10, 5);
+			var intMS = Math.round(ms * shift) / shift;
+			var dSec = intMS/1000;
+			label = CVRG_formatExponential(dSec,CVRG_TimeExponent,3);
 		}
-		var shift = Math.pow(10, 5);
-		var intMS = Math.round(ms * shift) / shift;
-		var dSec = intMS/1000;
-		var label = CVRG_formatExponential(dSec,CVRG_TimeExponent,3);
-		
 		return label;
 	};
 
@@ -284,7 +288,8 @@
 //		return x;
 		var result = "";		
 		result = formatMsecToExponent(x);
-		return "Time (seconds):" + result + " ";
+//		return "Time (seconds):" + result + " ";
+		return result + " Sec";
 	};
 	
 	/** controls the display of numbers on the axes (i.e. tick marks).
@@ -357,7 +362,7 @@
 	 * @param digitsAfterDecimal - number of digits to preserve after the decimal point, the last digit being rounded.
 	 */ 
 	var CVRG_formatExponential = function(num, exponent, digitsAfterDecimal){
-		var label = "foo";
+		var label = -99999;//unlikely to be a real time value
 		var coefficient = num/Math.pow(10, exponent);
 		
 		// Round up to the requested number of decimal places.

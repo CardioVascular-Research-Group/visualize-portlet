@@ -124,7 +124,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 			            rangeSelectorPlotFillColor: 'lightblue',
 			            connectSeparatedPoints: false,
 			            drawGapEdgePoints: true,
-						dateWindow: [dateStartMS, (dateStartMS+dateWidthMS)], // Start and End times in milliseconds
+						// dateWindow: [dateStartMS, (dateStartMS+dateWidthMS)], // Start and End times in milliseconds
 						interactionModel : {  // custom interation model definition parameter (Implemented in interval.js)
 							'mousedown' : CVRG_mousedown2,
 							'mousemove' : CVRG_mousemove2,

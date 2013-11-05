@@ -44,6 +44,19 @@ public class VisualizeSharedBacking  implements Serializable {
 		System.out.println("===== VisualizeSharedBacking, setSharedStudyEntry ========");
 		this.sharedStudyEntry = sharedStudyEntry;
 	}
+	
+    
+    public String getLeadCount(){
+    	return String.valueOf(getSharedStudyEntry().getLeadCount());
+    }
+
+    public String getSamplingRate(){
+    	return String.valueOf(getSharedStudyEntry().getSamplingRate()) + "Hz";
+    }
+
+    public String getDurationSec(){
+    	return String.valueOf(getSharedStudyEntry().getDurationSec()) + " seconds";
+    }
 	//--------------------------------
 //	public AnnotationBacking getSharedAnnotationBacking() {
 //		return sharedAnnotationBacking;

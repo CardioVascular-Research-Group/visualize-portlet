@@ -40,147 +40,147 @@
 	 * 
 	 * @returns
 	 */	
-	var CVRG_drawECGgraph = function(){
-		if(drawECGCallCount == 0){
-			drawECGCallCount++;
-			ecg_graph = new Dygraph( 
-					document.getElementById("ecg_div"),
-					data, 
-					{
-						stepPlot: false,
-						labelsDiv: document.getElementById('status_div'),
-						labelsDivStyles: { border: '1px solid black' },
-						labelsSeparateLines: false,
-						gridLineColor: '#FA8C8C',
-						labelsKMB: true,
-						axes: { 
-							x: { 
-								valueFormatter: CVRG_xValueFormatter2,
-								ticker: CVRG_xTicker,
-								axisLabelFormatter: CVRG_xAxisLabelFormatter2								
-							}, 
-							y: { 
-								valueFormatter: CVRG_yValueFormatter2, 
-								ticker: CVRG_yTicker, 
-								axisLabelFormatter: CVRG_yAxisLabelFormatter2
-							} 
-						},
-						annotationClickHandler:    CVRG_annotationClickHandler, 
-						annotationDblClickHandler: CVRG_annotationDblClickHandler, 
-						annotationMouseOverHandler:CVRG_annotationMouseOverHandler, 
-						annotationMouseOutHandler: CVRG_annotationMouseOutHandler, 
-						drawCallback:              CVRG_drawCallback, 
-						pointClickCallback:        CVRG_pointClickCallback,
-						zoomCallback:              CVRG_zoomCallback,
-						
-						highlightCallback: function(e, x, pts) {
-							var x = document.getElementById("ecg_div").xpos;
-							var y = document.getElementById("ecg_div").ypos;
-							//var yOffset = 209;
-							//var xOffset = 380;
-							var yOffset = 0;
-							var xOffset = 0;
-							CVRG_highlightCallback(e, pts, yOffset, xOffset);
-						},
-						unhighlightCallback: function(e){
-							CVRG_unhighlightCallback(e, ecg_graph.rawData_[0].length-1);
-						},
-
-						highlightCircleSize: 5,
-						strokeWidth: 1,
-						drawPoints: false,
-						width: 640,
-						height: 480,
-						padding: {left: 1, right: 1, top: 5, bottom: 5}
-						,
-						interactionModel : { // custom interation model definition parameter
-							'mousedown' : CVRG_mousedown,
-							'mousemove' : CVRG_mousemove,
-							'mouseup' : CVRG_mouseup
-							//'click' : CVRG_mouseclick,
-							//'dblclick' : CVRG_mousedblClick,
-							//'mousewheel' : CVRG_mousescroll
-						}
-						
-					}
-			);
-			
-//			var leadCount = ecg_graph.rawData_[0].length-1;
-			CVRG_InitHorizontalLines(leadCount, "ecg_div");
-			CVRG_InitVerticalLines("ecg_div");
-		}
-	};
-	
-
-     // Ver 2 
-    
-    
-    // Original Dygraph Single Lead Display by Mike Below.
-    
-	var CVRG_drawECGgraph2 = function(){
-		if(drawECGCallCount == 0){
-			drawECGCallCount++;
-			ecg_graph = new Dygraph( 
-					document.getElementById("ecg_div"),
-					data, 
-					{
-						stepPlot: false,
-						labelsDiv: document.getElementById('status_div'),
-						labelsDivStyles: { border: '1px solid black' },
-						labelsSeparateLines: false,
-						gridLineColor: '#FA8C8C',
-						labelsKMB: true,
-						axes: { 
-							x: { 
-								valueFormatter: CVRG_xValueFormatter2,
-								axisLabelFormatter: CVRG_xAxisLabelFormatter2,
-								ticker: CVRG_xTicker 
-							}, 
-							y: { 
-								valueFormatter: CVRG_yValueFormatter2,
-								axisLabelFormatter: CVRG_yAxisLabelFormatter2, 
-								ticker: CVRG_yTicker 
-							} 
-						},
-						annotationClickHandler:    CVRG_annotationClickHandler, 
-						annotationDblClickHandler: CVRG_annotationDblClickHandler, 
-						annotationMouseOverHandler:CVRG_annotationMouseOverHandler, 
-						annotationMouseOutHandler: CVRG_annotationMouseOutHandler, 
-						drawCallback:              CVRG_drawCallback, 
-						pointClickCallback:        CVRG_pointClickCallback2,
-						zoomCallback:              CVRG_zoomCallback,
-						highlightCallback: function(e, x, pts) {
-							var x = document.getElementById("ecg_div").xpos;
-							var y = document.getElementById("ecg_div").ypos;
-							// var yOffset = 209;
-							// var xOffset = 380;
-							var yOffset = 0;
-							var xOffset = 0;
-							CVRG_highlightCallback(e, pts, yOffset, xOffset);
-						},
-						unhighlightCallback: function(e){
-							CVRG_unhighlightCallback(e, ecg_graph.rawData_[0].length-1);
-						},
-						visibility: [true, false, false, false, false, false, false, false, false, false, false, false, ],
-						highlightCircleSize: 5,
-						strokeWidth: 1,
-						drawPoints: false,
-						width: 640,
-						height: 480,
-						padding: {left: 1, right: 1, top: 5, bottom: 5},
-						
-						dateWindow: [0,2500], // Start and End times in milliseconds
-						interactionModel : { // custom interation model definition parameter
-							'mousedown' : CVRG_mousedown2,
-							'mousemove' : CVRG_mousemove2,
-							'mouseup' : CVRG_mouseup2
-
-						}
-						
-					}
-			);
-		}
-	};
+//	var CVRG_drawECGgraph = function(){
+//		if(drawECGCallCount == 0){
+//			drawECGCallCount++;
+//			ecg_graph = new Dygraph( 
+//					document.getElementById("ecg_div"),
+//					data, 
+//					{
+//						stepPlot: false,
+//						labelsDiv: document.getElementById('status_div'),
+//						labelsDivStyles: { border: '1px solid black' },
+//						labelsSeparateLines: false,
+//						gridLineColor: '#FA8C8C',
+//						labelsKMB: true,
+//						axes: { 
+//							x: { 
+//								valueFormatter: CVRG_xValueFormatter2,
+//								ticker: CVRG_xTicker,
+//								axisLabelFormatter: CVRG_xAxisLabelFormatter2								
+//							}, 
+//							y: { 
+//								valueFormatter: CVRG_yValueFormatter2, 
+//								ticker: CVRG_yTicker, 
+//								axisLabelFormatter: CVRG_yAxisLabelFormatter2
+//							} 
+//						},
+//						annotationClickHandler:    CVRG_annotationClickHandler, 
+//						annotationDblClickHandler: CVRG_annotationDblClickHandler, 
+//						annotationMouseOverHandler:CVRG_annotationMouseOverHandler, 
+//						annotationMouseOutHandler: CVRG_annotationMouseOutHandler, 
+//						drawCallback:              CVRG_drawCallback, 
+//						pointClickCallback:        CVRG_pointClickCallback,
+//						zoomCallback:              CVRG_zoomCallback,
+//						
+//						highlightCallback: function(e, x, pts) {
+//							var x = document.getElementById("ecg_div").xpos;
+//							var y = document.getElementById("ecg_div").ypos;
+//							//var yOffset = 209;
+//							//var xOffset = 380;
+//							var yOffset = 0;
+//							var xOffset = 0;
+//							CVRG_highlightCallback(e, pts, yOffset, xOffset);
+//						},
+//						unhighlightCallback: function(e){
+//							CVRG_unhighlightCallback(e, ecg_graph.rawData_[0].length-1);
+//						},
+//
+//						highlightCircleSize: 5,
+//						strokeWidth: 1,
+//						drawPoints: false,
+//						width: 640,
+//						height: 480,
+//						padding: {left: 1, right: 1, top: 5, bottom: 5}
+//						,
+//						interactionModel : { // custom interation model definition parameter
+//							'mousedown' : CVRG_mousedown,
+//							'mousemove' : CVRG_mousemove,
+//							'mouseup' : CVRG_mouseup
+//							//'click' : CVRG_mouseclick,
+//							//'dblclick' : CVRG_mousedblClick,
+//							//'mousewheel' : CVRG_mousescroll
+//						}
+//						
+//					}
+//			);
+//			
+////			var leadCount = ecg_graph.rawData_[0].length-1;
+//			CVRG_InitHorizontalLines(leadCount, "ecg_div");
+//			CVRG_InitVerticalLines("ecg_div");
+//		}
+//	};
+//	
+//
+//     // Ver 2 
+//    
+//    
+//    // Original Dygraph Single Lead Display by Mike Below.
+//    
+//	var CVRG_drawECGgraph2 = function(){
+//		if(drawECGCallCount == 0){
+//			drawECGCallCount++;
+//			ecg_graph = new Dygraph( 
+//					document.getElementById("ecg_div"),
+//					data, 
+//					{
+//						stepPlot: false,
+//						labelsDiv: document.getElementById('status_div'),
+//						labelsDivStyles: { border: '1px solid black' },
+//						labelsSeparateLines: false,
+//						gridLineColor: '#FA8C8C',
+//						labelsKMB: true,
+//						axes: { 
+//							x: { 
+//								valueFormatter: CVRG_xValueFormatter2,
+//								axisLabelFormatter: CVRG_xAxisLabelFormatter2,
+//								ticker: CVRG_xTicker 
+//							}, 
+//							y: { 
+//								valueFormatter: CVRG_yValueFormatter2,
+//								axisLabelFormatter: CVRG_yAxisLabelFormatter2, 
+//								ticker: CVRG_yTicker 
+//							} 
+//						},
+//						annotationClickHandler:    CVRG_annotationClickHandler, 
+//						annotationDblClickHandler: CVRG_annotationDblClickHandler, 
+//						annotationMouseOverHandler:CVRG_annotationMouseOverHandler, 
+//						annotationMouseOutHandler: CVRG_annotationMouseOutHandler, 
+//						drawCallback:              CVRG_drawCallback, 
+//						pointClickCallback:        CVRG_pointClickCallback2,
+//						zoomCallback:              CVRG_zoomCallback,
+//						highlightCallback: function(e, x, pts) {
+//							var x = document.getElementById("ecg_div").xpos;
+//							var y = document.getElementById("ecg_div").ypos;
+//							// var yOffset = 209;
+//							// var xOffset = 380;
+//							var yOffset = 0;
+//							var xOffset = 0;
+//							CVRG_highlightCallback(e, pts, yOffset, xOffset);
+//						},
+//						unhighlightCallback: function(e){
+//							CVRG_unhighlightCallback(e, ecg_graph.rawData_[0].length-1);
+//						},
+//						visibility: [true, false, false, false, false, false, false, false, false, false, false, false, ],
+//						highlightCircleSize: 5,
+//						strokeWidth: 1,
+//						drawPoints: false,
+//						width: 640,
+//						height: 480,
+//						padding: {left: 1, right: 1, top: 5, bottom: 5},
+//						
+//						dateWindow: [0,2500], // Start and End times in milliseconds
+//						interactionModel : { // custom interation model definition parameter
+//							'mousedown' : CVRG_mousedown2,
+//							'mousemove' : CVRG_mousemove2,
+//							'mouseup' : CVRG_mouseup2
+//
+//						}
+//						
+//					}
+//			);
+//		}
+//	};
 
 	// Highlight one portion out of line. RSA 041113
     var highlight_start = 0;          // 480 dataSX now - set to the Current X Start javascript Var
@@ -700,22 +700,22 @@
 	 * @param opts = a function which maps options to their values
 	 * @param dygraph = the dygraph object
 	 */
-	var CVRG_xAxisLabelFormatter2 = function(val, granularity, opts, dygraph) {
-		return CVRG_xAxisLabelFormatter(val);  // calling the function written for the older dygraphs library.
-	};
-		
-			
-	// Function to call to format values along the x axis. 
-	// parameter:
-	//     ms - time in milliseconds.
-	var CVRG_xAxisLabelFormatter = function(ms) {
-		var shift = Math.pow(10, 5);
-		var intMS = Math.round(ms * shift) / shift;
-		var dSec = intMS/1000;
-		var label = CVRG_formatExponential(dSec,CVRG_TimeExponent,3);
-		
-		return label;
-	};
+//	var CVRG_xAxisLabelFormatter2 = function(val, granularity, opts, dygraph) {
+//		return CVRG_xAxisLabelFormatter(val);  // calling the function written for the older dygraphs library.
+//	};
+//		
+//			
+//	// Function to call to format values along the x axis. 
+//	// parameter:
+//	//     ms - time in milliseconds.
+//	var CVRG_xAxisLabelFormatter = function(ms) {
+//		var shift = Math.pow(10, 5);
+//		var intMS = Math.round(ms * shift) / shift;
+//		var dSec = intMS/1000;
+//		var label = CVRG_formatExponential(dSec,CVRG_TimeExponent,3);
+//		
+//		return label;
+//	};
 
 	/** Controls the display of numbers in the legend 
 	 * (i.e. the text that appears when you hover on the chart).
@@ -725,56 +725,56 @@
 	 * @param series_name = the name of the relevant series
 	 * @param dygraph = the dygraph object
 	 */ 
-	var CVRG_xValueFormatter2 = function(val, opts, series_name, dygraph){
-		return CVRG_xValueFormatter(val); // calling the function written for the older dygraphs library.
-	};
+//	var CVRG_xValueFormatter2 = function(val, opts, series_name, dygraph){
+//		return CVRG_xValueFormatter(val); // calling the function written for the older dygraphs library.
+//	};
 	    
-    /** Function to provide a custom display format the X value for mouseover. 
-	 * @param x - time in milliseconds.
-	 * 
-	 * @returns - time in HH:MM:SS.sss format.
-	 */
-	var CVRG_xValueFormatter = function(x) {
-		var result = "";
-//		var shift = Math.pow(10, 5);
-//		var msDuration = Math.round(x * shift) / shift;
-//		var msRemainder = 0;
+//    /** Function to provide a custom display format the X value for mouseover. 
+//	 * @param x - time in milliseconds.
+//	 * 
+//	 * @returns - time in HH:MM:SS.sss format.
+//	 */
+//	var CVRG_xValueFormatter = function(x) {
+//		var result = "";
+////		var shift = Math.pow(10, 5);
+////		var msDuration = Math.round(x * shift) / shift;
+////		var msRemainder = 0;
+////		
+////		var hours = Math.floor(msDuration/3600000); // ms/hour
+////		msRemainder = msDuration-(hours*3600000);
+////		var minutes = Math.floor(msRemainder/60000); // ms/minute
+////		msRemainder = msRemainder-(minutes*60000);
+////		var seconds =  Math.floor(msRemainder/1000); // ms/second
+////		var milliseconds = msRemainder - (seconds*1000);
+////		
+////		if(hours>0){
+////			result = hours + ":";
+////			if (minutes<10) result += "0";
+////			if (minutes==0) result += "0:";
+////		}
+////		if(minutes>0){
+////			result += minutes + ":";
+////			if(seconds<10) result += "0";
+////			if(seconds==0) result += "0.";
+////		}
+////		if(seconds>0){
+////			result += seconds + ".";			
+////			if(milliseconds<100) result += "0";
+////			if(milliseconds<10) result += "0";
+////			if(milliseconds==0) result += "0";
+////		}
+////		if(milliseconds>0) result += milliseconds;
 //		
-//		var hours = Math.floor(msDuration/3600000); // ms/hour
-//		msRemainder = msDuration-(hours*3600000);
-//		var minutes = Math.floor(msRemainder/60000); // ms/minute
-//		msRemainder = msRemainder-(minutes*60000);
-//		var seconds =  Math.floor(msRemainder/1000); // ms/second
-//		var milliseconds = msRemainder - (seconds*1000);
+////		result = x/1000; // Rai wanted to see it as raw seconds rather than HH:MM:SS.sss format.
+//		result = formatMsecToExponent(x);
+//// this is the LEAD		
+//		return "<br>" + result + "<br>Lead";
 //		
-//		if(hours>0){
-//			result = hours + ":";
-//			if (minutes<10) result += "0";
-//			if (minutes==0) result += "0:";
-//		}
-//		if(minutes>0){
-//			result += minutes + ":";
-//			if(seconds<10) result += "0";
-//			if(seconds==0) result += "0.";
-//		}
-//		if(seconds>0){
-//			result += seconds + ".";			
-//			if(milliseconds<100) result += "0";
-//			if(milliseconds<10) result += "0";
-//			if(milliseconds==0) result += "0";
-//		}
-//		if(milliseconds>0) result += milliseconds;
-		
-//		result = x/1000; // Rai wanted to see it as raw seconds rather than HH:MM:SS.sss format.
-		result = formatMsecToExponent(x);
-// this is the LEAD		
-		return "<br>" + result + "<br>Lead";
-		
-	
-		
-	// RSA 012813	return "[Time (seconds)]:</BR> Lead : </BR> microVolts</BR>[" + result + "]";
-		
-	};
+//	
+//		
+//	// RSA 012813	return "[Time (seconds)]:</BR> Lead : </BR> microVolts</BR>[" + result + "]";
+//		
+//	};
 	
 	/** controls the display of numbers on the axes (i.e. tick marks).
 	 * 
@@ -1512,22 +1512,22 @@
 		return bDots;
 	}
 	
-	/** Formats the label for the time axis based on the current decade of the data being displayed.
-	 * 
-	 * @returns {String}
-	 */
-	function CVRG_getnewTimeLabel(){
-		return CVRG_timeLabelPrefix + " ( * 10^" + CVRG_TimeExponent + " Lead " + CVRG_sSecondSuffix +")";
-	};
-	
-	function formatMsecToExponent(x){
-		var decimalMult = ( Math.pow(10,(CVRG_TimeExponent)) ); // e.g. 1, 10, 100, 1000 or 10000 ect.
-		var s = x/decimalMult;
-		return "Time (Sec) " + s + " * 10^0";
-		
-		
-		// RSA 012813 - return "Time: Seconds " + s + " X 10^" + CVRG_TimeExponent;
-	};
+//	/** Formats the label for the time axis based on the current decade of the data being displayed.
+//	 * 
+//	 * @returns {String}
+//	 */
+//	function CVRG_getnewTimeLabel(){
+//		return CVRG_timeLabelPrefix + " ( * 10^" + CVRG_TimeExponent + " Lead " + CVRG_sSecondSuffix +")";
+//	};
+//	
+//	function formatMsecToExponent(x){
+//		var decimalMult = ( Math.pow(10,(CVRG_TimeExponent)) ); // e.g. 1, 10, 100, 1000 or 10000 ect.
+//		var s = x/decimalMult;
+//		return "Time (Sec) " + s + " * 10^0";
+//		
+//		
+//		// RSA 012813 - return "Time: Seconds " + s + " X 10^" + CVRG_TimeExponent;
+//	};
 	
 //	var CVRG_SetStepPlot = function(step) {
 //		CVRG_step = step;
