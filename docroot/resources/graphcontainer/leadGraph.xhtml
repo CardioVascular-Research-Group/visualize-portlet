@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:composite="http://java.sun.com/jsf/composite"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+    <h:head>
+        <title>This content will not be displayed</title>
+    </h:head>
+    <h:body>
+        <composite:interface>
+            <composite:attribute name="number" required="true"/>
+        </composite:interface>
+
+        <composite:implementation>
+            <h:inputHidden id="voltCenterInput#{cc.attrs.number}" value="50" immediate="true" />
+			<h:panelGroup layout="block" id="ContainerDiv#{cc.attrs.number}"
+				styleClass="ecgContainer">
+				<h:panelGrid columns="2">
+					<h:outputText value="" />
+					<h:outputText value="XXX" id="TitleDiv#{cc.attrs.number}" styleClass="title" />
+					
+					<p:slider for="voltCenterInput#{cc.attrs.number}" id="slider#{cc.attrs.number}"
+						styleClass="voltSlider" style="height:140px" type="vertical"
+						onSlideEnd="panVoltage(#{cc.attrs.number},true,'#{facesContext.externalContext.encodeNamespace('')}')" />
+					<h:panelGroup layout="block" id="graphDiv#{cc.attrs.number}" class="graph">
+						<h:graphicImage value="/image/graph-loader.gif"
+							title="graph loading indicator" alt="graph loading indicator" />
+					</h:panelGroup>
+					
+					<h:outputText value="" />
+					<h:panelGroup layout="block" id="labelDiv#{cc.attrs.number}" styleClass="label"></h:panelGroup>
+				</h:panelGrid>
+			</h:panelGroup>
+           
+        </composite:implementation>
+    </h:body>
+</html>
