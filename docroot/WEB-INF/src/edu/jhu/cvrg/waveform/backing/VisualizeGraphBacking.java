@@ -654,6 +654,10 @@ public class VisualizeGraphBacking implements Serializable {
 		return jsonArrayTitle;
 	}
 
+	public String[] getArrayGraphTitle() {
+		return saGraphTitle;
+	}
+
 	public VisualizeSharedBacking getVisualizeSharedBacking() {
 		return visualizeSharedBacking;
 	}

@@ -394,4 +394,40 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	var WAVEFORM_getIdwNamespace = function(elementID){
 		return singleLeadNamespace + ":" + elementID;
 	};
+
+	
+	/** Copied from example on Tom Puleo's July 31,2008 blog at:
+	 * http://www.tompuleo.com/2008/07/aspnet-getelementbyid-for-server.html 
+	 * @param tagName - The tagname of the element you want e.g. "div" or "input"
+	 * @param endsWith - The assigned id of the element, without the crud JSF prepends it with. e.g. "TitleDiv5".
+	 * 					example with JSF crud:"A1576:j_idt12:TitleDiv5" 
+	 * **/
+	var WAVEFORM_getElementByIdEndsWith = function(tagName,endsWith)
+	{
+		var elements = document.getElementsByTagName(tagName);
+		for(var i = 0; i < elements.length; i++)
+		{
+			if (elements[i].id.endsWith(endsWith))
+			{
+				return elements[i];
+			}
+		}
+		alert("WAVEFORM_getElementByIdEndsWith() failed to find:" + tagName + ", " + endsWith);
+		return null;
+	};
+	String.prototype.endsWith = function(txt,ignoreCase)
+	{
+		var rgx;
+		if(ignoreCase)
+		{
+			rgx = new RegExp(txt+"$","i");
+		}
+		else
+		{
+			rgx = new RegExp(txt+"$");
+		}
+		return this.match(rgx)!=null;       
+	};
+	/** End of code from Tom Puleo **/
+	
 	
