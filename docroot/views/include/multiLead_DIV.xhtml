@@ -54,35 +54,14 @@
 	<!-- START 12 lead container -->
 	<h:inputHidden id="voltCenterInputALL" value="50" immediate="true" />
 
-	<h:panelGrid id="Container_12LeadDivOutside" layout="block" columns="3"
+	<h:panelGrid id="Container_12LeadDivOutside" layout="block" columns="2"
 		styleClass="Container_12LeadDivOutside">
-		<h:panelGrid id="Container_12LeadDiv" layout="block" columns="5" 
-			styleClass="Container_12LeadDiv" >			
-
- 			<graph:calibrationGraph number="0" />
- 			<graph:leadGraph number="0"/>
-			<graph:leadGraph number="3"/>
-			<graph:leadGraph number="6"/>
-			<graph:leadGraph number="9"/>
-
-			<graph:calibrationGraph number="1" />
-			<graph:leadGraph number="1"/>
-			<graph:leadGraph number="4"/>
-			<graph:leadGraph number="7"/>
-			<graph:leadGraph number="10"/>
-
-			<graph:calibrationGraph number="2" />
-			<graph:leadGraph number="2"/>
-			<graph:leadGraph number="5"/>
-			<graph:leadGraph number="8"/>
-			<graph:leadGraph number="11"/>
-
-<ui:repeat varStatus="status" var="i" value="#{visualizeGraphBacking.arrayGraphTitle}" > 
-     #{status.index}
-     <h:outputText value="Ner #{i}" />
-</ui:repeat>	
-		</h:panelGrid>
-
+		
+		<p:dataGrid var="i" value="#{visualizeGraphBacking.multiLeadLayoutList}"  rowIndexVar="col"  columns="#{visualizeGraphBacking.multiLeadColumnCount}">
+		    <graph:calibrationGraph number="#{i.leadNumber}" rendered="#{!i.lead}"/>
+		    <graph:leadGraph number="#{i.leadNumber}" rendered="#{i.lead}"/>
+		</p:dataGrid>
+		
 		<p:slider id="voltCenterALL" for="voltCenterInputALL"
 			styleClass="voltCenterAllLead" style="height:500px" type="vertical"
 			animate="false"

@@ -799,7 +799,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		// Set graph sizes
 		resizeAllGraphs(graphWidth, graphHeight);
 		resizeAllCallibrations(calWidth, calHeight);
-		resizeAllSliders(graphHeight);
+//		resizeAllSliders(graphHeight);
+		repositionAllCrosshairs();
 		
 		// uses the new graph container's height after graphs have been resized.
 //		var gcHeight = parseInt(document.getElementById(namespaceGlobal + ":Container_12LeadDivOutside").clientHeight); 
@@ -832,4 +833,18 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 			oSlider.style.height = parseInt(graphHeightPx) + "px";
 		}
 	};
+	
+	/** Change the vertical position of the cross-hairs relative to the graph containiner. 
+	 * The crosshair's top starts at the bottom of the graphDiv, so it must be moved up by the height of the graphDiv **/
+	var repositionAllCrosshairs = function(){
+		var graphZero = WAVEFORM_getElementByIdEndsWith("div", "graphDiv0");
+		var g0Height = parseInt(graphZero.clientHeight);  // removes the "px" at the end
+
+		for(var xL=0;xL < xLineSet.length;xL++){	
+			var xLineTemp = xLineSet[xL];
+			var xLineID = xLineTemp.id; // should be the same as array index "xL"
+			
+			xLineTemp.style.top = "-" + g0Height + "px";
+		}
+	}
 	//** end of Resizing functions ********************

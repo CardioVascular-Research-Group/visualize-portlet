@@ -79,6 +79,8 @@ public class AnnotationBacking implements Serializable {
         private int annotationCount=0;
 		private boolean singlePoint=true;
         private boolean newInstance=true;
+		private int flagCount = 0;
+		private char cIntervalLabel = 'A';
         //        @ManagedProperty("#{userModel}")
 //        private UserModel userModel;
         
@@ -103,7 +105,7 @@ public class AnnotationBacking implements Serializable {
     	
     	
 	/** sets up and calls showAnnotations() which retrieves annotations for the given lead, and executes the JavaScript functions which clear and then set the annotations on the Dygraph.<BR/>
-	 * The executed JavaScript includes:  CVRG_resetAnnotations(), CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval(), CVRG_showAnnotations().
+	 * The executed JavaScript includes:  CVRG_resetAnnotations(), CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval().
 	 **/
 	public void showAnnotationForLead(){
 		// Ajax.oncomplete("alert('AnnotationBacking.showAnnotationForLead: ')");
@@ -124,12 +126,11 @@ public class AnnotationBacking implements Serializable {
         showAnnotations(context, RetrieveECGDatabase);  
 	}
 	
-    /** Switches to the selection tree and list view.
-     * Handles onclick event for the button "btnView12LeadECG" in the viewA_SelectionTree.xhtml view.
-     * 
+    /** Switches to the single annotation creation/editing view.
+     * Handles interactionModel.mouseup event (via WAVEFORM3_mouseup() in JavaScript) for the single dygraph in the viewD_SingleLead.xhtml view.
      */
 	   public String viewAnnotationPoint(){
-	    	System.out.println("+++ AnnotationBacking.java, viewAnnotationPoint() +++");
+	    	// System.out.println("+++ AnnotationBacking.java, viewAnnotationPoint() +++");
 	    	FacesContext context = FacesContext.getCurrentInstance();
 			Map<String, String> map = context.getExternalContext().getRequestParameterMap();
 			
@@ -146,14 +147,15 @@ public class AnnotationBacking implements Serializable {
 			setDeltaY(0);
 			
 			setSinglePoint(true);
-			
+
+			showNewAnnotationForLead();
 			System.out.println("+++ AnnotationBacking.java, viewAnnotationPoint() passedDataOnsetX: " + passedDataOnsetX + " passedDataSY: " + passedDataOnsetY + " +++ ");
 			return "viewE_Annotate";
 	    }
 		
     
     public String viewAnnotationInterval(){
-    	System.out.println("+++ AnnotationBacking.java, viewAnnotationIntervalEdit() +++");
+//    	System.out.println("+++ AnnotationBacking.java, viewAnnotationInterval() +++");
     	FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
 		String passedDataOnsetX = (String) map.get("DataOnsetX");
@@ -174,13 +176,42 @@ public class AnnotationBacking implements Serializable {
 		
 		setSinglePoint(false);
 		
-		System.out.println("+++ AnnotationBacking.java, viewAnnotationIntervalEdit() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
-		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
-		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDataSXDuration() + "  dataSYDuration: " + getDataSYDuration() + " +++ ");
-
+		System.out.println("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
+		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
+		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDataSXDuration() + "  dataSYDuration: " + getDataSYDuration() + " +++ ");
+		
+		showNewAnnotationForLead();
 		return "viewE_Annotate";
     }
 
+    public void updateAnnotationInterval(){
+//    	System.out.println("+++ AnnotationBacking.java, updateAnnotationInterval() +++");
+    	FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
+		String passedDataOnsetX = (String) map.get("DataOnsetX");
+		String passedDataOnsetY = (String) map.get("DataOnsetY");
+		String passedDataOffsetX = (String) map.get("DataOffsetX");
+		String passedDataOffsetY = (String) map.get("DataOffsetY");
+		String passedDeltaX = (String) map.get("DeltaX");
+		String passedDeltaY = (String) map.get("DeltaY");
+		
+		setDataSX(Double.parseDouble(passedDataOnsetX));
+		setDataSY(Double.parseDouble(passedDataOnsetY));
+		
+		setDataOffsetX(Double.parseDouble(passedDataOffsetX));
+		setDataOffsetY(Double.parseDouble(passedDataOffsetY));
+
+		setDeltaX(Double.parseDouble(passedDeltaX));
+		setDeltaY(Double.parseDouble(passedDeltaY));
+		
+		setSinglePoint(false);
+		
+		System.out.println("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
+		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
+		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDataSXDuration() + "  dataSYDuration: " + getDataSYDuration() + " +++ ");
+		
+		showNewAnnotationForLead();
+    }
     
     public String viewCurrentAnnotation(){
     	System.out.println("+++ AnnotationBacking.java, viewCurrentAnnotation() +++");
@@ -398,7 +429,7 @@ public class AnnotationBacking implements Serializable {
 	
 
 		/** Retrieves annotations for the given lead, and executes the JavaScript functions which clear and then set the annotations on the Dygraph.<BR/>
-		 * The executed JavaScript includes:  CVRG_resetAnnotations(), CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval(), CVRG_showAnnotations().
+		 * The executed JavaScript includes:  CVRG_resetAnnotations(), CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval().
 		 * @param context
 		 * @param RetrieveECGDatabase
 		 */
@@ -427,125 +458,197 @@ public class AnnotationBacking implements Serializable {
 				Arrays.sort(retrievedAnnotationList);
 
 				String series = getLeadName();
-				long firstX;
-				long firstY = -999;
-				int flagCount = 0;
-				String flagLabel; //e.g. = "1";
-				char cIntervalLabel = 'A';
-				String ontologyId; //e.g. = "Amplitude";
-				String fullAnnotation;//
-				String annotationID;
+//				long firstX;
+//				long firstY = -999;
+				flagCount = 0;
+				cIntervalLabel = 'A';
+//				String ontologyId; //e.g. = "Amplitude";
+//				String fullAnnotation;//
+//				String annotationID;
 
 				HashMap<Double, Integer> duplicates = new HashMap<Double, Integer>();
 
 				for( int i = 0; i < retrievedAnnotationList.length; i++ ){
-					//Test JAVA data for CVRG_addAnnotation RSA 0117		
-					// series = RetrievedAnnotations[i].getLeadName(1);
-					firstX = (long) retrievedAnnotationList[i].getMilliSecondStart();     // time or "X" coordinate 
-					firstY = (long) retrievedAnnotationList[i].getMicroVoltStart();       //voltage or "Y" coordinate, not needed for dygraph annotation flag, but might be used by our code later.
-//					flagLabel = String.valueOf(i+1);   // label of Annotation
-					ontologyId = retrievedAnnotationList[i].getConceptLabel();
-					fullAnnotation = retrievedAnnotationList[i].getAnnotation();
-					setComment(retrievedAnnotationList[i].getComment() );
-					annotationID = retrievedAnnotationList[i].getUniqueID();
-//					System.out.println("RetrieveAnnotation loop x:" + firstX + " y:" + firstY + " flagCount: " + flagCount + " ontologyId:" + ontologyId + " fullAnnotation:\"" + fullAnnotation + "\" annotationID:\"" + annotationID + "\"");
-
-					Double xPosition = Double.valueOf(firstX);
-					Integer numOccurances = Integer.valueOf(1);
-
-					boolean duplicateCheck = duplicates.containsKey(xPosition);
-					int heightMultiplier = 1;
-
-					if(duplicateCheck) {
-						numOccurances = duplicates.get(xPosition);
-						heightMultiplier = (numOccurances.intValue()) + 1;
-						duplicates.put(xPosition, Integer.valueOf(heightMultiplier));
-					}
-					else {
-						duplicates.put(xPosition, Integer.valueOf(heightMultiplier));
-					}
-
-					if (fullAnnotation.length()>50){
-						String truncatedFull = fullAnnotation.substring(0, 50);
-						truncatedFull += "...";
-						ontologyId += " - " + truncatedFull;
-					}else{
-						ontologyId += " - " + fullAnnotation;
-					}
-				
-					if(retrievedAnnotationList[i].getIsSinglePoint()) {
-						if(firstX != (-999999999)){
-							flagLabel = String.valueOf(flagCount+1);   // label of Annotation
-
-							//System.out.println("Single point: " + flagLabel + " x: " + firstX);
-							int finalHeight = heightMultiplier * 15;
-							// 	add annotaion from JAVA to JavaScript Dygraph 
-							context.execute("CVRG_addAnnotationHeight('" + series + "' , '" +  firstX + "', '" +  firstY + "','" 
-								+ flagLabel + "','" + ontologyId + "','" + fullAnnotation + "/" + getComment() + "',' " 
-								+ finalHeight + "','" + annotationID + "')");
-							flagCount++;
-						}
-					}
-					else {
-						// get Alphabetic flag label, then increment letter.
-						String sIntervallabel = String.valueOf(cIntervalLabel);
-						cIntervalLabel = (char) (cIntervalLabel+1);
-
-						int finalHeight = heightMultiplier * -50;
-						String flagLabelFirst = sIntervallabel + ">";
-						String flagLabelLast = "<" + sIntervallabel;
-						String flagLabelCenter  = sIntervallabel + " Interval";
-						int width = 30;
-						int widthInterval = 66;
-						long secondX = (long) retrievedAnnotationList[i].getMilliSecondEnd();
-						long secondY = (long) retrievedAnnotationList[i].getMicroVoltEnd();
-
-						long centerX = (long) (( firstX + secondX ) / 2);
-						long msSample = (long)(1000/visualizeSharedBacking.getSharedStudyEntry().getSamplingRate()); // milliseconds per sample
-						long remainder = centerX % msSample;
-						centerX = centerX - remainder;
-
-//						int YcenterY = (int) (( x + secondX ) / 2); 
-//						double centerArea = ( secondX - x );
-						// mostly meaningless and useless values centerY and centerArea:
-						int centerY = (int) (( firstY + secondY ) / 2); 
-//						double centerArea = ( secondY - firstY );
-
-//						double toCenterWithArea = ( centerArea + firstX );
-
-
-						// START add annotaion from JAVA to JavaScript Dygraph 
-						//System.out.println("x: " + firstX);
-						context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  firstX + "', '" +  firstY + "','" 
-								+ flagLabelFirst + "','" + ontologyId + "','" + fullAnnotation + "',' " 
-								+ finalHeight + "','" + width + "','" + annotationID + "')");
-
-						//  Sets the center flag
-						//System.out.println( "centerX: " +  centerX);
-						context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  centerX + "', '" +  centerY + "','" 
-								+ flagLabelCenter  + "','" + ontologyId + "','" + fullAnnotation + "',' " 
-								+ finalHeight + "','" + widthInterval + "','" + annotationID + "')");
-
-						// END X
-						//System.out.println( "secondX: " + secondX);
-						context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  secondX + "', '" +  secondY + "','" 
-								+ flagLabelLast + "','" + ontologyId + "','" + fullAnnotation + "',' " 
-								+ finalHeight + "','" + width + "','" + annotationID + "')");
-
-						// sets the highlight
-						//context.execute("CVRG_setHightLightLocation('" +  x + "','" +  toCenterWithArea + "', '" +  secondX + "')");
-						context.execute("WAVEFORM_queueHighLightLocation('" +  firstX + "','" +  firstY + "','" +  finalHeight + "','" +  centerX + "', '" +  secondX + "')");
-					}
-
-					//add facesmessage
-					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Success", "Success"));
+					duplicates = addAnnotation(context, series, retrievedAnnotationList[i], duplicates);
 				}
-
-//				context.execute("CVRG_showAnnotations()");
-//				context.execute("SINGLELEAD_ShowAnnotationSingle()");
 			}
 		}
 
+		
+		/** Retrieves annotations for the given lead, and executes the JavaScript functions which clear and then set the annotations on the Dygraph.<BR/>
+		 * The executed JavaScript includes:  CVRG_resetAnnotations(), CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval().
+		 * @param context
+		 * @param RetrieveECGDatabase
+		 */
+		public void showNewAnnotationForLead(){
+			System.out.println("### showNewAnnotationForLead ###");
+			RequestContext context = RequestContext.getCurrentInstance();
+			userLifeRayModel = ResourceUtility.getCurrentUser();
+			String sErrorMess = "";
+			//    		int leadIndex = AnnotationData.getLeadIndexStatic(getLeadName());
+			int leadIndex = getLeadnum();
+			if(leadIndex == -1) sErrorMess += "lead index is invalid | ";
+			if(userLifeRayModel ==  null) sErrorMess += "userLifeRayModel is invalid | ";
+			if(visualizeSharedBacking.getSharedStudyEntry() ==  null) sErrorMess += "visualizeSharedBacking.getSharedStudyEntry() is invalid | ";
+
+			if(sErrorMess.length() > 0){
+				System.err.println ("AnnotationBacking.java, showNewAnnotation() failed: " + sErrorMess);
+			}else{
+//				AnnotationData[] retrievedAnnotationList; // = 
+				AnnotationData newAnnotation = new AnnotationData();
+				newAnnotation.setMilliSecondStart(getDataSX());
+				newAnnotation.setMicroVoltStart(getDataSY());
+				newAnnotation.setAnnotation("Fine-tuning Annotation");
+				newAnnotation.setConceptLabel("Editing");
+
+				newAnnotation.setIsSinglePoint(isSinglePoint());
+				if(!isSinglePoint()){
+					newAnnotation.setMilliSecondEnd(getDataOffsetX());
+					newAnnotation.setMicroVoltEnd(getDataOffsetY());
+				}
+				System.out.println("### ### isSinglePoint: " + newAnnotation.getIsComment() 
+						+ " getDataOffsetX(): " + newAnnotation.getMilliSecondEnd()
+						+ " getDataOffsetY(): " + newAnnotation.getMicroVoltEnd());
+				
+
+				context.execute("CVRG_resetAnnotations()");
+				context.execute("WAVEFORM_clearHighLightQueue()");
+
+				String series = getLeadName();
+
+
+				HashMap<Double, Integer> duplicates = new HashMap<Double, Integer>();
+				flagCount = 0;
+				cIntervalLabel = 'A';
+//
+				duplicates = addAnnotation(context, series, newAnnotation, duplicates);
+			}
+		}
+
+		/** Adds a single annotation to the javascript array "tempAnnotations", to be added to the single lead graph after the view page finishes loading.
+		 *  The executed JavaScript functions include: CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval().
+
+		 * @param context
+		 * @param series
+		 * @param singleAnnotation
+		 * @param duplicates
+		 * @return
+		 */
+		private HashMap<Double, Integer>  addAnnotation(RequestContext context, String series, AnnotationData singleAnnotation, 
+														HashMap<Double, Integer> duplicates){
+			long firstX;
+			long firstY = -999;
+			String flagLabel; //e.g. = "1";
+			String ontologyId; //e.g. = "Amplitude";
+			String fullAnnotation;//
+			String annotationID;
+			System.out.println("### ### addAnnotation() -- isSinglePoint: " + singleAnnotation.getIsComment() 
+					+ " getDataOffsetX(): " + singleAnnotation.getMilliSecondEnd()
+					+ " getDataOffsetY(): " + singleAnnotation.getMicroVoltEnd());
+
+			firstX = (long) singleAnnotation.getMilliSecondStart();     // time or "X" coordinate 
+			firstY = (long) singleAnnotation.getMicroVoltStart();       //voltage or "Y" coordinate, not needed for dygraph annotation flag, but might be used by our code later.
+//			flagLabel = String.valueOf(i+1);   // label of Annotation
+			ontologyId = singleAnnotation.getConceptLabel();
+			fullAnnotation = singleAnnotation.getAnnotation();
+			setComment(singleAnnotation.getComment() );
+			annotationID = singleAnnotation.getUniqueID();
+//			System.out.println("RetrieveAnnotation loop x:" + firstX + " y:" + firstY + " flagCount: " + flagCount + " ontologyId:" + ontologyId + " fullAnnotation:\"" + fullAnnotation + "\" annotationID:\"" + annotationID + "\"");
+
+			Double xPosition = Double.valueOf(firstX);
+			Integer numOccurances = Integer.valueOf(1);
+
+			boolean duplicateCheck = duplicates.containsKey(xPosition);
+			int heightMultiplier = 1;
+
+			if(duplicateCheck) {
+				numOccurances = duplicates.get(xPosition);
+				heightMultiplier = (numOccurances.intValue()) + 1;
+				duplicates.put(xPosition, Integer.valueOf(heightMultiplier));
+			}
+			else {
+				duplicates.put(xPosition, Integer.valueOf(heightMultiplier));
+			}
+
+			if (fullAnnotation.length()>50){
+				String truncatedFull = fullAnnotation.substring(0, 50);
+				truncatedFull += "...";
+				ontologyId += " - " + truncatedFull;
+			}else{
+				ontologyId += " - " + fullAnnotation;
+			}
+		
+			if(singleAnnotation.getIsSinglePoint()) {
+				if(firstX != (-999999999)){
+					flagLabel = String.valueOf(flagCount+1);   // label of Annotation
+
+					System.out.println("Single point: " + flagLabel + " x: " + firstX);
+					int finalHeight = heightMultiplier * 15;
+					// 	add annotaion from JAVA to JavaScript Dygraph 
+					context.execute("CVRG_addAnnotationHeight('" + series + "' , '" +  firstX + "', '" +  firstY + "','" 
+						+ flagLabel + "','" + ontologyId + "','" + fullAnnotation + "/" + getComment() + "',' " 
+						+ finalHeight + "','" + annotationID + "')");
+					flagCount++;
+				}
+			}
+			else {
+				// get Alphabetic flag label, then increment letter.
+				String sIntervallabel = String.valueOf(cIntervalLabel);
+				cIntervalLabel =  (char) (cIntervalLabel+1);
+
+				int finalHeight = heightMultiplier * -50;
+				String flagLabelFirst = sIntervallabel + ">";
+				String flagLabelLast = "<" + sIntervallabel;
+				String flagLabelCenter  = sIntervallabel + " Interval";
+				int width = 30;
+				int widthInterval = 66;
+				long secondX = (long) singleAnnotation.getMilliSecondEnd();
+				long secondY = (long) singleAnnotation.getMicroVoltEnd();
+
+				long centerX = (long) (( firstX + secondX ) / 2);
+				long msSample = (long)(1000/visualizeSharedBacking.getSharedStudyEntry().getSamplingRate()); // milliseconds per sample
+				long remainder = centerX % msSample;
+				centerX = centerX - remainder;
+
+//				int YcenterY = (int) (( x + secondX ) / 2); 
+//				double centerArea = ( secondX - x );
+				// mostly meaningless and useless values centerY and centerArea:
+				int centerY = (int) (( firstY + secondY ) / 2); 
+//				double centerArea = ( secondY - firstY );
+
+//				double toCenterWithArea = ( centerArea + firstX );
+
+
+				// START add annotaion from JAVA to JavaScript Dygraph 
+				//System.out.println("x: " + firstX);
+				context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  firstX + "', '" +  firstY + "','" 
+						+ flagLabelFirst + "','" + ontologyId + "','" + fullAnnotation + "',' " 
+						+ finalHeight + "','" + width + "','" + annotationID + "')");
+
+				//  Sets the center flag
+				//System.out.println( "centerX: " +  centerX);
+//				context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  centerX + "', '" +  centerY + "','" 
+//						+ flagLabelCenter  + "','" + ontologyId + "','" + fullAnnotation + "',' " 
+//						+ finalHeight + "','" + widthInterval + "','" + annotationID + "')");
+
+				// END X
+				//System.out.println( "secondX: " + secondX);
+				context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  secondX + "', '" +  secondY + "','" 
+						+ flagLabelLast + "','" + ontologyId + "','" + fullAnnotation + "',' " 
+						+ finalHeight + "','" + width + "','" + annotationID + "')");
+
+				// sets the highlight
+				//context.execute("CVRG_setHightLightLocation('" +  x + "','" +  toCenterWithArea + "', '" +  secondX + "')");
+				context.execute("WAVEFORM_queueHighLightLocation('" +  firstX + "','" +  firstY + "','" +  finalHeight + "','" +  centerX + "', '" +  secondX + "')");
+			}
+
+			//add facesmessage
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Success", "Success"));
+			
+			return duplicates;
+		}
+		
+		
 		public User getUserLifeRayModel() {
 			return userLifeRayModel;
 		}

@@ -198,6 +198,7 @@
     	highlightQueue = [];
     };
     
+    /** Queues an interval annotation for later highlighting. */
     var WAVEFORM_queueHighLightLocation = function (X1, Y1, flagHeight, XC ,X2){
 		var highlight = {
 			xStart: X1, // milliseconds
@@ -229,6 +230,7 @@
     		"rgb(110, 240, 150)", 
     		"rgb(240, 50, 50)"];
     
+    /** Draw a colored bar on the graph canvas to highlight each queued interval annotation. */
     var WAVEFORM_showHighLightQueue = function(canvas, area, g){
 //    	alert("WAVEFORM_showHighLightQueue()");
         canvas.strokeStyle= "#000000";

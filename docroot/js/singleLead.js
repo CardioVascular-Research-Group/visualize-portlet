@@ -79,12 +79,12 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 //			drawECGCallCount++;
 			dataSingle = SINGLELEAD_getSingleLeadData(CVRG_getLeadNum());
 			ecg_graph = new Dygraph( 
-					WAVEFORM_getElementById(divName),
+					WAVEFORM_getElementByIdEndsWith("div",divName),
 					dataSingle,
 					{
 						stepPlot: false,
 						labels: labelSingle,
-						labelsDiv: WAVEFORM_getElementById("status_div"),
+						labelsDiv: WAVEFORM_getElementByIdEndsWith("div","status_div"),
 						labelsDivStyles: { border: '1px solid black' },
 						labelsSeparateLines: false,
 						gridLineColor: '#FA8C8C',
@@ -101,14 +101,10 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 								ticker: CVRG_yTickerSingle  // Draws grid lines and draws numbers on the axis
 							} 
 						},
-						annotationClickHandler:    SINGLELEAD_annotationClickHandler, 
-						annotationDblClickHandler: CVRG_annotationDblClickHandler, 
-						annotationMouseOverHandler:CVRG_annotationMouseOverHandler, 
-						annotationMouseOutHandler: CVRG_annotationMouseOutHandler, 
 						drawCallback:              SINGLELEAD_drawCallback, 
 						pointClickCallback:        SINGLELEAD_pointClickCallback,
 						zoomCallback:              SINGLELEAD_zoomCallback,
-						underlayCallback:          SINGLELEAD_underlayCallback,
+						underlayCallback:          SINGLELEAD_underlayCallback,  // Shows a colored bar to highlight each interval 
 
 						highlightCallback: CVRG_highlightCallbackSingle,
 						unhighlightCallback: function(e){
@@ -157,9 +153,66 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		}
 //		alert("CVRG Message: Point on " + p.name + " clicked at: " + p.xval + " seconds, " + p.yval + "yVolts,  open annotation popup.");
 //		viewAnnotationPointEdit([{name:'sDataSX', value:p.xval},{name:'sDataSY', value:p.yval}]);
-
-//		annotationBar.show();  // Scott Alger Primefaces dropdown menu SA 1/17/2013
 		num++;
+	};
+	
+	/** SINGLELEAD_pointClickCallback(); 
+	//event -  the event object for the click 
+	// p  - a point on one of the graphs that was clicked. 
+	**/
+	var SINGLELEAD_FineTune_pointClickCallback = function(event, p) {
+//		alert("CVRG Message: Point on " + p.name + " clicked at: " + p.xval + " milliseconds, " + p.yval + "microVolts,  open annotation popup.");
+		setFineTuneTemp(p.name ,p.xval, p.yval);
+		SINGLELEAD_ShowAnnotationSingle();	
+	};
+	
+	var setFineTuneTemp = function (series, x,y){
+		var ann = {
+			series: series,  // series, // lead name
+			x: x, // milliseconds
+			y: y, // microvolts,  CVRG extra data, not used by dygraphs, displayed when mousing over annotation list.
+			shortText: "*", // text to show in the flag
+			text: "new point", // will appear when mouse hovers over flag
+			fullAnnotation: "Click Update to keep.", // CVRG extra data, not used by dygraphs, displayed when mousing over annotation list.
+			tickHeight: 15, 
+			annotationID: "New point" // Unique annotation ID (primary key) as found in the database.  			
+		};
+		
+		tempAnnotations[2] = ann;
+		// alert(tempAnnotations.length + ") series: |" + tempAnnotations[tempAnnotations.length-1].series + "| text: |" + tempAnnotations[tempAnnotations.length-1].text + "|");
+		
+//		alert(anns.length + ") series: |" + anns[anns.length-1].series + "| text: |" + anns[anns.length-1].text + "|");
+		// ecg_graph.setAnnotations(anns);
+		CVRG_last_ann++; // redundent counter
+	};
+	
+	var fineTuningPoint = -1;
+	var updateFineTuning = function(){
+//		alert('Running updateFineTuning(), fineTuningPoint:' + fineTuningPoint);
+		if(tempAnnotations.length == 3){
+			if(fineTuningPoint >= 0){
+				tempAnnotations[fineTuningPoint].x = tempAnnotations[2].x;
+				tempAnnotations[fineTuningPoint].y = tempAnnotations[2].y;
+			}
+			tempAnnotations.pop();
+			updateFineTuneValues(tempAnnotations[0].x, tempAnnotations[1].x);
+		}
+		SINGLELEAD_ShowAnnotationSingle();
+	};
+	
+	var updateFineTuneValues = function(onX, offX){
+		var col = CVRG_getLeadNum()+1; // zero column is timestamp
+		var onY = ecg_graph.getValue(onX, col);
+		var offY = ecg_graph.getValue(offX, col);
+		
+		var deltaX = offX - onX;
+		var deltaY = offY - onY;
+		updateAnnotationIntervalEdit([{name:'DataOnsetX', value:onX},
+				                    {name:'DataOnsetY', value:onY}, 
+				                    {name:'DataOffsetX', value:offX},
+				                    {name:'DataOffsetY', value:offY},
+				                    {name:'DeltaX', value:deltaX},
+		                            {name:'DeltaY', value:deltaY}]);
 	};
 	
 	var zoomTime = function() {
@@ -378,6 +431,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		
 	};
 	
+	/** Shows a colored bar to highlight each interval **/
 	var SINGLELEAD_underlayCallback = function(canvas, area, g){
 		WAVEFORM_showHighLightQueue(canvas, area, g);		
 	};
@@ -430,4 +484,68 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	};
 	/** End of code from Tom Puleo **/
 	
+	/** Single Lead Dygraph Display Mike Shipway 6/4/2013.
+	 * 
+	 * @returns
+	 */	
+	var SINGLELEAD_drawFineTuner = function(divName, namespace, dateStartMS, dateWidthMS){
+		singleLeadNamespace = namespace;
+		//alert("running SINGLELEAD_drawECGgraph("+ singleLeadNamespace + ":" + divName +")");
+//		if(drawECGCallCount == 0){
+//			drawECGCallCount++;
+			dataSingle = SINGLELEAD_getSingleLeadData(CVRG_getLeadNum());
+			ecg_graph = null;
+			ecg_graph = new Dygraph( 
+					WAVEFORM_getElementByIdEndsWith("div",divName),
+					dataSingle,
+					{
+						stepPlot: false,
+						labels: labelSingle,
+						labelsDiv: WAVEFORM_getElementByIdEndsWith("div","status_div"),
+						labelsDivStyles: { border: '1px solid black' },
+						labelsSeparateLines: false,
+						gridLineColor: '#FA8C8C',
+						labelsKMB: true,
+						axes: { 
+							x: { 
+								valueFormatter: CVRG_xValueFormatter2, //format the text that appears when you hover on the chart
+								axisLabelFormatter: CVRG_xAxisLabelFormatter2, // format the numbers on the axes (i.e. tick marks)
+								ticker: CVRG_xTickerSingle // Draws grid lines and draws numbers on the axis
+							}, 
+							y: { 
+								valueFormatter: CVRG_yValueFormatter2, //format the text that appears when you hover on the chart
+								axisLabelFormatter: CVRG_yAxisLabelFormatter2, // format the numbers on the axes (i.e. tick marks)
+								ticker: CVRG_yTickerSingle  // Draws grid lines and draws numbers on the axis
+							} 
+						},
+						annotationClickHandler:    SINGLELEAD_annotationClickHandler, 
+						annotationDblClickHandler: CVRG_annotationDblClickHandler, 
+						annotationMouseOverHandler:CVRG_annotationMouseOverHandler, 
+						annotationMouseOutHandler: CVRG_annotationMouseOutHandler, 
+						pointClickCallback:        SINGLELEAD_FineTune_pointClickCallback,
+						zoomCallback:              SINGLELEAD_zoomCallback,
+						underlayCallback:          SINGLELEAD_underlayCallback,
+
+						highlightCallback: CVRG_highlightCallbackSingle,
+						unhighlightCallback: function(e){
+							CVRG_unhighlightCrosshairs(1);
+						},
+						highlightCircleSize: 5,
+						strokeWidth: 1,
+//						
+						drawPoints: true,
+						padding: {left: 1, right: 1, top: 5, bottom: 5},
+			            connectSeparatedPoints: false,
+			            drawGapEdgePoints: true,
+						dateWindow: [dateStartMS, (dateStartMS+dateWidthMS)] // Start and End times in milliseconds
+					}
+			);
+		//}
+		var newWidth = 300; 
+		var newHeight= 300;
+		ecg_graph.resize(newWidth, newHeight);
+		CVRG_setLabels(displayMinV2, displayMaxV2, yLabel);
+//		CVRG_InitHorizontalLines(1, divName, singleLeadNamespace);
+//		CVRG_InitVerticalLines(divName, namespace);
+	};
 	

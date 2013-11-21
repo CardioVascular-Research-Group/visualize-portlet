@@ -143,18 +143,18 @@ public class VisualizeBacking implements Serializable {
     	System.out.println("+++ VisualizeBacking.java, graphSelectedECG() +++ ");
     	System.out.println("+ selected record:" + selectedStudyObject.getRecordName() + " in file:" + selectedStudyObject.getDataFile() + " lead count:" + selectedStudyObject.getLeadCount());
 //    	setVisibleFragment(2); // show 12 lead graph page fragment.
-    	if(selectedStudyObject.getLeadCount()==3){
-    		nextView = "viewC_Display3Leads";
-//    	setVisibleFragment(2); // show 12 lead graph page fragment.
-//    	if(selectedStudyObject.getLeadCount()==12){
-//    		nextView = "viewB_Display12Leads";
-    	}else{
-//    		if(selectedStudyObject.getLeadCount()==15){
-//	    		nextView = "viewD_SingleLead";
-//	    	}else{
-	    		nextView = "viewB_Display12Leads";
-	   // 	}
-    	}
+//    	if(selectedStudyObject.getLeadCount()==3){
+//    		nextView = "viewC_Display3Leads";
+////    	setVisibleFragment(2); // show 12 lead graph page fragment.
+////    	if(selectedStudyObject.getLeadCount()==12){
+////    		nextView = "viewB_Display12Leads";
+//    	}else{
+////    		if(selectedStudyObject.getLeadCount()==15){
+////	    		nextView = "viewD_SingleLead";
+////	    	}else{
+	    		nextView = "viewB_DisplayMultiLeads";
+//	   // 	}
+//    	}
     	
     	System.out.println("+ nextView:" + nextView); 
     	//generic12leadOnloadCallback();

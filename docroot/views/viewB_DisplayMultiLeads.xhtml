@@ -26,10 +26,11 @@
 							<script>
 								namespaceGlobal ='#{facesContext.externalContext.encodeNamespace('')}';								
 							</script>
-  						<ui:include src="include/12Lead_DIV.xhtml" /> 	
-<!--							<ui:include src="include/multiLead_DIV.xhtml" />-->
+<!--  						<ui:include src="include/12Lead_DIV.xhtml" /> 	-->
+							<ui:include src="include/multiLead_DIV.xhtml" />
 						</h:panelGroup>
-						<h:panelGroup id="testSuite_div" layout="block"></h:panelGroup>
+<!-- 
+						<h:panelGroup id="testSuite_div" layout="block"></h:panelGroup> -->
 					</p:layoutUnit>
 
 					<p:layoutUnit id="viewChangeButtons" 
@@ -40,7 +41,7 @@
 						maxSize="550">
 						<h:form id="multiLeadForm">
 							<p:remoteCommand name="calledOnLoad"
-								oncomplete="isMultigraph=true;renderData();"
+								oncomplete="isMultigraph=true;renderData();stretchToContentMulti();"
 								autoRun="true">
 							</p:remoteCommand>
 					

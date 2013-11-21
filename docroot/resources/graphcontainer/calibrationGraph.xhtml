@@ -10,21 +10,26 @@
     </h:head>
     <h:body>
         <composite:interface>
-            <composite:attribute name="number" required="true"/>
+            <composite:attribute name="number"/>
         </composite:interface>
 
         <composite:implementation>
-   			<h:panelGroup layout="block" id="ContainerCal#{cc.attrs.number}"
-				styleClass="calContainer">
-				<h:outputText value="200 mS" id="TitleCal#{cc.attrs.number}" styleClass="titleCal" />
-				<h:panelGrid columns="2">
-					<h:outputText value="1mV" id="yLabel#{cc.attrs.number}" styleClass="ylabelCal" />
-					<h:panelGroup layout="block" id="graphDivCal#{cc.attrs.number}"
-						styleClass="graphCal"></h:panelGroup>
-					<h:outputText value="" />
-				</h:panelGrid>
-				<h:panelGroup layout="block" id="labelCal#{cc.attrs.number}" styleClass="labelCal"></h:panelGroup>
-			</h:panelGroup>
+			<div id="ContainerCal#{cc.attrs.number}" class="calContainer">
+				<span id="TitleCal#{cc.attrs.number}" class="titleCal">200 mS</span>
+				<table>
+					<tbody>
+						<tr>
+							<td >
+								<span id="yLabel#{cc.attrs.number}" class="ylabelCal">1mV</span>
+							</td>
+							<td>
+								<div id="graphDivCal#{cc.attrs.number}" class="graphCal"></div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div id="labelCal#{cc.attrs.number}" class="labelCal">Label goes here</div>
+			</div>
         </composite:implementation>
     </h:body>
 </html>

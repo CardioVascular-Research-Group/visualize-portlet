@@ -47,7 +47,8 @@ public class VisualizationManager {
 			int offsetMilliSeconds, int durationMilliSeconds, 
 			int graphWidthPixels, boolean bTestPattern) {
 		System.out.println("--- -- fetchSubjectVisualizationData() saFileNameList[0]: " + saFileNameList[0] +  " offsetMilliSeconds: " + offsetMilliSeconds + " durationMilliSeconds: " + durationMilliSeconds );
-
+		long startTimeFetch = System.currentTimeMillis();
+		
 		String ftpURL = ResourceUtility.getFtpHost(); // web address of the data file repository 
 		String fUser = ResourceUtility.getFtpUser(); // ftp userID
 		String fPassword = ResourceUtility.getFtpPassword(); // ftp password
@@ -101,6 +102,8 @@ public class VisualizationManager {
 				serviceURL, // URL of the Analysis Web Service to send data files to. e.g. "http://icmv058.icm.jhu.edu:8080/axis2/services/";
 				callback);
 		
+		long webServiceTime = System.currentTimeMillis();
+
 		//***************************************************
 		try{
 			if(omeWSReturn != null){
@@ -135,7 +138,9 @@ public class VisualizationManager {
 							saChannelName[leadNum] = WebServiceUtility.guessLeadName(leadNum-1, siLeadCount);
 						}
 					}
-		
+
+					long parseMetaTime = System.currentTimeMillis();
+
 					// Parse the data from the CSV strings, rotating the array in the process.
 					int channelCount;
 					double[][] tempData = new double[iSampleCount][siLeadCount+1];
@@ -161,6 +166,8 @@ public class VisualizationManager {
 							System.err.println("ERROR VisualizationData.fetchSubjectVisualizationData() missing data for lead " + ch + " of " + siLeadCount);
 						}
 					}
+					long parsePrimaryDataTime = System.currentTimeMillis();
+
 					// populate the result object to be returned.   
 					visualizationData = new VisualizationData();
 					visualizationData.setECGDataLength(iSampleCount);
@@ -172,6 +179,12 @@ public class VisualizationManager {
 					visualizationData.setECGData(tempData);
 					visualizationData.setSubjectID(subjectID);
 					visualizationData.setMsDuration(iSegmentDuration);
+
+					long createResultObjectTime = System.currentTimeMillis();
+					System.out.println("--- -- web service waveformDataService.fetchWFDBdataSegmentType2() took " + (webServiceTime - startTimeFetch) +  " milliSeconds.");
+					System.out.println("--- -- parsing meta-data returned by web service took " + (parseMetaTime - webServiceTime) +  " milliSeconds.");
+					System.out.println("--- -- parsing primary ECG data returned by web service took " + (parsePrimaryDataTime - parseMetaTime) +  " milliSeconds.");
+					System.out.println("--- -- creating/populating result object took " + (createResultObjectTime - parsePrimaryDataTime) +  " milliSeconds.");
 				}
 			}
 		} catch(Exception ex) {

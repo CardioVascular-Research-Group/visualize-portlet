@@ -216,7 +216,7 @@ var CVRG_mouseup = function(event, g, context) {
 				isInterval = false;
 				Dygraph.endZoom(event, g, context);
 		     // CLEAR Y Duration point send to the input to submit to the backing bean
-				alert("interval_new.js, CVRG_mouseup(): Point on " + CVRG_getLeadName() + " clicked at: " + dataOnsetX + " seconds, " + dataOnsetY + "uVolts,  open annotation popup.");
+//				alert("interval_new.js, WAVEFORM3_mouseup(): Point on " + CVRG_getLeadName() + " clicked at: " + dataOnsetX + " seconds, " + dataOnsetY + "uVolts,  open annotation popup.");
 				viewAnnotationPointEdit([{name:'DataOnsetX', value:dataOnsetX},
 				                         {name:'DataOnsetY', value:dataOnsetY}]);
 

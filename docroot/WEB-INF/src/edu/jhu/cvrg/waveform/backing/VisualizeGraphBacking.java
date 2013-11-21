@@ -48,6 +48,7 @@ import edu.jhu.cvrg.waveform.utility.AnnotationUtility;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 import edu.jhu.cvrg.waveform.main.VisualizationManager;
 import edu.jhu.cvrg.waveform.model.FileTree;
+import edu.jhu.cvrg.waveform.model.MultiLeadLayout;
 import edu.jhu.cvrg.waveform.model.StudyEntry;
 import edu.jhu.cvrg.waveform.model.VisualizationData;
 import edu.jhu.cvrg.waveform.utility.ServerUtility;
@@ -78,6 +79,8 @@ public class VisualizeGraphBacking implements Serializable {
 	private int iGraphWidthPixels = 1200; //width of the longest graph which will use this data. Sets the maximum amount of data compression allowable.
 	private String[] saGraphTitle= {"I","II","III","aVR","aVL","aVF","V1","V2","V3","V4","V5","V6","VX","VY","VZ"}; // default values, should be replaced by the this.setGraphTitle() method, though usually the values are the same.
 	private JSONObject dataJson = null;
+	private ArrayList<MultiLeadLayout> multiLeadLayoutList;
+	private int multiLeadColumnCount = 5;
 
 
 	//private User userModel;
@@ -516,30 +519,30 @@ public class VisualizeGraphBacking implements Serializable {
 		int iaAnnCount[][] = null;
 		try {
 //			System.out.println("---- visualizeSharedBacking.getSharedStudyEntry(): " + visualizeSharedBacking.getSharedStudyEntry());
-			System.out.println("---- dbUser: " + ResourceUtility.getDbUser() );
+//			System.out.println("---- dbUser: " + ResourceUtility.getDbUser() );
 			if(visualizeSharedBacking.getSharedStudyEntry() != null){
 				AnnotationUtility annUtil = new AnnotationUtility(ResourceUtility.getDbUser(),
 		                ResourceUtility.getDbPassword(),
 		                ResourceUtility.getDbURI(),     
 		                ResourceUtility.getDbDriver(),
 		                ResourceUtility.getDbMainDatabase());
-			System.out.println("----AnnotationUtility using URI: " + annUtil.getURI());
+//			System.out.println("----AnnotationUtility using URI: " + annUtil.getURI());
 				
 				//userModel = ResourceUtility.getCurrentUser();
 				String SN = ResourceUtility.getCurrentUser().getScreenName();
-			System.out.println("---- userModel.getScreenName(): " + SN);
+			//System.out.println("---- userModel.getScreenName(): " + SN);
 				String St = visualizeSharedBacking.getSharedStudyEntry().getStudy();
-			System.out.println("---- visualizeSharedBacking.getSharedStudyEntry().getStudy(): " + St);
+//			System.out.println("---- visualizeSharedBacking.getSharedStudyEntry().getStudy(): " + St);
 				String SID = visualizeSharedBacking.getSharedStudyEntry().getSubjectID();
-			System.out.println("---- visualizeSharedBacking.getSharedStudyEntry().getSubjectID(): " + SID);
+//			System.out.println("---- visualizeSharedBacking.getSharedStudyEntry().getSubjectID(): " + SID);
 				String RN = visualizeSharedBacking.getSharedStudyEntry().getRecordName();
-			System.out.println("---- visualizeSharedBacking.getSharedStudyEntry().getRecordName(): " + RN);
+//			System.out.println("---- visualizeSharedBacking.getSharedStudyEntry().getRecordName(): " + RN);
 				
 				iaAnnCount = annUtil.getAnnotationCountPerLead(SN, St, SID, RN);
 			}else{
 				System.err.println("--- fetchAnnotationArray() SharedStudyEntry not found.");
 			}
-		System.out.println("--- annotations count, 1st lead: " + iaAnnCount[0][1]);
+//		System.out.println("--- annotations count, 1st lead: " + iaAnnCount[0][1]);
 			System.out.println("--- exiting fetchAnnotationArray()");
 		} catch (Exception e) {
 			System.err.println("Localized message: " + e.getLocalizedMessage());
@@ -561,26 +564,26 @@ public class VisualizeGraphBacking implements Serializable {
 //		}
 //		System.out.println("---- userModel==null: " + (userModel==null));
 		String userID = ResourceUtility.getCurrentUser().getScreenName();
-		System.out.println("---- userID: " + userID);
-		System.out.println("---- visualizeSharedBacking==null: " + (visualizeSharedBacking==null));
-		System.out.println("---- visualizeSharedBacking.getSharedStudyEntry()==null: " + (visualizeSharedBacking.getSharedStudyEntry()==null));
+//		System.out.println("---- userID: " + userID);
+//		System.out.println("---- visualizeSharedBacking==null: " + (visualizeSharedBacking==null));
+//		System.out.println("---- visualizeSharedBacking.getSharedStudyEntry()==null: " + (visualizeSharedBacking.getSharedStudyEntry()==null));
 		String subjectID = visualizeSharedBacking.getSharedStudyEntry().getSubjectID();
-		System.out.println("---- userID: " + userID + " subjectID: " + subjectID);
+//		System.out.println("---- userID: " + userID + " subjectID: " + subjectID);
 		
 		String[] saFileNameList = visualizeSharedBacking.getSharedStudyEntry().getAllFilenames();
-		System.out.println("---- saFileNameList.length: " + saFileNameList.length);
-		System.out.println("---- saFileNameList[0]: " + saFileNameList[0]);
+//		System.out.println("---- saFileNameList.length: " + saFileNameList.length);
+//		System.out.println("---- saFileNameList[0]: " + saFileNameList[0]);
 		long fileSize = visualizeSharedBacking.getSharedStudyEntry().getFileSize();
-		System.out.println("---- fileSize: " + fileSize);
+//		System.out.println("---- fileSize: " + fileSize);
 
 		//fetch data and print elapsed time.
 		long startTime = System.currentTimeMillis();
 		VisualizationManager visMan = new VisualizationManager(verbose);	
-		System.out.println("---- visMan==null: " + (visMan==null));
+//		System.out.println("---- visMan==null: " + (visMan==null));
 		VisualizationData VisData = visMan.fetchSubjectVisualizationData(userID, subjectID, saFileNameList, fileSize, 
 				iCurrentVisualizationOffset, iDurationMilliSeconds, iGraphWidthPixels, bTestPattern);
 		long estimatedTime = System.currentTimeMillis() - startTime;
-		System.out.println("--- - fetchSubjectVisualizationData() took " + estimatedTime +  " milliSeconds. Sample Count:" + VisData.getECGDataLength() + " Lead Count:" + VisData.getECGDataLeads() );
+		System.out.println("--- - fetchSubjectVisualizationData() took " + estimatedTime +  " milliSeconds total. Sample Count:" + VisData.getECGDataLength() + " Lead Count:" + VisData.getECGDataLeads() );
 		
 		//	Check to see is the The Web Service is returning Data for the User Display.
 	    if (VisData == null) {
@@ -601,6 +604,9 @@ public class VisualizeGraphBacking implements Serializable {
 				e.printStackTrace();
 			}
 	    }
+	    
+	    setMultiLeadLayoutList( MultiLeadLayout(VisData.getECGDataLeads()) );
+	    
 	    System.out.println("---Exiting function fetchDisplayData()");
 		return VisData.getECGDataLeads();
 	}
@@ -657,7 +663,74 @@ public class VisualizeGraphBacking implements Serializable {
 	public String[] getArrayGraphTitle() {
 		return saGraphTitle;
 	}
+	
+//	public boolean[] getIsLead(){
+//		boolean isLead[] = {false, true, true, true, true, 
+//							false, true, true, true, true, 
+//							false, true, true, true, true};
+//		return isLead;
+//	}
+//
+//	public int[] getLeadNumber(){
+//		int isLead[] = {0, 0, 3, 6, 9, 
+//						1, 1, 4, 7, 10, 
+//						2, 2, 5, 8, 11};
+//		return isLead;
+//	}
 
+	public int getMultiLeadColumnCount(){
+		return multiLeadColumnCount;
+	}
+	public void setMultiLeadColumnCount(int count){
+		this.multiLeadColumnCount = count;
+	}
+	
+	public ArrayList<MultiLeadLayout> getMultiLeadLayoutList() {
+		return multiLeadLayoutList;
+	}
+	public void setMultiLeadLayoutList(ArrayList<MultiLeadLayout> multiLeadLayoutList) {
+		this.multiLeadLayoutList = multiLeadLayoutList;
+	}
+
+	private ArrayList<MultiLeadLayout> MultiLeadLayout(int leadCount){
+		switch (leadCount){
+			case 3:
+				setMultiLeadColumnCount(4);
+				break;
+			case 12:
+				setMultiLeadColumnCount(5);
+				break;
+			default:
+				setMultiLeadColumnCount(5);
+				break;
+		}
+		
+		ArrayList<MultiLeadLayout> alLayoutList = new ArrayList<MultiLeadLayout>();
+		int iRowCount = (int) ((leadCount/(getMultiLeadColumnCount()-1))+0.5);  // rows always start with a calibration column, so data column count is one less.
+		for(int row=0;row<iRowCount;row++){
+			String debug = "layout row: " + row;
+			for(int col=0;col<getMultiLeadColumnCount();col++){
+				MultiLeadLayout layout = new MultiLeadLayout();
+				if(col ==  0){
+					// this is a calibration column
+					layout.setLead(false);
+					layout.setLeadNumber(row);
+					debug += " cal"+ row;
+				}else{
+					// this is a lead data column
+					layout.setLead(true);
+					layout.setLeadNumber(row + ((col-1)*iRowCount));
+					debug += ", L#"+ layout.getLeadNumber();
+				}
+				alLayoutList.add(layout);
+			}
+			System.out.println(debug);
+		}
+		return alLayoutList;
+	}
+	
+	
+	
 	public VisualizeSharedBacking getVisualizeSharedBacking() {
 		return visualizeSharedBacking;
 	}
