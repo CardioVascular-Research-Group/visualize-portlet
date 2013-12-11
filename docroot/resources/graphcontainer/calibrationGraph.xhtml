@@ -15,20 +15,20 @@
 
         <composite:implementation>
 			<div id="ContainerCal#{cc.attrs.number}" class="calContainer">
-				<span id="TitleCal#{cc.attrs.number}" class="titleCal">200 mS</span>
+				<span id="TitleCal#{cc.attrs.number}" class="titleCal, title">200 mS</span>
 				<table>
 					<tbody>
 						<tr>
 							<td >
-								<span id="yLabel#{cc.attrs.number}" class="ylabelCal">1mV</span>
+								<span id="yLabel#{cc.attrs.number}" class="ylabelCal, label">1mV</span>
 							</td>
 							<td>
-								<div id="graphDivCal#{cc.attrs.number}" class="graphCal"></div>
+								<div id="graphDivCal#{cc.attrs.number}" class="graphCal, label"></div>
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<div id="labelCal#{cc.attrs.number}" class="labelCal">Label goes here</div>
+				<div id="labelCal#{cc.attrs.number}" class="labelCal, label">Label goes here</div>
 			</div>
         </composite:implementation>
     </h:body>

@@ -7,7 +7,11 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 	<h:head />
 	<h:body>
-	
+		<style>
+			.ui-widget{
+		    	font-size: 1.2em;
+			}
+		</style>
 		<f:event type="preRenderView"
 			listener="#{visualizeGraphBacking.initialize}" />
 		<!-- START OF TOP include_viewContentLeads -->
@@ -58,6 +62,11 @@
 								icon="ui-icon-arrowthick-2-n-s" styleClass="navigationButton"
 								title="Center each graph on it's median, while using the standard voltage scale (+/- 2000uV)."
 								onclick="centerVoltageMulti();return false;"></p:button>
+	
+							<p:button id="voltCenterButtonMultiMode" value="center mode" type="button"
+								icon="ui-icon-arrowthick-2-n-s" styleClass="navigationButton"
+								title="Center each graph on it's mode, while using the standard voltage scale (+/- 2000uV)."
+								onclick="centerVoltageMultiMode();return false;"></p:button>
 	
 							<p:button id="voltCenterNScaleButtonMulti"
 								value="center and scale" type="button"

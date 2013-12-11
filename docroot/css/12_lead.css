@@ -59,12 +59,13 @@
 }
 
 .title {
-	
+	font-size: 1.2em;
 }
 
 .label {
 	text-align: center;
 	height: 35px;
+	font-size: 1.2em;
 }
 
 .graph {
@@ -95,12 +96,12 @@
 	text-align: center;
 	height: 35px;
 }
-/*
+
 .ylabelCal2{
     position:absolute;
     left:-5px;
     top:50px;
-    font-size:8pt;
+    font-size:1.2em;
     
     Safari
     -webkit-transform: rotate(-90deg);
@@ -114,7 +115,7 @@
     filter: progid : DXImageTransform.Microsoft.BasicImage ( rotation = 3 );
    
 }
-
+/*
 .graphCal{
     position:absolute;
     left:10px;

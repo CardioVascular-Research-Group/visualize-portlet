@@ -500,7 +500,9 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 //		});
 //    };
     
-    
+    /** Center and Scale the voltage axis of the Multi-lead view
+     * 
+     */
     var centerScaleVoltageMulti = function(){
 		for(var gs=0;gs<graphSet.length;gs++){
 	    	var ext = getDataMinMaxMulti(gs);
@@ -521,10 +523,36 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		}
     };
     
+    /** Center the voltage axis on the average, set voltage scale to default +/- 2000uV.
+     * 
+     */
     var centerVoltageMulti = function(){
 		for(var gs=0;gs<graphSet.length;gs++){
 	    	var ext = getDataMinMaxMulti(gs);
 	    	var centerV = (ext.dataMax+ext.dataMin)/2;
+	    	
+			displayMinV2 = centerV-2000; // same scale as default graph
+			displayMaxV2 = centerV+2000; // same scale as default graph
+	    	
+			graphSet[gs].updateOptions({
+				valueRange: [displayMinV2, displayMaxV2]
+			});
+	
+//			sliderVoltRangeSingle.minValue = displayMinV2;
+//			sliderVoltRangeSingle.maxValue = displayMaxV2;
+//			voltMinInput.value = displayMinV2;
+//			voltMaxInput.value = displayMaxV2;
+//			voltCenterInput.value = 00;
+    	}
+    };
+    
+    /** Center the voltage axis on the Mode (not average) value, set voltage scale to default +/- 2000uV.
+     * 
+     */
+    var centerVoltageMultiMode = function(){
+		for(var gs=0;gs<graphSet.length;gs++){
+	    	var ext = getDataMinMaxMulti(gs);
+	    	var centerV = ext.mode;
 	    	
 			displayMinV2 = centerV-2000; // same scale as default graph
 			displayMaxV2 = centerV+2000; // same scale as default graph
@@ -546,21 +574,60 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
      */ 
     var getDataMinMaxMulti = function (graphNumber){
     	var ret = [];
+        var modeMap = {};
+        var maxEl = graphSet[graphNumber][0];
+        var maxCount = 1;
+        var modeRounder = 100;
+
     	var dataMin = graphSet[graphNumber].getValue(calPointCount+1,graphNumber+1);
     	var dataMax = graphSet[graphNumber].getValue(calPointCount+1,graphNumber+1);
     	var val = 0;
-    	for(var row=calPointCount+2;row<graphSet[graphNumber].numRows();row++){
+    	for(var row=calPointCount+2;row<(graphSet[graphNumber].numRows()/2);row++){
     		val = graphSet[graphNumber].getValue(row,graphNumber+1); // column zero is time, so lead zero's data is in column one.
     		if(dataMax < val) dataMax = val;
     		if(dataMin > val) dataMin = val;
+    		
+    		val = (val/modeRounder)|0; // bitwise OR to truncate floating point figures 
+    		if(modeMap[val] == null)
+        		modeMap[val] = 1;
+        	else
+        		modeMap[val]++;	
+        	if(modeMap[val] > maxCount)
+        	{
+        		maxEl = val;
+        		maxCount = modeMap[val];
+        	}
     	}
     	ret = {
 			dataMin: dataMin, // microVolts
-			dataMax: dataMax // microVolts
+			dataMax: dataMax, // microVolts
+			mode: maxEl*modeRounder // mode (mode commonly occuring value
 		};
     	
     	return ret;
     };
+    
+    function mode(array)
+    {
+        if(array.length == 0)
+        	return null;
+        var modeMap = {};
+        var maxEl = array[0], maxCount = 1;
+        for(var i = 0; i < array.length; i++)
+        {
+        	var val = array[i];
+        	if(modeMap[val] == null)
+        		modeMap[val] = 1;
+        	else
+        		modeMap[val]++;	
+        	if(modeMap[val] > maxCount)
+        	{
+        		maxEl = val;
+        		maxCount = modeMap[val];
+        	}
+        }
+        return maxEl;
+    }
     
     var setVoltageZoomMulti = function(newDisplayMinV, newDisplayMaxV){
 		for(var gs=0;gs<graphSet.length;gs++){

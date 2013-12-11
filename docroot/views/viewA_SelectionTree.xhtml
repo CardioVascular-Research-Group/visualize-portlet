@@ -40,144 +40,128 @@
 			}
 		</style>
 
-		<h:panelGroup id="mainGroup" layout="block"
-			styleClass="backgroundofContent">
-			<p:layout id="layoutVisualizeInclude" styleClass="visualizeLayout"
-				style="height:70%;">
-				<p:layoutUnit id="mainUnit" position="center"
-					styleClass="visualizeLayoutUnit">
-					<h:form id="formVisualize">
-						<p:fieldset legend="Choose Files That Meet Your Criteria">
-							<h:panelGroup id="analyzeTreeHolder" layout="block"
-								styleClass="selectFieldset">
+		<h:panelGroup id="mainGroup" layout="block" styleClass="backgroundofContent">
+			<h:form id="formVisualize">
+				<p:layout id="layoutVisualizeInclude" styleClass="visualizeLayout" style="height:70%;">
+					<p:layoutUnit position="west" header="Choose Files That Meet Your Criteria" resizable="true" size="385" minSize="385" maxSize="600" collapsible="true" >
+						<p:tree id="docTree" 
+							dynamic="true"
+							selection="#{visualizeBacking.fileTree.selectedNodes}"
+							selectionMode="multiple"
+							value="#{visualizeBacking.fileTree.treeRoot}" 
+							var="node">
+							<p:ajax event="select" listener="#{visualizeBacking.folderSelect}" update="docTree"/>
+							<p:ajax event="unselect" listener="#{visualizeBacking.folderUnSelect}" update="docTree"/>
+							
+							<p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
+								<h:outputText value="#{node.subjectID}" />
+							</p:treeNode>
+							
+							<p:treeNode type="document" icon="ui-icon ui-icon-document">
+								<h:outputText value="#{node.subjectID}"/>
+							</p:treeNode>
+						</p:tree>
+						<p:commandButton id="btnDisplay" 
+							value="Click to Display Files"
+							styleClass="displayButton" 
+							update="availableStudy"
+							actionListener="#{visualizeBacking.displaySelectedMultiple}"
+							icon="ui-icon-disk" 
+							title="ViewA_Selection" />
+					</p:layoutUnit>
+					
+					<p:layoutUnit position="center" header="Select One ECG Record to View Leads" >
+						<p:dataTable id="availableStudy" 
+							var="studyHolder"
+							styleClass="visualizeDataTable" 
+							sortMode="multiple"
+							rowKey="#{studyHolder.subjectID}"
+							value="#{visualizeBacking.studyEntryList}"
+							selection="#{visualizeBacking.selectedStudyObject}"
+							selectionMode="single" 
+							paginator="true" 
+							rows="5"
+							resizableColumns="true" 
+							paginatorAlwaysVisible="false"
+							paginatorPosition="top"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="5,10,15,20">
 
-								<p:tree id="docTree" 
-									dynamic="true"
-									selection="#{visualizeBacking.fileTree.selectedNodes}"
-									selectionMode="multiple"
-									value="#{visualizeBacking.fileTree.treeRoot}" 
-									var="node">
-									<p:ajax event="select" listener="#{visualizeBacking.folderSelect}" update="docTree"/>
-									<p:ajax event="unselect" listener="#{visualizeBacking.folderUnSelect}" update="docTree"/>
-									
-									<p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
-										<h:outputText value="#{node.subjectID}" />
-									</p:treeNode>
-									
-									<p:treeNode type="document" icon="ui-icon ui-icon-document">
-										<h:outputText value="#{node.subjectID}"/>
-									</p:treeNode>
-									
-								</p:tree>
-								<p:commandButton id="btnDisplay" 
-									value="Click to Display Files"
-									styleClass="displayButton" 
-									update="availableStudy"
-									actionListener="#{visualizeBacking.displaySelectedMultiple}"
-									icon="ui-icon-disk" 
-									title="ViewA_Selection" />
+							<!-- <p:ajax event="rowSelect" listener="#{visualizeBacking.onRowSelect}"/> -->
 
-							</h:panelGroup>
+							<p:column headerText="Subject ID" width="150">
+								<h:outputText value="#{studyHolder.subjectID}" />
+							</p:column>
 
-							<!-- 900px wide -->
-							<p:dataTable id="availableStudy" 
-								var="studyHolder"
-								styleClass="visualizeDataTable" 
-								sortMode="multiple"
-								rowKey="#{studyHolder.subjectID}"
-								value="#{visualizeBacking.studyEntryList}"
-								selection="#{visualizeBacking.selectedStudyObject}"
-								selectionMode="single" 
-								paginator="true" 
-								rows="5"
-								resizableColumns="true" 
-								paginatorAlwaysVisible="false"
-								paginatorPosition="top"
-								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-								rowsPerPageTemplate="5,10,15,20">
+							<p:column headerText="Lead Count" width="70">
+								<h:outputText value="#{studyHolder.leadCount}"
+									style="text-align:right" />
+							</p:column>
 
-								<!-- <p:ajax event="rowSelect" listener="#{visualizeBacking.onRowSelect}"/> -->
+							<p:column headerText="Sampling Rate" width="100">
+								<h:outputText value="#{studyHolder.samplingRate}Hz"
+									style="text-align:right" />
+							</p:column>
+
+							<p:column headerText="Duration(Sec)" width="120">
+								<h:outputText value="#{studyHolder.durationSec}"
+									style="text-align:right" />
+							</p:column>
+
+							<p:column headerText="File Format" width="100">
+								<h:outputText value="#{studyHolder.datatype}" />
+							</p:column>
+
+							<p:column headerText="Recording Date" width="150">
+								<h:outputText value="#{studyHolder.dateOfRecording}"
+									style="text-align:right" />
+							</p:column>
+
+							<f:facet name="footer">
+
+								<p:commandButton id="btnView12LeadECG" value="View ECG"
+									action="#{visualizeBacking.graphSelectedECG}" ajax="true"
+									icon="ui-icon-search"
+									title="View a graph of the selected ECG and its annotations" />
+
+								<p:dialog id="multiDialog" header="Files Selected"
+									widgetVar="multiCheckDialog" height="100" showEffect="fade">
+
+									<p:dataList id="displayMulti"
+										value="#{visualizeBacking.selectedStudyObject}"
+										var="studyHolder">
+										<f:verbatim>
+											<br />
+										</f:verbatim>
+										<h:outputText value="#{studyHolder.datatype}" />
+										<h:outputText value="#{studyHolder.recordDetails}" />
+										<h:outputText value="#{studyHolder.recordName}" />
+										<h:outputText value="#{studyHolder.subjectID}" />
+									</p:dataList>
+
+									<p:commandButton style="float:left;" icon="ui-icon-close"
+										id="ViewButton" oncomplete="multiCheckDialog.hide();" />
+								</p:dialog>
+							</f:facet>
+
+							<p:dialog id="objDlg" header="Object Detail"
+								widgetVar="objDialog" resizable="false" showEffect="fade"
+								hideEffect="explode" modal="true">
 
 								<f:facet name="header">
-									<f:verbatim>Select One ECG Record to View Leads</f:verbatim>
+									<h:outputText value="Object Detail" />
 								</f:facet>
 
-								<p:column headerText="Subject ID" width="150">
-									<h:outputText value="#{studyHolder.subjectID}" />
-								</p:column>
-
-								<p:column headerText="Lead Count" width="70">
-									<h:outputText value="#{studyHolder.leadCount}"
-										style="text-align:right" />
-								</p:column>
-
-								<p:column headerText="Sampling Rate" width="100">
-									<h:outputText value="#{studyHolder.samplingRate}Hz"
-										style="text-align:right" />
-								</p:column>
-
-								<p:column headerText="Duration(Sec)" width="120">
-									<h:outputText value="#{studyHolder.durationSec}"
-										style="text-align:right" />
-								</p:column>
-
-								<p:column headerText="File Format" width="100">
+								<h:panelGrid id="displayObject" columns="2" cellpadding="4"
+									style="margin:0 auto;">
 									<h:outputText value="#{studyHolder.datatype}" />
-								</p:column>
-
-								<p:column headerText="Recording Date" width="150">
-									<h:outputText value="#{studyHolder.dateOfRecording}"
-										style="text-align:right" />
-								</p:column>
-
-								<f:facet name="footer">
-
-									<p:commandButton id="btnView12LeadECG" value="View ECG"
-										action="#{visualizeBacking.graphSelectedECG}" ajax="true"
-										icon="ui-icon-search"
-										title="View a graph of the selected ECG and its annotations" />
-
-									<p:dialog id="multiDialog" header="Files Selected"
-										widgetVar="multiCheckDialog" height="100" showEffect="fade">
-
-										<p:dataList id="displayMulti"
-											value="#{visualizeBacking.selectedStudyObject}"
-											var="studyHolder">
-											<f:verbatim>
-												<br />
-											</f:verbatim>
-											<h:outputText value="#{studyHolder.datatype}" />
-											<h:outputText value="#{studyHolder.recordDetails}" />
-											<h:outputText value="#{studyHolder.recordName}" />
-											<h:outputText value="#{studyHolder.subjectID}" />
-										</p:dataList>
-
-										<p:commandButton style="float:left;" icon="ui-icon-close"
-											id="ViewButton" oncomplete="multiCheckDialog.hide();" />
-									</p:dialog>
-								</f:facet>
-
-								<p:dialog id="objDlg" header="Object Detail"
-									widgetVar="objDialog" resizable="false" showEffect="fade"
-									hideEffect="explode" modal="true">
-
-									<f:facet name="header">
-										<h:outputText value="Object Detail" />
-									</f:facet>
-
-									<h:panelGrid id="displayObject" columns="2" cellpadding="4"
-										style="margin:0 auto;">
-										<h:outputText value="#{studyHolder.datatype}" />
-										<h:outputText value="#{studyHolder.recordName}" />
-									</h:panelGrid>
-								</p:dialog>
-
-							</p:dataTable>
-
-						</p:fieldset>
-					</h:form>
-				</p:layoutUnit>
-			</p:layout>
+									<h:outputText value="#{studyHolder.recordName}" />
+								</h:panelGrid>
+							</p:dialog>
+						</p:dataTable>
+					</p:layoutUnit>	
+				</p:layout>
+			</h:form>
 		</h:panelGroup>
 	</h:body>
 </f:view>

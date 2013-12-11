@@ -30,6 +30,10 @@ function getApp() {
 	if (app == null) {
 		app = document.getElementById("OntologyTree");
 	}
+	
+	if (app == null) {
+		app = WAVEFORM_getElementByIdEndsWith("div","OntologyTree");
+	}
 	if (app == null) {
 		alert("Could not get Flash object, JavaScript/Flex communication failed.");
 	}
@@ -39,7 +43,8 @@ function getApp() {
 // these are the available functions that you can call ONCE the 
 // flash SWF has finished loading
 
-/** Loads a new ontology by id. */
+/** Loads a new ontology by id.  
+ * e.g. "42932" */
 function loadOntology(ontologyID) {
 	var app = getApp();
 	if (app && app.loadOntology) {
@@ -100,14 +105,14 @@ function getSelectedConceptFullID() {
 /** Gets the name of the currently selected concept, will be null if nothing is selected. 
  * e.g. "Negative_Electrode" 
  */
-//function getSelectedConceptName() {
-//	var conceptName = null;
-//	var app = getApp();
-//	if (app && app.getSelectedConceptName) {
-		//conceptName = app.getSelectedConceptName();
-//	}
-//	return conceptName;
-//}
+function getSelectedConceptName() {
+	var conceptName = null;
+	var app = getApp();
+	if (app && app.getSelectedConceptName) {
+		conceptName = app.getSelectedConceptName();
+	}
+	return conceptName;
+}
 
 /** Loads and selects a concept (by id) in the current ontology. */
 function loadConceptByID(conceptID) {
@@ -118,18 +123,18 @@ function loadConceptByID(conceptID) {
 }
 
 /** Attempts to load and select a concept (by name) in the current ontology. */
-//function loadConceptByName(conceptName) {
-//	var app = getApp();
-//	if (app && app.loadConceptByName) {
-//		app.loadConceptByName(conceptName);
-//	}
-//}
+function loadConceptByName(conceptName) {
+	var app = getApp();
+	if (app && app.loadConceptByName) {
+		app.loadConceptByName(conceptName);
+	}
+}
 
 /** This function gets call by flash when the swf has finished loading. */
 function appComplete(swfID) {
 //	alert("flash app finished loading: " + swfID);
 //	alert("appComplete() conceptName=" + conceptName);
-	loadConceptByName(CVRG_conceptName);
+//	loadConceptByName(CVRG_conceptName);
 }
 
 /** Implement this function to listen for tree selection changes 
@@ -158,7 +163,8 @@ function treeSelectionChanged(nodeID, nodeName, swfID) {
  * e.g. "ECGOntologyv0:ECG000000318", "Negative_Electrode", "OntologyTree"
  */
 function treeNodeDoubleClicked(nodeID, nodeName, swfID) {
-//	alert("tree node double clicked: " + nodeID + " - " + nodeName + " - " + swfID);
+	alert("tree node double clicked: " + nodeID + " - " + nodeName + " - " + swfID);
+	alert("ontologyID:" + getOntologyID() );
 }
 
 /** Implement this function to listen for error messages when loading an ontology */

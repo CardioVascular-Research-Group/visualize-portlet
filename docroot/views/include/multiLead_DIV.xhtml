@@ -25,30 +25,34 @@
 			transform: rotate(-90deg);
 		}
 		
-		.toplabel {
+		.toplabelBold {
 			font-weight:bold;
 			text-align: right;
+			font-size: 1.2em;
+		}
+		.toplabel {
+			font-size: 1.2em;
 		}
 	</style>
 
 	<!-- Instruction label -->
 	<h:panelGrid layout="block" id="instruction12Lead"
-		styleClass="instruction12Lead" columns="2" width="800">
+		styleClass="instruction12Lead" columns="2" cellpadding="20">
 		<h:panelGroup>
-			<h:outputLabel id="subjectLabel" styleClass="toplabel" value="Subject:" />
-			<h:outputText id="subjectValue" value="#{visualizeSharedBacking.sharedStudyEntry.getRecordName()}" />
+			<h:outputLabel id="subjectLabel" styleClass="toplabelBold" value="Subject:" />
+			<h:outputText id="subjectValue" styleClass="toplabel" value="#{visualizeSharedBacking.sharedStudyEntry.getRecordName()}" />
 	
-			<h:outputLabel id="leadLabel" styleClass="toplabel" value=" / Lead count:" />
-			<h:outputText id="leadValue" value="#{visualizeSharedBacking.leadCount}" />
+			<h:outputLabel id="leadLabel" styleClass="toplabelBold" value=" / Lead count:" />
+			<h:outputText id="leadValue"  styleClass="toplabel" value="#{visualizeSharedBacking.leadCount}" />
 	
-			<h:outputLabel id="rateLabel" styleClass="toplabel" value=" / Sampling-rate:" />
-			<h:outputText id="rateValue" value="#{visualizeSharedBacking.samplingRate}" />
+			<h:outputLabel id="rateLabel" styleClass="toplabelBold" value=" / Sampling-rate:" />
+			<h:outputText id="rateValue"  styleClass="toplabel" value="#{visualizeSharedBacking.samplingRate}" />
 	
-			<h:outputLabel id="durationLabel" styleClass="toplabel" value=" / ECG duration:" />
-			<h:outputText id="durationValue" value="#{visualizeSharedBacking.durationSec}" />
+			<h:outputLabel id="durationLabel" styleClass="toplabelBold" value=" / ECG duration:" />
+			<h:outputText id="durationValue"  styleClass="toplabel" value="#{visualizeSharedBacking.durationSec}" />
 		</h:panelGroup>
 		
-		<h:outputLabel id="instruction" styleClass="toplabel" value="[Click a graph to expand.]" />
+		<h:outputLabel id="instruction" styleClass="toplabelBold" value=" [Click a graph to expand.]" />
 	</h:panelGrid>
 
 	<!-- START 12 lead container -->

@@ -7,7 +7,6 @@
 		styleClass="dragPanelPanZoom clearfix hoverShadow ">
 		<p:commandButton id="moveToBegin" 
 			icon="ui-icon-seek-first" 
-			style="font-size: 8pt;"
 			value="First" 
 			title="Move to Beginning" 
 			alt="Move to Beginning"
@@ -16,7 +15,6 @@
 			actionListener="#{visualizeGraphBacking.panZeroSec}" />
 		<p:commandButton id="moveToLast" 
 			icon="ui-icon-seek-end" 
-			style="font-size: 8pt;"
 			value="Last" 
 			title="Move to End" 
 			alt="Move to End"
@@ -25,7 +23,6 @@
 			actionListener="#{visualizeGraphBacking.panEnd}" />
 		<p:commandButton id="moveBack"
 			icon="ui-icon-seek-prev" 
-			style="font-size: 8pt;"
 			value="Back" 
 			title="Move Back" 
 			alt="Move Back"
@@ -33,8 +30,7 @@
 			oncomplete="renderData();"
 			actionListener="#{visualizeGraphBacking.panLeft}" />
 		<p:commandButton  id="moveNext"
-			icon="ui-icon-seek-next" 
-			style="font-size: 8pt;"
+			icon="ui-icon-seek-next"
 			value="Next" 
 			title="Move Forward" 
 			alt="Move Forward"
@@ -48,7 +44,6 @@
 			value="#{visualizeGraphBacking.newMilliSec}"  />			
 		<p:commandButton  id="jumpTo"
 			icon="ui-icon-seek-next" 
-			style="font-size: 8pt;"
 			value="Jump to time (Seconds)" 
 			title="Jump directly to the time entered above." 
 			alt="Jump directly to the time entered above."

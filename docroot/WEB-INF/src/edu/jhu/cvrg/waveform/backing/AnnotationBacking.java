@@ -57,7 +57,7 @@ public class AnnotationBacking implements Serializable {
 
 	private static final long serialVersionUID = -6719393176698520013L;
 
-		public String nodeID;	
+		public String nodeID; // equivalent to Concept ID (AnnotationData.ConceptID) e.g. "ECGOntology:ECG_000000243".
 //    	public String dataSXstring; 
 //    	public String dataSYstring;
 		public double dataXChange; 
@@ -79,8 +79,10 @@ public class AnnotationBacking implements Serializable {
         private int annotationCount=0;
 		private boolean singlePoint=true;
         private boolean newInstance=true;
+        private boolean previousAnnotation=false;
 		private int flagCount = 0;
 		private char cIntervalLabel = 'A';
+		private boolean showFineGraph=false;
         //        @ManagedProperty("#{userModel}")
 //        private UserModel userModel;
         
@@ -150,6 +152,10 @@ public class AnnotationBacking implements Serializable {
 
 			showNewAnnotationForLead();
 			System.out.println("+++ AnnotationBacking.java, viewAnnotationPoint() passedDataOnsetX: " + passedDataOnsetX + " passedDataSY: " + passedDataOnsetY + " +++ ");
+			setTermName("");
+			setFullAnnotation("");
+			setShowFineGraph(false);
+			setPreviousAnnotation(false);// this is an new annotation, allow editing.
 			return "viewE_Annotate";
 	    }
 		
@@ -180,7 +186,10 @@ public class AnnotationBacking implements Serializable {
 		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
 		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDataSXDuration() + "  dataSYDuration: " + getDataSYDuration() + " +++ ");
 		
+		setTermName("");
+		setFullAnnotation("");
 		showNewAnnotationForLead();
+		setPreviousAnnotation(false);// this is an new annotation, allow editing.
 		return "viewE_Annotate";
     }
 
@@ -254,7 +263,8 @@ public class AnnotationBacking implements Serializable {
 		setTermName(retrievedAnnotation.getConceptLabel());
 		setFullAnnotation(retrievedAnnotation.getAnnotation());
 		setComment(retrievedAnnotation.getComment());
-		
+		setNodeID(retrievedAnnotation.getConceptID());
+		setPreviousAnnotation(true);// this is an existing annotation, do not allow editing.
 //		System.out.println("+++ AnnotationBacking.java, viewCurrentAnnotation() passedDataOnsetX: " + passedDataOnsetX + " passedDataSY: " + passedDataOnsetY + " +++ ");
 		return "viewE_Annotate";
     }
@@ -268,7 +278,7 @@ public class AnnotationBacking implements Serializable {
 		return "viewD_SingleLead";
     }
 
-    
+
 	public void showNodeID(){
 		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getNodeID()); // ECGTermsv1:ECG_000000103 
 		String sDefinition= saOntDetail[1];
@@ -296,15 +306,15 @@ public class AnnotationBacking implements Serializable {
 		String passedNodeID = (String) map.get("nodeID");
 		String passedNodeName = (String) map.get("nodeName");
 
-		setNodeID(passedNodeID);
-		setTermName(passedNodeName);
+		setNodeID(passedNodeID); // e.g. "ECGTermsv1:ECG_000000460"
+		setTermName(passedNodeName); // e.g. "R_Peak"
 
 		
 		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getNodeID()); // ECGTermsv1:ECG_000000103 
 		String sDefinition= saOntDetail[1];
 		// String sDefinition=lookupOntologyDefinition("ECGTermsv1:ECG_000000103");
 		
-		setFullAnnotation(sDefinition);
+		setFullAnnotation(sDefinition); // e.g. "The peak of the R Wave."
 		System.out.println("*** -- nodeID: \"" + getNodeID() + "\"");
 		System.out.println("*** -- FullAnnotation: \"" + getFullAnnotation()  + "\"");
 	     
@@ -523,6 +533,15 @@ public class AnnotationBacking implements Serializable {
 //
 				duplicates = addAnnotation(context, series, newAnnotation, duplicates);
 			}
+		}
+
+		public void showNewAnnotationGraph(){
+			System.out.println("*** showNewAnnotationGraph()");
+			setShowFineGraph(true);
+		}
+		public void showNewAnnotationDetails(){
+			System.out.println("*** showNewAnnotationDetails()");
+			setShowFineGraph(false);
 		}
 
 		/** Adds a single annotation to the javascript array "tempAnnotations", to be added to the single lead graph after the view page finishes loading.
@@ -846,6 +865,33 @@ public class AnnotationBacking implements Serializable {
 
         public int getAnnotationCount() {
 			return annotationCount;
+		}
+
+
+
+		public boolean isShowFineGraph() {
+			return showFineGraph;
+		}
+
+
+		/** Set to true to show fine tuning graph, to false for text details of new annotation.
+		 *  
+		 * @param showFineGraph
+		 */
+		public void setShowFineGraph(boolean showFineGraph) {
+			this.showFineGraph = showFineGraph;
+		}
+
+
+
+		public boolean isPreviousAnnotation() {
+			return previousAnnotation;
+		}
+
+
+
+		public void setPreviousAnnotation(boolean previousAnnotation) {
+			this.previousAnnotation = previousAnnotation;
 		}
 
 }

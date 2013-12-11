@@ -101,6 +101,8 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 								ticker: CVRG_yTickerSingle  // Draws grid lines and draws numbers on the axis
 							} 
 						},
+						annotationClickHandler:    SINGLELEAD_annotationClickHandler, 
+						annotationDblClickHandler: CVRG_annotationDblClickHandler, 
 						drawCallback:              SINGLELEAD_drawCallback, 
 						pointClickCallback:        SINGLELEAD_pointClickCallback,
 						zoomCallback:              SINGLELEAD_zoomCallback,
@@ -137,6 +139,9 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		CVRG_InitVerticalLines(divName, namespace);
 	};
 
+	/** Sets the annotations of the single lead graph object to the values transferred from the backing bean.
+	 * 
+	 */
 	var SINGLELEAD_ShowAnnotationSingle = function() {
 		ecg_graph.setAnnotations(tempAnnotations);
 	};
@@ -197,6 +202,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 			tempAnnotations.pop();
 			updateFineTuneValues(tempAnnotations[0].x, tempAnnotations[1].x);
 		}
+		SINGLELEAD_drawFineTuner("fineTune_div", singleLeadNamespace, tempAnnotations[0].x, (tempAnnotations[0].x - tempAnnotations[1].x));	
 		SINGLELEAD_ShowAnnotationSingle();
 	};
 	
@@ -423,7 +429,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 //		alert("SINGLELEAD_annotationClickHandler() called.  series: " + ann.series + " x: " + ann.x  + " y: " + ann.y  
 //				+ " flagLabel: " + ann.flagLabel + " ontologyId: " + ann.ontologyId 
 //				+ " fullAnnotation: " + ann.fullAnnotation + " height: " + ann.height + " annotationID: " + ann.annotationID);
-		
+
 		viewCurrentAnnotationNoEdit([{name:'annotationID', value:ann.annotationID}]);
 
 		
@@ -488,8 +494,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	 * 
 	 * @returns
 	 */	
-	var SINGLELEAD_drawFineTuner = function(divName, namespace, dateStartMS, dateWidthMS){
-		singleLeadNamespace = namespace;
+	var SINGLELEAD_drawFineTuner = function(divName,dateStartMS, dateWidthMS){
 		//alert("running SINGLELEAD_drawECGgraph("+ singleLeadNamespace + ":" + divName +")");
 //		if(drawECGCallCount == 0){
 //			drawECGCallCount++;
@@ -549,3 +554,31 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 //		CVRG_InitVerticalLines(divName, namespace);
 	};
 	
+
+	var renderSingleGraphFineTuner = function(centerPoint, bShowGraph, termName){
+		alert('renderSingleGraphFineTuner(' + centerPoint + '), showFineGraph: '+ bShowGraph + ', termName: ' + termName + '');
+		isMultigraph=false;
+		fineTuningPoint=0;
+		
+		CVRG_setConceptName(termName);
+		loadConceptByName(CVRG_conceptName);
+
+		if(bShowGraph){
+			var offsetMS = centerPoint - 15.0;
+			var widthMS = 30.0;
+			SINGLELEAD_drawFineTuner("fineTune_div", offsetMS, widthMS);	
+			SINGLELEAD_ShowAnnotationSingle();	
+		}
+	};
+	
+	var renderSingleGraphFullAnnotation = function(startMS, endMS, bShowGraph){
+		if(bShowGraph){
+			var offsetMS = startMS - 5.0;
+			var widthMS = (endMS - startMS) + 10.0;
+				
+			fineTuningPoint==-1;
+			SINGLELEAD_drawFineTuner("fineTune_div", offsetMS, widthMS);	
+			SINGLELEAD_ShowAnnotationSingle();	
+		}				
+	}
+
