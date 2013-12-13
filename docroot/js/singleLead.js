@@ -202,8 +202,8 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 			tempAnnotations.pop();
 			updateFineTuneValues(tempAnnotations[0].x, tempAnnotations[1].x);
 		}
-		SINGLELEAD_drawFineTuner("fineTune_div", singleLeadNamespace, tempAnnotations[0].x, (tempAnnotations[0].x - tempAnnotations[1].x));	
-		SINGLELEAD_ShowAnnotationSingle();
+//		SINGLELEAD_drawFineTuner("fineTune_div", singleLeadNamespace, tempAnnotations[0].x, (tempAnnotations[0].x - tempAnnotations[1].x));	
+//		SINGLELEAD_ShowAnnotationSingle();
 	};
 	
 	var updateFineTuneValues = function(onX, offX){
@@ -496,67 +496,69 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	 */	
 	var SINGLELEAD_drawFineTuner = function(divName,dateStartMS, dateWidthMS){
 		//alert("running SINGLELEAD_drawECGgraph("+ singleLeadNamespace + ":" + divName +")");
-//		if(drawECGCallCount == 0){
-//			drawECGCallCount++;
-			dataSingle = SINGLELEAD_getSingleLeadData(CVRG_getLeadNum());
-			ecg_graph = null;
-			ecg_graph = new Dygraph( 
-					WAVEFORM_getElementByIdEndsWith("div",divName),
-					dataSingle,
-					{
-						stepPlot: false,
-						labels: labelSingle,
-						labelsDiv: WAVEFORM_getElementByIdEndsWith("div","status_div"),
-						labelsDivStyles: { border: '1px solid black' },
-						labelsSeparateLines: false,
-						gridLineColor: '#FA8C8C',
-						labelsKMB: true,
-						axes: { 
-							x: { 
-								valueFormatter: CVRG_xValueFormatter2, //format the text that appears when you hover on the chart
-								axisLabelFormatter: CVRG_xAxisLabelFormatter2, // format the numbers on the axes (i.e. tick marks)
-								ticker: CVRG_xTickerSingle // Draws grid lines and draws numbers on the axis
-							}, 
-							y: { 
-								valueFormatter: CVRG_yValueFormatter2, //format the text that appears when you hover on the chart
-								axisLabelFormatter: CVRG_yAxisLabelFormatter2, // format the numbers on the axes (i.e. tick marks)
-								ticker: CVRG_yTickerSingle  // Draws grid lines and draws numbers on the axis
-							} 
-						},
-						annotationClickHandler:    SINGLELEAD_annotationClickHandler, 
-						annotationDblClickHandler: CVRG_annotationDblClickHandler, 
-						annotationMouseOverHandler:CVRG_annotationMouseOverHandler, 
-						annotationMouseOutHandler: CVRG_annotationMouseOutHandler, 
-						pointClickCallback:        SINGLELEAD_FineTune_pointClickCallback,
-						zoomCallback:              SINGLELEAD_zoomCallback,
-						underlayCallback:          SINGLELEAD_underlayCallback,
+		dataSingle = SINGLELEAD_getSingleLeadData(CVRG_getLeadNum());
+		var graphDiv = WAVEFORM_getElementByIdEndsWith("div",divName);
+		var labelDiv = WAVEFORM_getElementByIdEndsWith("div","status_div");
+		if((graphDiv!=null)&(labelDiv!=null)){
+ecg_graph = null;
+ecg_graph = new Dygraph( 
+	graphDiv,
+	dataSingle,
+	{
+		stepPlot: false,
+		labels: labelSingle,
+		labelsDiv: labelDiv,
+		labelsDivStyles: { border: '1px solid black' },
+		labelsSeparateLines: false,
+		gridLineColor: '#FA8C8C',
+		labelsKMB: true,
+		axes: { 
+			x: { 
+				valueFormatter: CVRG_xValueFormatter2, //format the text that appears when you hover on the chart
+				axisLabelFormatter: CVRG_xAxisLabelFormatter2, // format the numbers on the axes (i.e. tick marks)
+				ticker: CVRG_xTickerSingle // Draws grid lines and draws numbers on the axis
+			}, 
+			y: { 
+				valueFormatter: CVRG_yValueFormatter2, //format the text that appears when you hover on the chart
+				axisLabelFormatter: CVRG_yAxisLabelFormatter2, // format the numbers on the axes (i.e. tick marks)
+				ticker: CVRG_yTickerSingle  // Draws grid lines and draws numbers on the axis
+			} 
+		},
+		annotationClickHandler:    SINGLELEAD_annotationClickHandler, 
+		annotationDblClickHandler: CVRG_annotationDblClickHandler, 
+		pointClickCallback:        SINGLELEAD_FineTune_pointClickCallback,
+		zoomCallback:              SINGLELEAD_zoomCallback,
+		underlayCallback:          SINGLELEAD_underlayCallback,
 
-						highlightCallback: CVRG_highlightCallbackSingle,
-						unhighlightCallback: function(e){
-							CVRG_unhighlightCrosshairs(1);
-						},
-						highlightCircleSize: 5,
-						strokeWidth: 1,
-//						
-						drawPoints: true,
-						padding: {left: 1, right: 1, top: 5, bottom: 5},
-			            connectSeparatedPoints: false,
-			            drawGapEdgePoints: true,
-						dateWindow: [dateStartMS, (dateStartMS+dateWidthMS)] // Start and End times in milliseconds
-					}
-			);
-		//}
-		var newWidth = 300; 
+		highlightCallback: CVRG_highlightCallbackSingle,
+		unhighlightCallback: function(e){
+			CVRG_unhighlightCrosshairs(1);
+		},
+		highlightCircleSize: 5,
+		strokeWidth: 1,
+//							
+		drawPoints: true,
+		padding: {left: 1, right: 1, top: 5, bottom: 5},
+        connectSeparatedPoints: false,
+        drawGapEdgePoints: true,
+		dateWindow: [dateStartMS, (dateStartMS+dateWidthMS)] // Start and End times in milliseconds
+	}
+);
+		}
+		var newWidth = 600; 
 		var newHeight= 300;
 		ecg_graph.resize(newWidth, newHeight);
 		CVRG_setLabels(displayMinV2, displayMaxV2, yLabel);
-//		CVRG_InitHorizontalLines(1, divName, singleLeadNamespace);
-//		CVRG_InitVerticalLines(divName, namespace);
 	};
 	
 
+	/** Draws the fine tuning dygraph of the data 15 points before and after the center point.
+	 * @param centerPoint - specific data point that is being fine tuned.
+	 * @param bShowGraph - Boolean if false don't draw the graph after all.
+	 * @param termName - aka conceptName, sets the concept name in the ontologyTreeAPI so that it can be used by the ontology tree Flash program.
+	 */
 	var renderSingleGraphFineTuner = function(centerPoint, bShowGraph, termName){
-		alert('renderSingleGraphFineTuner(' + centerPoint + '), showFineGraph: '+ bShowGraph + ', termName: ' + termName + '');
+		//alert('renderSingleGraphFineTuner(' + centerPoint + '), showFineGraph: '+ bShowGraph + ', termName: ' + termName + '');
 		isMultigraph=false;
 		fineTuningPoint=0;
 		
@@ -564,21 +566,76 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		loadConceptByName(CVRG_conceptName);
 
 		if(bShowGraph){
-			var offsetMS = centerPoint - 15.0;
+			centerPoint = parseFloat(centerPoint);
+			var startMS = centerPoint - 15.0;
+			var endMS = centerPoint + 15.0;
 			var widthMS = 30.0;
-			SINGLELEAD_drawFineTuner("fineTune_div", offsetMS, widthMS);	
+			SINGLELEAD_drawFineTuner("fineTune_div", startMS, widthMS);	
+			centerFineScaleVoltage(startMS, endMS);
+
 			SINGLELEAD_ShowAnnotationSingle();	
 		}
 	};
 	
 	var renderSingleGraphFullAnnotation = function(startMS, endMS, bShowGraph){
 		if(bShowGraph){
+			startMS = parseFloat(startMS);
+			endMS = parseFloat(endMS);
 			var offsetMS = startMS - 5.0;
 			var widthMS = (endMS - startMS) + 10.0;
 				
 			fineTuningPoint==-1;
 			SINGLELEAD_drawFineTuner("fineTune_div", offsetMS, widthMS);	
+			centerFineScaleVoltage(startMS, endMS);
+			
 			SINGLELEAD_ShowAnnotationSingle();	
 		}				
 	}
 
+	  var centerFineScaleVoltage = function(startTime,endTime){
+	    	CVRG_unhighlightCrosshairs(1);
+	    	var ext = getFineDataMinMax(startTime,endTime);
+	    	var deltaV = (ext.dataMax-ext.dataMin);
+	    	
+			displayMinV2 = ext.dataMin-(deltaV*.1); // leave a 10% space at the bottom
+			displayMaxV2 = ext.dataMax+(deltaV*.1); // leave a 10% space at the top
+	    	
+			ecg_graph.updateOptions({
+				valueRange: [displayMinV2, displayMaxV2]
+			});
+
+//			WAVEFORM_getElementById('voltCenterInput').value = 0;
+	    };
+	    
+	    var getFineDataMinMax = function (startTime, endTime){
+	    	var col = 0; // column zero is time, 1 is data, 2 is calibration.
+	    	var startRow=0;endRow=0;
+	    	for(var row=calPointCount+2;row<ecg_graph.numRows();row++){
+	    		val = ecg_graph.getValue(row,col);
+	    		val1 = ecg_graph.getValue(row,1);
+	    		val2 = ecg_graph.getValue(row,2);
+	    		if (val<=startTime){
+	    			startRow=row;
+	    			endRow=row;
+	    		};
+	    		if (val>=endTime){
+	    			endRow=row;
+	    			break;
+	    		};
+	    	}
+	    	col = 1; 
+	    	var dataMin = ecg_graph.getValue(startRow,col);// initialize 
+	    	var dataMax = dataMin;
+	    	var val = 0;
+	    	for(var row=startRow+1;row<endRow;row++){
+	    		val = ecg_graph.getValue(row,col);
+	    		if(dataMax < val) dataMax = val;
+	    		if(dataMin > val) dataMin = val;
+	    	}
+	    	var ret = {
+	    				dataMin: dataMin, // microVolts
+			    		dataMax: dataMax // microVolts
+	    			};
+	    	
+	    	return ret;
+	    };

@@ -183,7 +183,24 @@ public class VisualizeGraphBacking implements Serializable {
 		return "viewB_Display12Leads.xhtml";
     }
 
-
+    /** Loads the data for the selected ecg file and switches to the 12 lead graph panel.
+     * Handles onclick event for the button "btnView12LeadECG" in the viewA_SelectionTree.xhtml view.
+     * 
+     */
+    public String viewMultiLeadGraph(){
+    	System.out.println("+ VisualizeGraphBacking.java, viewMultiLeadGraph() +++ ");
+    	
+		if(visualizeSharedBacking.getSharedStudyEntry() != null){
+			int iaAnnCount[][] = fetchAnnotationArray();			
+			iCurrentVisualizationOffset = 0;	
+			int iLeadCount = fetchDisplayData();
+			setGraphTitle(iaAnnCount, iLeadCount);
+		}
+    	System.out.println("+ Exiting viewMultiLeadGraph() +++ ");
+    	setGraphMultipleVisible(true);
+		return "viewB_DisplayMultiLeads";
+    }
+    
     /** Determines which files are selected in the fileTree and displays them in the StudyEntryList.
      * Handles the click event from the button "btnDisplay".
      * @param event
