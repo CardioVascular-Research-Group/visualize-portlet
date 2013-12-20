@@ -155,7 +155,10 @@
 }
 */
 .dragPanelPanZoom {
-	width: 116px;
+	width: 93%;
+}
+.dragPanelPanZoom > .ui-panel-content{
+	padding: 0.5em 0.1em !important;
 }
 /*
 .instruction12Lead{
@@ -185,3 +188,7 @@
 .navigationButton {
 	width: 120px;
 }						
+
+.ui-tree{
+	border:0!important;	
+}

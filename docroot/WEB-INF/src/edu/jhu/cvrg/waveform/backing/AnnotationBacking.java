@@ -25,30 +25,27 @@ limitations under the License.
 * 
 */
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
-//import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ComponentSystemEvent;
 
-//import org.omnifaces.util.Ajax;
 import org.primefaces.context.RequestContext;
 
 import com.liferay.portal.model.User;
 
-import edu.jhu.cvrg.waveform.utility.AnnotationUtility;
+import edu.jhu.cvrg.dbapi.dto.AnnotationDTO;
+import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
+import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
-import edu.jhu.cvrg.waveform.model.AnnotationData;
-import edu.jhu.cvrg.waveform.model.StudyEntry;
-//import edu.jhu.cvrg.waveform.model.UserModel;
 import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
 
 @SessionScoped
@@ -58,8 +55,6 @@ public class AnnotationBacking implements Serializable {
 	private static final long serialVersionUID = -6719393176698520013L;
 
 		public String nodeID; // equivalent to Concept ID (AnnotationData.ConceptID) e.g. "ECGOntology:ECG_000000243".
-//    	public String dataSXstring; 
-//    	public String dataSYstring;
 		public double dataXChange; 
 		public double dataYChange; 
 		public double dataOnsetX; // X value (time) of a point or the Start of an interval
@@ -78,31 +73,20 @@ public class AnnotationBacking implements Serializable {
         private User userLifeRayModel;
         private int annotationCount=0;
 		private boolean singlePoint=true;
-        private boolean newInstance=true;
         private boolean previousAnnotation=false;
 		private int flagCount = 0;
 		private char cIntervalLabel = 'A';
 		private boolean showFineGraph=false;
-        //        @ManagedProperty("#{userModel}")
-//        private UserModel userModel;
-        
-		//    	@ManagedProperty("#{visualizeBacking.selectedStudyObject}")
-//    	private StudyEntry studyEntry;
-    	@ManagedProperty("#{visualizeSharedBacking}")
+
+		@ManagedProperty("#{visualizeSharedBacking}")
     	private VisualizeSharedBacking visualizeSharedBacking;   
 	
     	public void initialize(ComponentSystemEvent event) {
         	System.out.println("*************** AnnotationBacking.java, initialize() **********************");
-        	
-    		
-//			if (newInstance) {
-    			System.out.println("***  New instance ****");
-    			showAnnotationForLead();
-//    		}else{
-//    			System.out.println("***  Existing instance, annotationCount:" + annotationCount + " Lead Name:" + leadName + " ****");
-//    		}
-    		newInstance = false;
-    	}
+
+        	System.out.println("***  New instance ****");
+			showAnnotationForLead();
+		}
         
     	
     	
@@ -110,29 +94,21 @@ public class AnnotationBacking implements Serializable {
 	 * The executed JavaScript includes:  CVRG_resetAnnotations(), CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval().
 	 **/
 	public void showAnnotationForLead(){
-		// Ajax.oncomplete("alert('AnnotationBacking.showAnnotationForLead: ')");
+		
 		RequestContext context = RequestContext.getCurrentInstance();
-		//AnnotationUtility RetrieveECGDatabase = new AnnotationUtility();
-		AnnotationUtility RetrieveECGDatabase = new AnnotationUtility(ResourceUtility.getDbUser(),
-                ResourceUtility.getDbPassword(),
-                ResourceUtility.getDbURI(),     
-                ResourceUtility.getDbDriver(),
-                ResourceUtility.getDbMainDatabase());
 		
 		setLeadName(visualizeSharedBacking.getSelectedLeadName());
 		setLeadnum(Integer.parseInt(visualizeSharedBacking.getSelectedLeadNumber()));
 		setComment(""); // make sure it is blank
 		
-//        System.out.println("AnnotationBacking.showAnnotationForLead LeadName: " + getLeadName());
-//        System.out.println("AnnotationBacking.showAnnotationForLead Leadnum: " + getLeadnum());
-        showAnnotations(context, RetrieveECGDatabase);  
+        showAnnotations(context);  
 	}
 	
     /** Switches to the single annotation creation/editing view.
      * Handles interactionModel.mouseup event (via WAVEFORM3_mouseup() in JavaScript) for the single dygraph in the viewD_SingleLead.xhtml view.
      */
 	   public String viewAnnotationPoint(){
-	    	// System.out.println("+++ AnnotationBacking.java, viewAnnotationPoint() +++");
+
 	    	FacesContext context = FacesContext.getCurrentInstance();
 			Map<String, String> map = context.getExternalContext().getRequestParameterMap();
 			
@@ -161,7 +137,7 @@ public class AnnotationBacking implements Serializable {
 		
     
     public String viewAnnotationInterval(){
-//    	System.out.println("+++ AnnotationBacking.java, viewAnnotationInterval() +++");
+
     	FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
 		String passedDataOnsetX = (String) map.get("DataOnsetX");
@@ -194,7 +170,7 @@ public class AnnotationBacking implements Serializable {
     }
 
     public void updateAnnotationInterval(){
-//    	System.out.println("+++ AnnotationBacking.java, updateAnnotationInterval() +++");
+
     	FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
 		String passedDataOnsetX = (String) map.get("DataOnsetX");
@@ -230,25 +206,16 @@ public class AnnotationBacking implements Serializable {
 		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
 		
 		String passedAnnotationID = (String) map.get("annotationID");
-		int leadIndex = getLeadnum();
-
-		AnnotationUtility RetrieveECGDatabase = new AnnotationUtility(ResourceUtility.getDbUser(),
-                ResourceUtility.getDbPassword(),
-                ResourceUtility.getDbURI(),     
-                ResourceUtility.getDbDriver(),
-                ResourceUtility.getDbMainDatabase());
-
-		AnnotationData retrievedAnnotation = RetrieveECGDatabase.getAnnotationByID(userLifeRayModel.getScreenName(), visualizeSharedBacking.getSharedStudyEntry().getStudy(), 
-						visualizeSharedBacking.getSharedStudyEntry().getSubjectID(), String.valueOf(leadIndex), 
-						leadIndex, visualizeSharedBacking.getSharedStudyEntry().getRecordName(), passedAnnotationID);
 		
-		setDataSX(retrievedAnnotation.getMilliSecondStart());
-		setDataSY(retrievedAnnotation.getMicroVoltStart());
-
-		setDataOffsetX(retrievedAnnotation.getMilliSecondEnd());
-		setDataOffsetY(retrievedAnnotation.getMicroVoltEnd());
+		AnnotationDTO retrievedAnnotation = ConnectionFactory.createConnection().getAnnotationById(userLifeRayModel.getUserId(), Long.valueOf(passedAnnotationID));
 		
-		if(retrievedAnnotation.getIsSinglePoint()){
+		setDataSX(retrievedAnnotation.getStartXcoord());
+		setDataSY(retrievedAnnotation.getStartYcoord());
+
+		setDataOffsetX(retrievedAnnotation.getEndXcoord());
+		setDataOffsetY(retrievedAnnotation.getEndYcoord());
+		
+		if(retrievedAnnotation.isSinglePoint()){
 			DeltaX=0;
 			DeltaY=0;
 		}else{
@@ -259,13 +226,13 @@ public class AnnotationBacking implements Serializable {
 		setDeltaX(DeltaX);
 		setDeltaY(DeltaY);
 		
-		setSinglePoint(retrievedAnnotation.getIsSinglePoint());
-		setTermName(retrievedAnnotation.getConceptLabel());
-		setFullAnnotation(retrievedAnnotation.getAnnotation());
-		setComment(retrievedAnnotation.getComment());
-		setNodeID(retrievedAnnotation.getConceptID());
+		setSinglePoint(retrievedAnnotation.isSinglePoint());
+		setTermName(retrievedAnnotation.getName());
+		setFullAnnotation(retrievedAnnotation.getValue());
+		setComment(retrievedAnnotation.getDescription());
+		setNodeID(retrievedAnnotation.getBioportalID());
 		setPreviousAnnotation(true);// this is an existing annotation, do not allow editing.
-//		System.out.println("+++ AnnotationBacking.java, viewCurrentAnnotation() passedDataOnsetX: " + passedDataOnsetX + " passedDataSY: " + passedDataOnsetY + " +++ ");
+
 		return "viewE_Annotate";
     }
 	
@@ -288,14 +255,10 @@ public class AnnotationBacking implements Serializable {
 		System.out.println("*** showNodeID(), nodeID: \"" + getNodeID() + "\"");
 		System.out.println("*** showNodeID(), FullAnnotation: \"" + getFullAnnotation()  + "\"");
 	     
-	     	Map<String, Object> data = new HashMap<String, Object>();
-	     	String dataFullAnnotation = getFullAnnotation();
-	        
-	     	data.put("*", dataFullAnnotation);
-//	        Ajax.data(data);
-//	        Ajax.oncomplete("showData()");
-//	    //  Ajax.oncomplete("showDataVal()");
-	        
+     	Map<String, Object> data = new HashMap<String, Object>();
+     	String dataFullAnnotation = getFullAnnotation();
+        
+     	data.put("*", dataFullAnnotation);
 	}
 	
 	public void lookupDefinition(){
@@ -312,16 +275,11 @@ public class AnnotationBacking implements Serializable {
 		
 		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getNodeID()); // ECGTermsv1:ECG_000000103 
 		String sDefinition= saOntDetail[1];
-		// String sDefinition=lookupOntologyDefinition("ECGTermsv1:ECG_000000103");
 		
 		setFullAnnotation(sDefinition); // e.g. "The peak of the R Wave."
 		System.out.println("*** -- nodeID: \"" + getNodeID() + "\"");
 		System.out.println("*** -- FullAnnotation: \"" + getFullAnnotation()  + "\"");
 	     
-//	     	Map<String, Object> data = new HashMap<String, Object>();
-//	     	String dataFullAnnotation = getFullAnnotation();
-//	        
-//	     	data.put("*", dataFullAnnotation);
 	}
 	
 	
@@ -332,9 +290,8 @@ public class AnnotationBacking implements Serializable {
 			RequestContext context = RequestContext.getCurrentInstance();
 			userLifeRayModel = ResourceUtility.getCurrentUser();
 			context.addCallbackParam("saved", true);    //basic parameter
-	   //   context.addCallbackParam("annotationBackingBean", annotationBacking);    //pojo as json
 			
-		//  callBack working
+			//  callBack working
 			System.out.println("saveAnnotationSetFlag(), SinglePoint: " + isSinglePoint());
 			System.out.println("saveAnnotationSetFlag(), LeadName: " + getLeadName());
 			System.out.println("saveAnnotationSetFlag(), leadnum: " + getLeadnum());
@@ -348,13 +305,6 @@ public class AnnotationBacking implements Serializable {
 			System.out.println("saveAnnotationSetFlag(), FullAnnotation: " + getFullAnnotation());
 			System.out.println("saveAnnotationSetFlag(), nodeID: " + getNodeID());
 
-//		    AnnotationUtility RetrieveECGDatabase = new AnnotationUtility();
-			AnnotationUtility RetrieveECGDatabase = new AnnotationUtility(ResourceUtility.getDbUser(),
-	                ResourceUtility.getDbPassword(),
-	                ResourceUtility.getDbURI(),     
-	                ResourceUtility.getDbDriver(),
-	                ResourceUtility.getDbMainDatabase());
-			
 //			 * Required values that need to be filled in are:
 //				 * 
 //				 * created by (x) - the source of this annotation (whether it came from an algorithm or was entered manually)
@@ -369,71 +319,35 @@ public class AnnotationBacking implements Serializable {
 //				 * 
 //				 * Note:  If this is an interval, then an offset label, y-coordinate, and t-coordinate are required for that as well.
 			
-			AnnotationData annotationToInsert = new AnnotationData();
-
-			String ms = String.valueOf(java.lang.System.currentTimeMillis());  // used for GUID
-	/*		String series = "6"; // lead name
-			double x = 996; // "t-coodinate"
-			double y = 95; // y-coordinate
-			String flagLabel = "flagLabel"; // onset label???
-			String ontologyId = "QRS Offset";
-			String fullAnnotation = "This is only a test";	*/
-			
-			annotationToInsert.setUserID(userLifeRayModel.getScreenName());
-			
-			annotationToInsert.setSubjectID(visualizeSharedBacking.getSharedStudyEntry().getSubjectID());
-			annotationToInsert.setLeadName(getLeadName());
-			annotationToInsert.setLeadIndex(getLeadnum());
-			annotationToInsert.setDatasetName(visualizeSharedBacking.getSharedStudyEntry().getRecordName());
-			annotationToInsert.setStudyID(visualizeSharedBacking.getSharedStudyEntry().getStudy());
-			
-			 annotationToInsert.setCreator("manual");
-			 annotationToInsert.setConceptLabel(getTermName());
-			 annotationToInsert.setConceptRestURL("");
-			 annotationToInsert.setUniqueID(ms);
-			 annotationToInsert.setOnsetLabel("Onset");
-			 annotationToInsert.setOnsetRestURL("");
-			 annotationToInsert.setMicroVoltStart(getDataSY());
-			 annotationToInsert.setMilliSecondStart(getDataSX());
+						
+			AnnotationDTO ann = new AnnotationDTO(ResourceUtility.getCurrentUserId(), ResourceUtility.getCurrentGroupId(), ResourceUtility.getCurrentCompanyId(),
+					 							   visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), "manual", "ANNOTATION", getTermName(), null /*bioportalID*/, "",
+					 							   getLeadnum(), "", getComment(), getFullAnnotation(), Calendar.getInstance(),null, null, null, null, 
+					 							   null, visualizeSharedBacking.getSharedStudyEntry().getRecordName(), visualizeSharedBacking.getSharedStudyEntry().getSubjectId());
 			 
-			 annotationToInsert.setMicroVoltEnd(getDataOffsetY());
-			 annotationToInsert.setMilliSecondEnd(getDataOffsetX());
+			 if(isSinglePoint()){
+				 ann.setStartXcoord(getDataSX());
+				 ann.setStartYcoord(getDataSY());
+				 ann.setEndXcoord(getDataSX());
+				 ann.setEndYcoord(getDataSY());
+			 }else{
+				 ann.setStartXcoord(getDataSX());
+				 ann.setStartYcoord(getDataSY());
+				 ann.setEndXcoord(getDataOffsetX());
+				 ann.setEndYcoord(getDataOffsetY());
+			 }
 			 
-//Check to make sure that there is no case where the duration/offset values can be legitimately 0 
-			 annotationToInsert.setIsSinglePoint(isSinglePoint());
-//			 if (getDataOffsetY() == 0 && getDataOffsetX() == 0) {
-//				 annotationToInsert.setIsSinglePoint(true);
-//			 }
-//			 else {
-//				 annotationToInsert.setIsSinglePoint(false);
-//			 }
-			 annotationToInsert.setOffsetLabel("Offset");
-			 annotationToInsert.setOffsetRestURL("");
-			 annotationToInsert.setAnnotation(getFullAnnotation());
-			 annotationToInsert.setComment(getComment());
-			 annotationToInsert.setUnit("");
-			
-//Inserting save to XML database
 			 
-			 boolean insertionSuccess = RetrieveECGDatabase.storeLeadAnnotationNode(annotationToInsert);
+			 Long annotationId = ConnectionFactory.createConnection().storeAnnotation(ann);
 			 
-			 if(!insertionSuccess) {
-
-//add facesmessage
-				 
-			 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Failure", "Annotation did not save properly"));
-			        
+			 if(annotationId == null) {
+				 //add facesmessage
+				 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Failure", "Annotation did not save properly"));
 			 }
 
-//			System.out.println("saveAnnotationSetFlag(), LeadName: " + getLeadName());
-//			System.out.println("saveAnnotationSetFlag(), dataSY: " + getDataSY());
-//			System.out.println("saveAnnotationSetFlag(), dataSX: " + getDataSX());
-//			System.out.println("saveAnnotationSetFlag(), termName: " + getTermName());
-//			System.out.println("saveAnnotationSetFlag(), FullAnnotation: " + getFullAnnotation());
-//			System.out.println("saveAnnotationSetFlag(), nodeID: " + getNodeID());
 			System.out.println("saveAnnotationSetFlag(), Complete.");
 			
-			showAnnotations(context, RetrieveECGDatabase); // clears current annotations and reloads all, including the new one.
+			showAnnotations(context); // clears current annotations and reloads all, including the new one.
 			context.execute("SINGLELEAD_ShowAnnotationSingle()"); // need to redisplay all the annotations.
 		}
 	
@@ -443,10 +357,10 @@ public class AnnotationBacking implements Serializable {
 		 * @param context
 		 * @param RetrieveECGDatabase
 		 */
-		private void showAnnotations(RequestContext context, AnnotationUtility RetrieveECGDatabase) {
+		private void showAnnotations(RequestContext context) {
 			userLifeRayModel = ResourceUtility.getCurrentUser();
 			String sErrorMess = "";
-			//    		int leadIndex = AnnotationData.getLeadIndexStatic(getLeadName());
+
 			int leadIndex = getLeadnum();
 			if(leadIndex == -1) sErrorMess += "lead index is invalid | ";
 			if(userLifeRayModel ==  null) sErrorMess += "userLifeRayModel is invalid | ";
@@ -455,31 +369,28 @@ public class AnnotationBacking implements Serializable {
 			if(sErrorMess.length() > 0){
 				System.err.println ("AnnotationBacking.java, showAnnotations() failed: " + sErrorMess);
 			}else{
-				AnnotationData[] retrievedAnnotationList = 
-					RetrieveECGDatabase.getLeadAnnotationNode(userLifeRayModel.getScreenName(), 
-													visualizeSharedBacking.getSharedStudyEntry().getStudy(), 
-													visualizeSharedBacking.getSharedStudyEntry().getSubjectID(), 
-													String.valueOf(leadIndex), 
-													leadIndex, 
-													visualizeSharedBacking.getSharedStudyEntry().getRecordName());
-				annotationCount = retrievedAnnotationList.length;
+				List<AnnotationDTO> retrievedAnnotationList = ConnectionFactory.createConnection().getLeadAnnotationNode(userLifeRayModel.getUserId(), visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), leadIndex);
+
+				if(retrievedAnnotationList != null){
+					annotationCount = retrievedAnnotationList.size();
+				}else{
+					annotationCount = 0;
+				}
 				context.execute("CVRG_resetAnnotations()");
 				context.execute("WAVEFORM_clearHighLightQueue()");
-				Arrays.sort(retrievedAnnotationList);
-
-				String series = getLeadName();
-//				long firstX;
-//				long firstY = -999;
+				
 				flagCount = 0;
 				cIntervalLabel = 'A';
-//				String ontologyId; //e.g. = "Amplitude";
-//				String fullAnnotation;//
-//				String annotationID;
-
-				HashMap<Double, Integer> duplicates = new HashMap<Double, Integer>();
-
-				for( int i = 0; i < retrievedAnnotationList.length; i++ ){
-					duplicates = addAnnotation(context, series, retrievedAnnotationList[i], duplicates);
+				
+				if(retrievedAnnotationList != null){
+					String series = getLeadName();
+					HashMap<Double, Integer> duplicates = new HashMap<Double, Integer>();
+					
+					for (AnnotationDTO annotationDTO : retrievedAnnotationList) {
+						if(!annotationDTO.isWholeLead()){
+							duplicates = addAnnotation(context, series, annotationDTO, duplicates);	
+						}
+					}
 				}
 			}
 		}
@@ -495,7 +406,7 @@ public class AnnotationBacking implements Serializable {
 			RequestContext context = RequestContext.getCurrentInstance();
 			userLifeRayModel = ResourceUtility.getCurrentUser();
 			String sErrorMess = "";
-			//    		int leadIndex = AnnotationData.getLeadIndexStatic(getLeadName());
+
 			int leadIndex = getLeadnum();
 			if(leadIndex == -1) sErrorMess += "lead index is invalid | ";
 			if(userLifeRayModel ==  null) sErrorMess += "userLifeRayModel is invalid | ";
@@ -504,21 +415,22 @@ public class AnnotationBacking implements Serializable {
 			if(sErrorMess.length() > 0){
 				System.err.println ("AnnotationBacking.java, showNewAnnotation() failed: " + sErrorMess);
 			}else{
-//				AnnotationData[] retrievedAnnotationList; // = 
-				AnnotationData newAnnotation = new AnnotationData();
-				newAnnotation.setMilliSecondStart(getDataSX());
-				newAnnotation.setMicroVoltStart(getDataSY());
-				newAnnotation.setAnnotation("Fine-tuning Annotation");
-				newAnnotation.setConceptLabel("Editing");
+				AnnotationDTO newAnnotation = new AnnotationDTO();
+				newAnnotation.setStartXcoord(getDataSX());
+				newAnnotation.setStartYcoord(getDataSY());
+				newAnnotation.setValue("Fine-tuning Annotation");
+				newAnnotation.setName("Editing");
 
-				newAnnotation.setIsSinglePoint(isSinglePoint());
 				if(!isSinglePoint()){
-					newAnnotation.setMilliSecondEnd(getDataOffsetX());
-					newAnnotation.setMicroVoltEnd(getDataOffsetY());
+					newAnnotation.setEndXcoord(getDataOffsetX());
+					newAnnotation.setEndYcoord(getDataOffsetY());
+				}else{
+					newAnnotation.setEndXcoord(getDataSX());
+					newAnnotation.setEndYcoord(getDataSY());
 				}
-				System.out.println("### ### isSinglePoint: " + newAnnotation.getIsComment() 
-						+ " getDataOffsetX(): " + newAnnotation.getMilliSecondEnd()
-						+ " getDataOffsetY(): " + newAnnotation.getMicroVoltEnd());
+				System.out.println("### ### isSinglePoint: " + newAnnotation.isComment() 
+															+ " getDataOffsetX(): " + newAnnotation.getEndXcoord()
+															+ " getDataOffsetY(): " + newAnnotation.getEndYcoord());
 				
 
 				context.execute("CVRG_resetAnnotations()");
@@ -530,7 +442,7 @@ public class AnnotationBacking implements Serializable {
 				HashMap<Double, Integer> duplicates = new HashMap<Double, Integer>();
 				flagCount = 0;
 				cIntervalLabel = 'A';
-//
+
 				duplicates = addAnnotation(context, series, newAnnotation, duplicates);
 			}
 		}
@@ -553,26 +465,26 @@ public class AnnotationBacking implements Serializable {
 		 * @param duplicates
 		 * @return
 		 */
-		private HashMap<Double, Integer>  addAnnotation(RequestContext context, String series, AnnotationData singleAnnotation, 
+		private HashMap<Double, Integer>  addAnnotation(RequestContext context, String series, AnnotationDTO singleAnnotation, 
 														HashMap<Double, Integer> duplicates){
 			long firstX;
 			long firstY = -999;
 			String flagLabel; //e.g. = "1";
 			String ontologyId; //e.g. = "Amplitude";
 			String fullAnnotation;//
-			String annotationID;
-			System.out.println("### ### addAnnotation() -- isSinglePoint: " + singleAnnotation.getIsComment() 
-					+ " getDataOffsetX(): " + singleAnnotation.getMilliSecondEnd()
-					+ " getDataOffsetY(): " + singleAnnotation.getMicroVoltEnd());
+			Long annotationID;
+			System.out.println("### ### addAnnotation() -- isSinglePoint: " + singleAnnotation.isSinglePoint() 
+					+ " isComment: " + singleAnnotation.isComment()
+					+ " getDataOffsetX(): " + singleAnnotation.getEndXcoord()
+					+ " getDataOffsetY(): " + singleAnnotation.getEndYcoord());
 
-			firstX = (long) singleAnnotation.getMilliSecondStart();     // time or "X" coordinate 
-			firstY = (long) singleAnnotation.getMicroVoltStart();       //voltage or "Y" coordinate, not needed for dygraph annotation flag, but might be used by our code later.
-//			flagLabel = String.valueOf(i+1);   // label of Annotation
-			ontologyId = singleAnnotation.getConceptLabel();
-			fullAnnotation = singleAnnotation.getAnnotation();
-			setComment(singleAnnotation.getComment() );
-			annotationID = singleAnnotation.getUniqueID();
-//			System.out.println("RetrieveAnnotation loop x:" + firstX + " y:" + firstY + " flagCount: " + flagCount + " ontologyId:" + ontologyId + " fullAnnotation:\"" + fullAnnotation + "\" annotationID:\"" + annotationID + "\"");
+			firstX = (long) singleAnnotation.getStartXcoord().longValue();	// time or "X" coordinate 
+			firstY = (long) singleAnnotation.getStartYcoord().longValue();	//voltage or "Y" coordinate, not needed for dygraph annotation flag, but might be used by our code later.
+
+			ontologyId = singleAnnotation.getName();
+			fullAnnotation = singleAnnotation.getValue();
+			setComment(singleAnnotation.getDescription());
+			annotationID = singleAnnotation.getAnnotationId();
 
 			Double xPosition = Double.valueOf(firstX);
 			Integer numOccurances = Integer.valueOf(1);
@@ -597,7 +509,7 @@ public class AnnotationBacking implements Serializable {
 				ontologyId += " - " + fullAnnotation;
 			}
 		
-			if(singleAnnotation.getIsSinglePoint()) {
+			if(singleAnnotation.isSinglePoint()) {
 				if(firstX != (-999999999)){
 					flagLabel = String.valueOf(flagCount+1);   // label of Annotation
 
@@ -609,8 +521,7 @@ public class AnnotationBacking implements Serializable {
 						+ finalHeight + "','" + annotationID + "')");
 					flagCount++;
 				}
-			}
-			else {
+			} else {
 				// get Alphabetic flag label, then increment letter.
 				String sIntervallabel = String.valueOf(cIntervalLabel);
 				cIntervalLabel =  (char) (cIntervalLabel+1);
@@ -618,46 +529,28 @@ public class AnnotationBacking implements Serializable {
 				int finalHeight = heightMultiplier * -50;
 				String flagLabelFirst = sIntervallabel + ">";
 				String flagLabelLast = "<" + sIntervallabel;
-				String flagLabelCenter  = sIntervallabel + " Interval";
+				
 				int width = 30;
-				int widthInterval = 66;
-				long secondX = (long) singleAnnotation.getMilliSecondEnd();
-				long secondY = (long) singleAnnotation.getMicroVoltEnd();
+				
+				long secondX = (long) singleAnnotation.getEndXcoord().longValue();
+				long secondY = (long) singleAnnotation.getEndYcoord().longValue();
 
 				long centerX = (long) (( firstX + secondX ) / 2);
 				long msSample = (long)(1000/visualizeSharedBacking.getSharedStudyEntry().getSamplingRate()); // milliseconds per sample
 				long remainder = centerX % msSample;
 				centerX = centerX - remainder;
 
-//				int YcenterY = (int) (( x + secondX ) / 2); 
-//				double centerArea = ( secondX - x );
-				// mostly meaningless and useless values centerY and centerArea:
-				int centerY = (int) (( firstY + secondY ) / 2); 
-//				double centerArea = ( secondY - firstY );
-
-//				double toCenterWithArea = ( centerArea + firstX );
-
-
 				// START add annotaion from JAVA to JavaScript Dygraph 
-				//System.out.println("x: " + firstX);
 				context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  firstX + "', '" +  firstY + "','" 
 						+ flagLabelFirst + "','" + ontologyId + "','" + fullAnnotation + "',' " 
 						+ finalHeight + "','" + width + "','" + annotationID + "')");
 
-				//  Sets the center flag
-				//System.out.println( "centerX: " +  centerX);
-//				context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  centerX + "', '" +  centerY + "','" 
-//						+ flagLabelCenter  + "','" + ontologyId + "','" + fullAnnotation + "',' " 
-//						+ finalHeight + "','" + widthInterval + "','" + annotationID + "')");
-
 				// END X
-				//System.out.println( "secondX: " + secondX);
 				context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  secondX + "', '" +  secondY + "','" 
 						+ flagLabelLast + "','" + ontologyId + "','" + fullAnnotation + "',' " 
 						+ finalHeight + "','" + width + "','" + annotationID + "')");
 
 				// sets the highlight
-				//context.execute("CVRG_setHightLightLocation('" +  x + "','" +  toCenterWithArea + "', '" +  secondX + "')");
 				context.execute("WAVEFORM_queueHighLightLocation('" +  firstX + "','" +  firstY + "','" +  finalHeight + "','" +  centerX + "', '" +  secondX + "')");
 			}
 
@@ -676,11 +569,11 @@ public class AnnotationBacking implements Serializable {
 			this.userLifeRayModel = userLifeRayModel;
 		}
 
-		public StudyEntry getStudyEntry() {
+		public DocumentRecordDTO getStudyEntry() {
 			return visualizeSharedBacking.getSharedStudyEntry();
 		}
 
-		public void setStudyEntry(StudyEntry studyEntry) {
+		public void setStudyEntry(DocumentRecordDTO studyEntry) {
 			this.visualizeSharedBacking.setSharedStudyEntry(studyEntry);
 		}
 
@@ -787,24 +680,13 @@ public class AnnotationBacking implements Serializable {
 
 		public void setNodeID(String nodeID) {
 			this.nodeID = nodeID;
-//			this.fullAnnotation = this.termName + " | " + this.nodeID + " DUMMY Definition";
-		}
-
-		private int getLastnum() {
-			return lastnum;
-		}
-
-		private void setLastnum(int lastnum) {
-			this.lastnum = lastnum;
 		}
 
 		public int getLeadnum() {
-			//System.out.println( "AnnotationBacking.getLeadnum() called with:" + leadnum);
 			return leadnum;
 		}
 
 		public void setLeadnum(int leadnum) {
-//			System.out.println( "AnnotationBacking.setLeadnum() called with:" + leadnum);
 			this.leadnum = leadnum;
 		}
 
@@ -835,26 +717,11 @@ public class AnnotationBacking implements Serializable {
 		
 		public double getDataOffsetX() {
 			return dataOffsetX;
-//			double ret;
-//			if(dataSXDuration==0)
-//				ret = 0;
-//			else 
-//				ret = dataSX+dataSXDuration;
-//			
-//			return ret;
 		}
+		
 		public double getDataOffsetY() {
 			return dataOffsetY;
-//			double ret;
-//			if(dataSYDuration==0)
-//				ret = 0;
-//			else 
-//				ret = dataSY+dataSYDuration;
-//			
-//			return ret;
 		}
-
-
 
 		public boolean isSinglePoint() {
 			return singlePoint;

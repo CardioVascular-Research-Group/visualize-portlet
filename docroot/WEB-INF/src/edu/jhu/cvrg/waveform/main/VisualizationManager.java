@@ -2,10 +2,12 @@ package edu.jhu.cvrg.waveform.main;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.axiom.om.OMElement;
 
-import edu.jhu.cvrg.waveform.callbacks.SvcAxisCallback;
+import com.liferay.portal.kernel.repository.model.FileEntry;
+
 import edu.jhu.cvrg.waveform.model.VisualizationData;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
@@ -17,12 +19,9 @@ import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
 public class VisualizationManager {
 
 	private boolean verbose = false;
-//	private AnalysisInProgress aIP;
-//	private AnalysisUtility anUtil = new AnalysisUtility();
 	public boolean make12LeadTestPattern=false;
 	public VisualizationManager(boolean verbose){		 
 		this.verbose = verbose;
-//		aIP = new AnalysisInProgress();
 	}
 
 
@@ -42,65 +41,51 @@ public class VisualizationManager {
 	 * 
 	 * @see org.cvrgrid.ecgrid.client.BrokerService#fetchSubjectVisualization(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, long, int, int)
 	 */
-	public VisualizationData fetchSubjectVisualizationData(String userID, String subjectID, 
-			String[] saFileNameList, long fileSize, 
-			int offsetMilliSeconds, int durationMilliSeconds, 
-			int graphWidthPixels, boolean bTestPattern) {
-		System.out.println("--- -- fetchSubjectVisualizationData() saFileNameList[0]: " + saFileNameList[0] +  " offsetMilliSeconds: " + offsetMilliSeconds + " durationMilliSeconds: " + durationMilliSeconds );
+	public VisualizationData fetchSubjectVisualizationData(Long userID, String subjectID, Map<String, FileEntry> fileMap, long fileSize, int offsetMilliSeconds, int durationMilliSeconds, 
+														   int graphWidthPixels, boolean bTestPattern) {
+		
+		Set<String> fileNames = fileMap.keySet();
+		
+		System.out.println("--- -- fetchSubjectVisualizationData() saFileNameList[0]: " + fileNames.iterator().next() +  " offsetMilliSeconds: " + offsetMilliSeconds + " durationMilliSeconds: " + durationMilliSeconds );
 		long startTimeFetch = System.currentTimeMillis();
 		
-		String ftpURL = ResourceUtility.getFtpHost(); // web address of the data file repository 
-		String fUser = ResourceUtility.getFtpUser(); // ftp userID
-		String fPassword = ResourceUtility.getFtpPassword(); // ftp password
-//		String mySqlURL; 
-//		String fileNameList = "";
-		int iFileCount = saFileNameList.length;
+		int iFileCount = fileMap.size();
 		VisualizationData visualizationData = null;
 		
 		//**** create the file subnodes of the fileNameList node. ************
-		LinkedHashMap<String, String> fileMap = new LinkedHashMap<String, String>();
+		LinkedHashMap<String, String> fileNameMap = new LinkedHashMap<String, String>();
 		int f=0;
-		for(String fn:saFileNameList){
-//			fileNameList += "\t\t<filename>" + fn + "</filename>\n";
-			fileMap.put("fileName_" + f, fn);
+		for(String fn: fileNames){
+			fileNameMap.put("fileName_" + f, fn);
 			f++;
 		}
 		//************************************
 		
 		LinkedHashMap<String, Object> parameterMap = new LinkedHashMap<String, Object>();
 
-//		String serviceMethod = "collectWFDBdataSegment";		
-//		String serviceName = "nodeDataService"; 
-		
 		String serviceMethod = "fetchWFDBdataSegmentType2";
 		String serviceName = "waveformDataService"; 
 
-		parameterMap.put("service", serviceMethod); 
-		
-//		parameterMap.put("brokerURL", ftpURL); // 
-		parameterMap.put("ftpHost", ftpURL);
-		parameterMap.put("ftpUser", fUser); // 
-		parameterMap.put("ftpPassword", fPassword);
-//		parameterMap.put("fileName", fileName);
-		parameterMap.put("fileNameList", fileMap);
+		parameterMap.put("fileNameList", fileNameMap);
 		parameterMap.put("fileCount", String.valueOf(iFileCount));
-		parameterMap.put("parameterCount", "0");
-		
 		parameterMap.put("fileSize", String.valueOf(fileSize));
+		
+		parameterMap.put("parameterCount", "0");
 		parameterMap.put("offsetMilliSeconds", String.valueOf(offsetMilliSeconds));
 		parameterMap.put("durationMilliSeconds", String.valueOf(durationMilliSeconds));
 		parameterMap.put("graphWidthPixels", String.valueOf(graphWidthPixels));
+		parameterMap.put("userId", String.valueOf(userID));
+		
 		parameterMap.put("testPattern", String.valueOf(bTestPattern));
 		parameterMap.put("verbose", String.valueOf(verbose));
 
 		String serviceURL = ResourceUtility.getAnalysisServiceURL();
-		SvcAxisCallback callback = null; // forces callWebService to return webservice results directly.
 		
 		OMElement omeWSReturn = WebServiceUtility.callWebServiceComplexParam(parameterMap, 
 				serviceMethod, // Method of the service which implements the copy. e.g. "copyDataFilesToAnalysis"
 				serviceName, // Name of the web service. e.g. "dataTransferService"
 				serviceURL, // URL of the Analysis Web Service to send data files to. e.g. "http://icmv058.icm.jhu.edu:8080/axis2/services/";
-				callback);
+				null, fileMap);
 		
 		long webServiceTime = System.currentTimeMillis();
 

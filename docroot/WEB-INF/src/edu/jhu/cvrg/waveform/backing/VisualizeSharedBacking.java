@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
-import edu.jhu.cvrg.waveform.model.StudyEntry;
+import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
 
 @ManagedBean(name = "visualizeSharedBacking")
 @SessionScoped
@@ -18,8 +18,7 @@ public class VisualizeSharedBacking  implements Serializable {
 	private String selectedLeadName="";
 	private String selectedLeadNumber="";
 
-	private StudyEntry sharedStudyEntry;
-//	private AnnotationBacking sharedAnnotationBacking;
+	private DocumentRecordDTO sharedStudyEntry;
 
 	public String getSelectedLeadName() {
 		return selectedLeadName;
@@ -36,11 +35,10 @@ public class VisualizeSharedBacking  implements Serializable {
 		this.selectedLeadNumber = selectedLeadNumber;
 	}
 
-	public StudyEntry getSharedStudyEntry() {
-		//System.out.println("||||| VisualizeSharedBacking, getSharedStudyEntry |||||");
+	public DocumentRecordDTO getSharedStudyEntry() {
 		return sharedStudyEntry;
 	}
-	public void setSharedStudyEntry(StudyEntry sharedStudyEntry) {
+	public void setSharedStudyEntry(DocumentRecordDTO sharedStudyEntry) {
 		System.out.println("===== VisualizeSharedBacking, setSharedStudyEntry ========");
 		this.sharedStudyEntry = sharedStudyEntry;
 	}
@@ -57,11 +55,5 @@ public class VisualizeSharedBacking  implements Serializable {
     public String getDurationSec(){
     	return String.valueOf(getSharedStudyEntry().getDurationSec()) + " seconds";
     }
-	//--------------------------------
-//	public AnnotationBacking getSharedAnnotationBacking() {
-//		return sharedAnnotationBacking;
-//	}
-//	public void setSharedAnnotationBacking(AnnotationBacking sharedAnnotationBacking) {
-//		this.sharedAnnotationBacking = sharedAnnotationBacking;
-//	}         
+ 
 }

@@ -51,11 +51,8 @@
 			oncomplete="renderData();"
 			actionListener="#{visualizeGraphBacking.panToMilliSec}" />			
 	</p:panel>
-	<!--
- 	<p:draggable for="dragPanelPanZoom" handle=".ui-panel-titlebar" />
-	<p:resizable for="dragPanelPanZoom" handles="e,w,n,s,se,sw,ne,nw" />
- -->
-	<p:panel id="ecgDataHidden">
+
+	<p:panel id="ecgDataHidden" visible="false">
 		<script>
 			//alert("updating panel: ecgDataHidden");
 			data = '#{visualizeGraphBacking.data}';

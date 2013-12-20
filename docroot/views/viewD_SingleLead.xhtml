@@ -13,11 +13,11 @@
 			}
 		</style>
 
-		<f:event type="preRenderView"
-			listener="#{annotationBacking.initialize}" />
+		<f:event type="preRenderView" listener="#{annotationBacking.initialize}" />
+		
 		<h:form id="drawGraph_loadAnnotations">
 			<p:remoteCommand name="calledOnLoad"
-				oncomplete="isMultigraph=false;renderSingleGraphAndAnnotations();" autoRun="true">
+							 oncomplete="isMultigraph=false;renderSingleGraphAndAnnotations();" autoRun="true">
 			</p:remoteCommand>
 		</h:form>
 		<script>
@@ -43,16 +43,9 @@
 				partialSubmit="false"
 				action="#{annotationBacking.viewCurrentAnnotation}" />
 		</h:form>
-		<h:panelGroup id="backgroundofContentDiv" layout="block"
-			styleClass="backgroundofContent">
-			<p:layout id="graphView"
-				style=" min-height:710px; height:720px; top:20px">
-				<p:layoutUnit id="ecgGraphLayout" position="center"
-					style="min-width:400px; 
-									min-height:700px; 
-									width:90%; 
-									background-color:#fdf6e3; 
-									margin:1px auto;">
+		<h:panelGroup id="backgroundofContentDiv" layout="block" styleClass="backgroundofContent">
+			<p:layout id="graphView" style="width:100%;height:550px" >
+				<p:layoutUnit id="ecgGraphLayout" position="center">
 					<p:panel id="graphContainerDiv" styleClass="ecgContainer">
 						<!-- START LEAD VISULAZATION  -->
 						<h:inputHidden id="voltMinInput" value="1" immediate="true" />
@@ -86,8 +79,7 @@
 					</p:panel>
 				</p:layoutUnit>
 
-				<p:layoutUnit id="viewChangeButtons" position="east"
-					resizable="true" size="150" minSize="50" maxSize="550">
+				<p:layoutUnit id="viewChangeButtons" position="east" resizable="true" size="150" minSize="50" maxSize="550" collapsible="true" header="Nav Menu">
 					<h:form>
 						<p:commandButton id="returnToList" value="View ECG List"
 							action="#{visualizeGraphBacking.viewSelectionTree}" ajax="true"

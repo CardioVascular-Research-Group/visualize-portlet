@@ -19,28 +19,18 @@ limitations under the License.
 * 
 */
 
-import javax.annotation.PostConstruct;
-
-
 import java.io.Serializable;
 import java.util.ArrayList;
-//import java.util.HashMap;
-//import java.util.Map;
 
-//import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-//import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ComponentSystemEvent;
 
-
-//import org.json.JSONException;
 import org.json.JSONObject;
-//import org.omnifaces.util.Ajax;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.SelectEvent;
@@ -49,13 +39,12 @@ import org.primefaces.model.TreeNode;
 
 import com.liferay.portal.model.User;
 
-//import edu.jhu.cvrg.waveform.utility.AnnotationUtility;
+import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
+import edu.jhu.cvrg.dbapi.factory.Connection;
+import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
+import edu.jhu.cvrg.waveform.model.FileTreeNode;
+import edu.jhu.cvrg.waveform.model.LocalFileTree;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
-//import edu.jhu.cvrg.waveform.main.VisualizationManager;
-import edu.jhu.cvrg.waveform.model.FileTree;
-import edu.jhu.cvrg.waveform.model.StudyEntry;
-//import edu.jhu.cvrg.waveform.model.VisualizationData;
-//import edu.jhu.cvrg.waveform.utility.ServerUtility;
 
 @ManagedBean(name = "visualizeBacking")
 @ViewScoped
@@ -66,21 +55,20 @@ public class VisualizeBacking implements Serializable {
 	
 	private static final long serialVersionUID = -4006126553152259063L;
 
-	private ArrayList<StudyEntry> selectedNodes;
+	private ArrayList<FileTreeNode> selectedNodes;
 	
 
-	private StudyEntry selectedStudyObject;  
+	private DocumentRecordDTO selectedStudyObject;  
 	
-	private ArrayList<StudyEntry> studyEntryList;
+	private ArrayList<DocumentRecordDTO> studyEntryList;
 	private boolean geVisible = true;
-	private FileTree fileTree;
+	private LocalFileTree fileTree;
 	private boolean selectVisible = true, graphVisible = false, graphMultipleVisible=false;
 	private int iCurrentVisualizationOffset=0; // 12 lead displays always start at zero seconds (0 ms).
 	private int iVisualizationWidthMS = 2500;
 	private int iDurationMilliSeconds = 2500; // 2.5 second of data is needed for rhythm strip(s) at the bottom of the page. 
 	private int iSingleLeadWidthMS = 2500;
 	private int iGraphWidthPixels = 2500; //width of the longest graph which will use this data. Sets the maximum amount of data compression allowable.
-	private String[] saGraphTitle= {"I","II","III","aVR","aVL","aVF","V1","V2","V3","V4","V5","V6","VX","VY","VZ"}; // default values, should be replaced by the this.setGraphTitle() method, though usually the values are the same.
 	private JSONObject dataJson;
 	private boolean newInstance = true;
 
@@ -92,8 +80,8 @@ public class VisualizeBacking implements Serializable {
 		userModel = ResourceUtility.getCurrentUser();
 		if(fileTree == null){
 			System.out.println("*** creating new FileTree for user:" + userModel.getScreenName());
-			fileTree = new FileTree();
-			fileTree.initialize(userModel.getScreenName());
+			fileTree = new LocalFileTree(userModel.getUserId(), "hea");
+			fileTree.initialize(userModel.getUserId());
 			System.out.println("*** fileTree == null :" + (fileTree == null));
 		}else{
 			System.out.println("*** fileTree already exists *** ");
@@ -109,7 +97,7 @@ public class VisualizeBacking implements Serializable {
 			System.out.println("***  New instance ****");
 			userModel = ResourceUtility.getCurrentUser();
 			if (selectVisible) {
-				fileTree = new FileTree(userModel.getScreenName());
+				fileTree = new LocalFileTree(userModel.getUserId(), "hea");
 			}
 		}
 		newInstance = false;
@@ -121,19 +109,6 @@ public class VisualizeBacking implements Serializable {
     	setVisibleFragment(0); // show list/tree page fragment.
     }
 
-    /** Switches to the 12 lead graph panel.
-     * Handles onclick event for the button "btnView12LeadECG" in the panelVisualizeSelect fragment (panel).
-     * 
-     * @param event
-     */
-//    public void viewLeads(ActionEvent event){
-//    	System.out.println("VisualizeBacking.java, viewLeads()");
-//    	System.out.println("+ graphVisible = " + isGraphVisible());
-//    	System.out.println("+ graphMultipleVisible = " + isGraphMultipleVisible());
-//    	//setVisibleFragment(2); // show 12 lead graph page fragment.
-//    	generic12leadOnloadCallback();
-//    }
-//    
     /** Loads the data for the selected ecg file and switches to the 12 lead graph panel.
      * Handles onclick event for the button "btnView12LeadECG" in the viewA_SelectionTree.xhtml view.
      * 
@@ -141,34 +116,12 @@ public class VisualizeBacking implements Serializable {
     public String graphSelectedECG(){
     	String nextView="";
     	System.out.println("+++ VisualizeBacking.java, graphSelectedECG() +++ ");
-    	System.out.println("+ selected record:" + selectedStudyObject.getRecordName() + " in file:" + selectedStudyObject.getDataFile() + " lead count:" + selectedStudyObject.getLeadCount());
-//    	setVisibleFragment(2); // show 12 lead graph page fragment.
-//    	if(selectedStudyObject.getLeadCount()==3){
-//    		nextView = "viewC_Display3Leads";
-////    	setVisibleFragment(2); // show 12 lead graph page fragment.
-////    	if(selectedStudyObject.getLeadCount()==12){
-////    		nextView = "viewB_Display12Leads";
-//    	}else{
-////    		if(selectedStudyObject.getLeadCount()==15){
-////	    		nextView = "viewD_SingleLead";
-////	    	}else{
-	    		nextView = "viewB_DisplayMultiLeads";
-//	   // 	}
-//    	}
+    	System.out.println("+ selected record:" + selectedStudyObject.getRecordName() /*+ " in file:" + selectedStudyObject.getDataFile()*/ + " lead count:" + selectedStudyObject.getLeadCount());
+   		nextView = "viewB_DisplayMultiLeads";
     	
     	System.out.println("+ nextView:" + nextView); 
-    	//generic12leadOnloadCallback();
 		return nextView;
     }
-//
-//    public void viewSingleLead(ActionEvent event){
-//    	System.out.println("VisualizeBacking.java, viewSingleLead()");
-//    	System.out.println("- graphVisible = " + isGraphVisible());
-//    	System.out.println("- graphMultipleVisible = " + isGraphMultipleVisible());
-//    	//setVisibleFragment(1); // show single lead graph page fragment.
-////    	generic12leadOnloadCallback();
-//    }
-
 
     /** Determines which files are selected in the fileTree and displays them in the StudyEntryList.
      * Handles the click event from the button "btnDisplay".
@@ -178,7 +131,16 @@ public class VisualizeBacking implements Serializable {
 		System.out.println("-VisualizeBacking.displaySelectedMultiple() ");
 		selectedNodes = fileTree.getSelectedFileNodes();
 		System.out.println("--selectedNodes.size(): " + selectedNodes.size());
-		setStudyEntryList(selectedNodes);
+		
+		Connection database = ConnectionFactory.createConnection();
+		
+		if(selectedNodes != null){
+			studyEntryList = new ArrayList<DocumentRecordDTO>();
+			for (FileTreeNode node : selectedNodes) {
+				studyEntryList.add(database.getDocumentRecordById(node.getDocumentRecordId()));
+			}
+		}
+		
 		System.out.println("-VisualizeBacking.displaySelectedMultiple() DONE");
 	}
 	
@@ -198,17 +160,17 @@ public class VisualizeBacking implements Serializable {
 	}
 
 	public void onRowSelect(SelectEvent event) {
-		selectedStudyObject = ((StudyEntry) event.getObject());
+		selectedStudyObject = ((DocumentRecordDTO) event.getObject());
 		System.out.println(" onRowSelect() selectedStudyObject " + selectedStudyObject.toString()  );
-		FacesMessage msg = new FacesMessage("Selected Row", ((StudyEntry) event.getObject()).getStudy());
+		FacesMessage msg = new FacesMessage("Selected Row", ((DocumentRecordDTO) event.getObject()).getDocumentRecordId().toString()); //FIXME [VILARDO] where is the study property? Using the document id.
 		FacesContext.getCurrentInstance().addMessage(null, msg);
 		System.out.println(" onRowSelect() selectedStudyObject DONE");
 	}
 
 	public void onRowUnselect(UnselectEvent event) {
 		System.out.println(" onRowUnSelect() selectedStudyObject " + selectedStudyObject.toString()  );
-		StudyEntry studyentry = ((StudyEntry) event.getObject());
-		FacesMessage msg = new FacesMessage("Unselected Row",studyentry.getStudy());
+		DocumentRecordDTO studyentry = ((DocumentRecordDTO) event.getObject());
+		FacesMessage msg = new FacesMessage("Unselected Row",studyentry.getDocumentRecordId().toString());
 		FacesContext.getCurrentInstance().addMessage(null, msg);
 		System.out.println(" onRowUnSelect() selectedStudyObject DONE");
 	}
@@ -221,13 +183,13 @@ public class VisualizeBacking implements Serializable {
 		this.geVisible = true;
 	}
 
-	public void setSelectedStudyObject(StudyEntry selectedStudyObject) {
+	public void setSelectedStudyObject(DocumentRecordDTO selectedStudyObject) {
 		this.selectedStudyObject = selectedStudyObject;
 		visualizeSharedBacking.setSharedStudyEntry(selectedStudyObject);
 		System.out.println("Graphed Study Object Set");
 	}
 
-	public StudyEntry getSelectedStudyObject() {
+	public DocumentRecordDTO getSelectedStudyObject() {
 		return selectedStudyObject;
 	}
 
@@ -242,11 +204,11 @@ public class VisualizeBacking implements Serializable {
 		this.geVisible = geVisible;
 	}
 
-	public FileTree getFileTree() {
+	public LocalFileTree getFileTree() {
 		return fileTree;
 	}
 
-	public void setFileTree(FileTree fileTree) {
+	public void setFileTree(LocalFileTree fileTree) {
 		this.fileTree = fileTree;
 	}
 
@@ -272,26 +234,17 @@ public class VisualizeBacking implements Serializable {
 		this.graphMultipleVisible = graphMultipleVisible;
 	}
 
-	public ArrayList<StudyEntry> getStudyEntryList() {
+	public ArrayList<DocumentRecordDTO> getStudyEntryList() {
 		return studyEntryList;
 	}
 
-	public void setStudyEntryList(ArrayList<StudyEntry> studyEntryList) {
+	public void setStudyEntryList(ArrayList<DocumentRecordDTO> studyEntryList) {
 		this.studyEntryList = studyEntryList;
 	}
 
 	public int getCurrentVisualizationOffset() {
 		return iCurrentVisualizationOffset;
 	}
-
-	/** When this variable is changed, then the data will be fetched and the viewing window will be reloaded.
-	 * 
-	 * @param currentVisualizationOffset
-	 */
-//	public void setCurrentVisualizationOffset(int currentVisualizationOffset) {
-//		//this.currentVisualizationOffset = currentVisualizationOffset;
-//		g12leadPanToTime(currentVisualizationOffset);
-//	}
 
 	public int getVisualizationWidthMS() {
 		return iVisualizationWidthMS;
