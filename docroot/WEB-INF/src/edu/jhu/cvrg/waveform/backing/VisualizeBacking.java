@@ -22,14 +22,15 @@ limitations under the License.
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
-import javax.faces.event.ComponentSystemEvent;
 
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
@@ -70,42 +71,29 @@ public class VisualizeBacking implements Serializable {
 	private int iSingleLeadWidthMS = 2500;
 	private int iGraphWidthPixels = 2500; //width of the longest graph which will use this data. Sets the maximum amount of data compression allowable.
 	private JSONObject dataJson;
-	private boolean newInstance = true;
-
+	
 	private User userModel;
+	private static Logger log = Logger.getLogger(VisualizeBacking.class);
 	
-	
-	public void init() { // copied from analyze to replace initialize()
-		System.out.println("*************** VisualizeBacking.java, init() copied from analyze to replace initialize() **********************");
+	@PostConstruct
+	public void init() { 
+		log.info("*************** VisualizeBacking.java, init() copied from analyze to replace initialize() **********************");
 		userModel = ResourceUtility.getCurrentUser();
 		if(fileTree == null){
-			System.out.println("*** creating new FileTree for user:" + userModel.getScreenName());
+			log.info("*** creating new FileTree for user:" + userModel.getScreenName());
 			fileTree = new LocalFileTree(userModel.getUserId(), "hea");
 			fileTree.initialize(userModel.getUserId());
-			System.out.println("*** fileTree == null :" + (fileTree == null));
+			log.info("*** fileTree == null :" + (fileTree == null));
 		}else{
-			System.out.println("*** fileTree already exists *** ");
+			log.info("*** fileTree already exists *** ");
 		}
 			
-		System.out.println("*************** VisualizeBacking.java, init() finished **********************");
-	}
-
-	public void initialize(ComponentSystemEvent event) {
-    	System.out.println("*************** VisualizeBacking.java, initialize() **********************");
-    	
-		if (newInstance) {
-			System.out.println("***  New instance ****");
-			userModel = ResourceUtility.getCurrentUser();
-			if (selectVisible) {
-				fileTree = new LocalFileTree(userModel.getUserId(), "hea");
-			}
-		}
-		newInstance = false;
+		log.info("*************** VisualizeBacking.java, init() finished **********************");
 	}
     
     public void viewSelectTree(ActionEvent event){
-    	System.out.println("VisualizeBacking.java, viewSelectTree()");
-    	System.out.println("= graphVisible = " + graphVisible);
+    	log.info("VisualizeBacking.java, viewSelectTree()");
+    	log.info("= graphVisible = " + graphVisible);
     	setVisibleFragment(0); // show list/tree page fragment.
     }
 
@@ -115,11 +103,11 @@ public class VisualizeBacking implements Serializable {
      */
     public String graphSelectedECG(){
     	String nextView="";
-    	System.out.println("+++ VisualizeBacking.java, graphSelectedECG() +++ ");
-    	System.out.println("+ selected record:" + selectedStudyObject.getRecordName() /*+ " in file:" + selectedStudyObject.getDataFile()*/ + " lead count:" + selectedStudyObject.getLeadCount());
+    	log.info("+++ VisualizeBacking.java, graphSelectedECG() +++ ");
+    	log.info("+ selected record:" + selectedStudyObject.getRecordName() + " lead count:" + selectedStudyObject.getLeadCount());
    		nextView = "viewB_DisplayMultiLeads";
     	
-    	System.out.println("+ nextView:" + nextView); 
+   		log.info("+ nextView:" + nextView); 
 		return nextView;
     }
 
@@ -128,9 +116,9 @@ public class VisualizeBacking implements Serializable {
      * @param event
      */
 	public void displaySelectedMultiple(ActionEvent event) {
-		System.out.println("-VisualizeBacking.displaySelectedMultiple() ");
+		log.info("-VisualizeBacking.displaySelectedMultiple() ");
 		selectedNodes = fileTree.getSelectedFileNodes();
-		System.out.println("--selectedNodes.size(): " + selectedNodes.size());
+		log.info("--selectedNodes.size(): " + selectedNodes.size());
 		
 		Connection database = ConnectionFactory.createConnection();
 		
@@ -141,7 +129,7 @@ public class VisualizeBacking implements Serializable {
 			}
 		}
 		
-		System.out.println("-VisualizeBacking.displaySelectedMultiple() DONE");
+		log.info("-VisualizeBacking.displaySelectedMultiple() DONE");
 	}
 	
 	public void folderSelect(NodeSelectEvent event){
@@ -161,18 +149,18 @@ public class VisualizeBacking implements Serializable {
 
 	public void onRowSelect(SelectEvent event) {
 		selectedStudyObject = ((DocumentRecordDTO) event.getObject());
-		System.out.println(" onRowSelect() selectedStudyObject " + selectedStudyObject.toString()  );
+		log.info(" onRowSelect() selectedStudyObject " + selectedStudyObject.toString()  );
 		FacesMessage msg = new FacesMessage("Selected Row", ((DocumentRecordDTO) event.getObject()).getDocumentRecordId().toString()); //FIXME [VILARDO] where is the study property? Using the document id.
 		FacesContext.getCurrentInstance().addMessage(null, msg);
-		System.out.println(" onRowSelect() selectedStudyObject DONE");
+		log.info(" onRowSelect() selectedStudyObject DONE");
 	}
 
 	public void onRowUnselect(UnselectEvent event) {
-		System.out.println(" onRowUnSelect() selectedStudyObject " + selectedStudyObject.toString()  );
+		log.info(" onRowUnSelect() selectedStudyObject " + selectedStudyObject.toString()  );
 		DocumentRecordDTO studyentry = ((DocumentRecordDTO) event.getObject());
 		FacesMessage msg = new FacesMessage("Unselected Row",studyentry.getDocumentRecordId().toString());
 		FacesContext.getCurrentInstance().addMessage(null, msg);
-		System.out.println(" onRowUnSelect() selectedStudyObject DONE");
+		log.info(" onRowUnSelect() selectedStudyObject DONE");
 	}
 	
 	public void hideGe(ActionEvent e){
@@ -186,7 +174,7 @@ public class VisualizeBacking implements Serializable {
 	public void setSelectedStudyObject(DocumentRecordDTO selectedStudyObject) {
 		this.selectedStudyObject = selectedStudyObject;
 		visualizeSharedBacking.setSharedStudyEntry(selectedStudyObject);
-		System.out.println("Graphed Study Object Set");
+		log.info("Graphed Study Object Set");
 	}
 
 	public DocumentRecordDTO getSelectedStudyObject() {
@@ -287,7 +275,7 @@ public class VisualizeBacking implements Serializable {
 	 * 2 = multiple lead (e.g. 3, 12 or 15) graph<BR>
 	 */
 	private void setVisibleFragment(int fragmentID){
-    	System.out.println("VisualizeBacking.java, setVisibleFragment(" + fragmentID + ")");
+		log.info("VisualizeBacking.java, setVisibleFragment(" + fragmentID + ")");
 
 		// reset all
 		setSelectVisible(false);
@@ -323,8 +311,7 @@ public class VisualizeBacking implements Serializable {
 		return visualizeSharedBacking;
 	}
 
-	public void setVisualizeSharedBacking(
-			VisualizeSharedBacking visualizeSharedBacking) {
+	public void setVisualizeSharedBacking(VisualizeSharedBacking visualizeSharedBacking) {
 		this.visualizeSharedBacking = visualizeSharedBacking;
 	}
 

@@ -13,8 +13,6 @@
 			}
 		</style>
 
-		<f:event type="preRenderView" listener="#{annotationBacking.initialize}" />
-		
 		<h:form id="drawGraph_loadAnnotations">
 			<p:remoteCommand name="calledOnLoad"
 							 oncomplete="isMultigraph=false;renderSingleGraphAndAnnotations();" autoRun="true">
@@ -24,8 +22,8 @@
 			var renderSingleGraphAndAnnotations = function(){
 				//alert("renderSingleGraphAndAnnotations() called.");
 				var namespace = '#{facesContext.externalContext.encodeNamespace('')}';
-				var offsetMS = '#{visualizeGraphBacking.currentVisualizationOffset}';
-				var widthMS = '#{visualizeGraphBacking.durationMilliSeconds}';
+				var offsetMS = '#{visualizeSharedBacking.currentVisualizationOffset}';
+				var widthMS = '#{visualizeSharedBacking.durationMilliSeconds}';
 				// add 400 ms to account for the calibration.
 				SINGLELEAD_drawECGgraph('ecgSingle_div', namespace, (offsetMS), (widthMS+400));
 				SINGLELEAD_ShowAnnotationSingle();				
@@ -54,18 +52,15 @@
 
 						<h:panelGrid columns="2" border="0">
 							<h:outputText value="" />
-							<h:outputText id="TitleDiv0"
-								value="#{annotationBacking.leadDescription}" styleClass="title" />
+							<h:outputText id="TitleDiv0" value="#{annotationBacking.leadDescription}" styleClass="title" />
 
 							<p:slider id="sliderVoltCenterSingle"
 								for="#{facesContext.externalContext.encodeNamespace(':voltCenterInput')}"
 								type="vertical" style="height:400px" minValue="-50"
 								maxValue="50" onSlideEnd="zoomVoltage()" />
-							<h:panelGroup id="ecgSingle_div" layout="block" class="graph"
-								style="border:1">
+							<h:panelGroup id="ecgSingle_div" layout="block" class="graph" style="border:1">
 								GRAPH WILL GO HERE
-								<h:graphicImage value="/image/graph-loader.gif"
-									title="graph loading indicator" alt="graph loading indicator" />
+								<h:graphicImage value="/image/graph-loader.gif" title="graph loading indicator" alt="graph loading indicator" />
 							</h:panelGroup>
 
 							<h:outputText value="" />
@@ -82,15 +77,14 @@
 				<p:layoutUnit id="viewChangeButtons" position="east" resizable="true" size="150" minSize="50" maxSize="550" collapsible="true" header="Nav Menu">
 					<h:form>
 						<p:commandButton id="returnToList" value="View ECG List"
-							action="#{visualizeGraphBacking.viewSelectionTree}" ajax="true"
+							action="#{visualizeSharedBacking.viewSelectionTree}" ajax="true"
 							icon="ui-icon-document" styleClass="navigationButton"
 							title="View the ECG selection tree." />
 
 						<p:commandButton id="showMultiLead" value="View Multi-Lead"
-							action="#{visualizeGraphBacking.viewMultiLeadGraph}"
-							icon="ui-icon-arrowreturnthick-1-w"
-							title="View multiple lead graphs." styleClass="navigationButton"
-							onkeydown="CVRG_clickCallCommon(0);" />
+							action="#{visualizeSharedBacking.viewMultiLeadGraph}" ajax="true"
+							icon="ui-icon-arrowreturnthick-1-w" styleClass="navigationButton" 
+							title="View multiple lead graphs."/>
 
 						<p:button id="voltCenterButton" value="center" type="button"
 							styleClass="navigationButton" icon="ui-icon-arrowthick-2-n-s"
@@ -109,7 +103,7 @@
 							onclick="setVoltageZoom(-2000,2000);return false;" />
 							
 						<ui:include src="include/includePanZoom.xhtml" />
-						<h:selectOneMenu id="singleLeadWidth" value="#{visualizeGraphBacking.durationMilliSeconds}" >
+						<h:selectOneMenu id="singleLeadWidth" value="#{visualizeSharedBacking.durationMilliSeconds}" >
 						   	<f:selectItem itemValue="1200" itemLabel="1.2 Sec" />
 						   	<f:selectItem itemValue="2500" itemLabel="2.5 Sec" />
 						   	<f:selectItem itemValue="5000" itemLabel="5.0 Sec" />
@@ -124,7 +118,7 @@
 							alt="Change display width, in milliseconds."
 							update=":#{p:component('ecgDataHidden')}" 
 							oncomplete="renderData();"
-							actionListener="#{visualizeGraphBacking.reloadData}" />						
+							actionListener="#{visualizeSharedBacking.reloadData}" />						
 					</h:form>
 				</p:layoutUnit>
 			</p:layout>

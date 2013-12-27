@@ -36,8 +36,7 @@
 	</style>
 
 	<!-- Instruction label -->
-	<h:panelGrid layout="block" id="instruction12Lead"
-		styleClass="instruction12Lead" columns="2" cellpadding="20">
+	<h:panelGrid layout="block" id="instruction12Lead" styleClass="instruction12Lead" columns="2" cellpadding="20">
 		<h:panelGroup>
 			<h:outputLabel id="subjectLabel" styleClass="toplabelBold" value="Subject:" />
 			<h:outputText id="subjectValue" styleClass="toplabel" value="#{visualizeSharedBacking.sharedStudyEntry.getRecordName()}" />
@@ -58,8 +57,7 @@
 	<!-- START 12 lead container -->
 	<h:inputHidden id="voltCenterInputALL" value="50" immediate="true" />
 
-	<h:panelGrid id="Container_12LeadDivOutside" layout="block" columns="2"
-		styleClass="Container_12LeadDivOutside">
+	<h:panelGrid id="Container_12LeadDivOutside" layout="block" columns="2" styleClass="Container_12LeadDivOutside">
 		
 		<p:dataGrid var="i" value="#{visualizeGraphBacking.multiLeadLayoutList}"  rowIndexVar="col"  columns="#{visualizeGraphBacking.multiLeadColumnCount}">
 		    <graph:calibrationGraph number="#{i.leadNumber}" rendered="#{!i.lead}"/>

@@ -108,7 +108,6 @@ public class VisualizationData implements Serializable {
 		
 		for(int row=0;row<dRow;row++){
 			if(row==0){
-//				saECGData[row][0] = "millisecond";
 				for(int col=0;col<dCol;col++){
 					saECGData[row][col] = saLeadName[col];
 				}

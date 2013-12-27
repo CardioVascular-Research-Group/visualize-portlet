@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.log4j.Logger;
 
 import com.liferay.portal.kernel.repository.model.FileEntry;
 
@@ -18,10 +19,12 @@ import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
  */
 public class VisualizationManager {
 
-	private boolean verbose = false;
-	public boolean make12LeadTestPattern=false;
-	public VisualizationManager(boolean verbose){		 
-		this.verbose = verbose;
+	public static boolean make12LeadTestPattern=false;
+	
+	private static final Logger log = Logger.getLogger(VisualizationManager.class);
+	
+	private VisualizationManager(){		 
+		
 	}
 
 
@@ -35,18 +38,21 @@ public class VisualizationManager {
 	 * @param offsetMilliSeconds - number of milliseconds from the beginning of the ECG at which to start the graph.
 	 * @param durationMilliSeconds - The requested length of the returned data subset, in milliseconds.
 	 * @param graphWidthPixels - Width of the zoomed graph in pixels(zoom factor*unzoomed width), hence the maximum points needed in the returned VisualizationData.
+	 * @param samplesPerChannel 
+	 * @param leadCount 
+	 * @param samplingRate 
 	 * @param callback - call back handler class.
 	 * 	 
 	 * @return a populated VisualizationData object or <B>null</B> on any web service failure
 	 * 
 	 * @see org.cvrgrid.ecgrid.client.BrokerService#fetchSubjectVisualization(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, long, int, int)
 	 */
-	public VisualizationData fetchSubjectVisualizationData(Long userID, String subjectID, Map<String, FileEntry> fileMap, long fileSize, int offsetMilliSeconds, int durationMilliSeconds, 
-														   int graphWidthPixels, boolean bTestPattern) {
+	public static VisualizationData fetchSubjectVisualizationData(Long userID, String subjectID, Map<String, FileEntry> fileMap, int offsetMilliSeconds, int durationMilliSeconds, 
+														   int graphWidthPixels, boolean bTestPattern, double samplingRate, int leadCount, int samplesPerChannel) {
 		
 		Set<String> fileNames = fileMap.keySet();
 		
-		System.out.println("--- -- fetchSubjectVisualizationData() saFileNameList[0]: " + fileNames.iterator().next() +  " offsetMilliSeconds: " + offsetMilliSeconds + " durationMilliSeconds: " + durationMilliSeconds );
+		log.info("--- -- fetchSubjectVisualizationData() saFileNameList[0]: " + fileNames.iterator().next() +  " offsetMilliSeconds: " + offsetMilliSeconds + " durationMilliSeconds: " + durationMilliSeconds );
 		long startTimeFetch = System.currentTimeMillis();
 		
 		int iFileCount = fileMap.size();
@@ -68,7 +74,6 @@ public class VisualizationManager {
 
 		parameterMap.put("fileNameList", fileNameMap);
 		parameterMap.put("fileCount", String.valueOf(iFileCount));
-		parameterMap.put("fileSize", String.valueOf(fileSize));
 		
 		parameterMap.put("parameterCount", "0");
 		parameterMap.put("offsetMilliSeconds", String.valueOf(offsetMilliSeconds));
@@ -76,9 +81,12 @@ public class VisualizationManager {
 		parameterMap.put("graphWidthPixels", String.valueOf(graphWidthPixels));
 		parameterMap.put("userId", String.valueOf(userID));
 		
+		parameterMap.put("sampleFrequency", String.valueOf(samplingRate));
+		parameterMap.put("signalCount", String.valueOf(leadCount));
+		parameterMap.put("samplesPerSignal", String.valueOf(samplesPerChannel));
+		
 		parameterMap.put("testPattern", String.valueOf(bTestPattern));
-		parameterMap.put("verbose", String.valueOf(verbose));
-
+		
 		String serviceURL = ResourceUtility.getAnalysisServiceURL();
 		
 		OMElement omeWSReturn = WebServiceUtility.callWebServiceComplexParam(parameterMap, 
@@ -148,7 +156,7 @@ public class VisualizationManager {
 								}
 							}
 						}else{
-							System.err.println("ERROR VisualizationData.fetchSubjectVisualizationData() missing data for lead " + ch + " of " + siLeadCount);
+							log.error("ERROR VisualizationData.fetchSubjectVisualizationData() missing data for lead " + ch + " of " + siLeadCount);
 						}
 					}
 					long parsePrimaryDataTime = System.currentTimeMillis();
@@ -166,10 +174,10 @@ public class VisualizationManager {
 					visualizationData.setMsDuration(iSegmentDuration);
 
 					long createResultObjectTime = System.currentTimeMillis();
-					System.out.println("--- -- web service waveformDataService.fetchWFDBdataSegmentType2() took " + (webServiceTime - startTimeFetch) +  " milliSeconds.");
-					System.out.println("--- -- parsing meta-data returned by web service took " + (parseMetaTime - webServiceTime) +  " milliSeconds.");
-					System.out.println("--- -- parsing primary ECG data returned by web service took " + (parsePrimaryDataTime - parseMetaTime) +  " milliSeconds.");
-					System.out.println("--- -- creating/populating result object took " + (createResultObjectTime - parsePrimaryDataTime) +  " milliSeconds.");
+					log.info("--- -- web service waveformDataService.fetchWFDBdataSegmentType2() took " + (webServiceTime - startTimeFetch) +  " milliSeconds.");
+					log.info("--- -- parsing meta-data returned by web service took " + (parseMetaTime - webServiceTime) +  " milliSeconds.");
+					log.info("--- -- parsing primary ECG data returned by web service took " + (parsePrimaryDataTime - parseMetaTime) +  " milliSeconds.");
+					log.info("--- -- creating/populating result object took " + (createResultObjectTime - parsePrimaryDataTime) +  " milliSeconds.");
 				}
 			}
 		} catch(Exception ex) {
