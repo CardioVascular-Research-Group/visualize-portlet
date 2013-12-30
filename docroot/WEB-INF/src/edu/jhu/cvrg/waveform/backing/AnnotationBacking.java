@@ -161,30 +161,37 @@ public class AnnotationBacking implements Serializable {
 		
     
     public String viewAnnotationInterval(){
-//    	System.out.println("+++ AnnotationBacking.java, viewAnnotationInterval() +++");
+    	System.out.println("+++ AnnotationBacking.java, viewAnnotationInterval() +++");
     	FacesContext context = FacesContext.getCurrentInstance();
-		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
-		String passedDataOnsetX = (String) map.get("DataOnsetX");
-		String passedDataOnsetY = (String) map.get("DataOnsetY");
-		String passedDataOffsetX = (String) map.get("DataOffsetX");
-		String passedDataOffsetY = (String) map.get("DataOffsetY");
-		String passedDeltaX = (String) map.get("DeltaX");
-		String passedDeltaY = (String) map.get("DeltaY");
+		Map<String, String> paramMap = context.getExternalContext().getRequestParameterMap();
+		System.out.println("++++ have context and RequestParameterMap");
 		
-		setDataSX(Double.parseDouble(passedDataOnsetX));
-		setDataSY(Double.parseDouble(passedDataOnsetY));
-		
-		setDataOffsetX(Double.parseDouble(passedDataOffsetX));
-		setDataOffsetY(Double.parseDouble(passedDataOffsetY));
+		String passedDataOnsetX = (String) paramMap.get("DataOnsetX");
+		String passedDataOnsetY = (String) paramMap.get("DataOnsetY");
+		String passedDataOffsetX = (String) paramMap.get("DataOffsetX");
+		String passedDataOffsetY = (String) paramMap.get("DataOffsetY");
+		String passedDeltaX = (String) paramMap.get("DeltaX");
+		String passedDeltaY = (String) paramMap.get("DeltaY");
+		System.out.println("++++ retrieved parameters from  Parameter Map");
+		System.out.println("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX +  "  passedDataOnsetY: " + passedDataOnsetY + " +++ ");
+		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
+		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDeltaX:      " + passedDeltaX +      "      passedDeltaY: " + passedDeltaY + " +++ ");
 
-		setDeltaX(Double.parseDouble(passedDeltaX));
-		setDeltaY(Double.parseDouble(passedDeltaY));
-		
+		if((passedDataOnsetX==null) || (passedDataOffsetX==null) || (passedDeltaX==null) ){
+			setDataSX(Double.parseDouble(passedDataOnsetX));
+			setDataOffsetX(Double.parseDouble(passedDataOffsetX));
+			setDeltaX(Double.parseDouble(passedDeltaX));
+		}
+		if((passedDataOnsetY==null) || (passedDataOffsetY==null) || (passedDeltaY==null) ){
+			setDataSY(Double.parseDouble(passedDataOnsetY));
+			setDataOffsetY(Double.parseDouble(passedDataOffsetY));
+			setDeltaY(Double.parseDouble(passedDeltaY));
+		}		
 		setSinglePoint(false);
 		
 		System.out.println("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
 		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
-		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDataSXDuration() + "  dataSYDuration: " + getDataSYDuration() + " +++ ");
+		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDeltaX() + "  dataSYDuration: " + getDeltaY() + " +++ ");
 		
 		setTermName("");
 		setFullAnnotation("");
@@ -217,7 +224,7 @@ public class AnnotationBacking implements Serializable {
 		
 		System.out.println("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
 		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
-		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDataSXDuration() + "  dataSYDuration: " + getDataSYDuration() + " +++ ");
+		System.out.println("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDeltaX() + "  dataSYDuration: " + getDeltaY() + " +++ ");
 		
 		showNewAnnotationForLead();
     }
@@ -342,8 +349,8 @@ public class AnnotationBacking implements Serializable {
 			System.out.println("saveAnnotationSetFlag(), dataSX: " + getDataSX());
 			System.out.println("saveAnnotationSetFlag(), DataOffsetX: " + getDataOffsetX());
 			System.out.println("saveAnnotationSetFlag(), DataOffsetY: " + getDataOffsetY());			
-			System.out.println("saveAnnotationSetFlag(), dataSYDuration : " + getDataSYDuration());
-			System.out.println("saveAnnotationSetFlag(), dataSXDuration : " + getDataSXDuration());
+			System.out.println("saveAnnotationSetFlag(), dataSYDuration : " + getDeltaY());
+			System.out.println("saveAnnotationSetFlag(), dataSXDuration : " + getDeltaX());
 			System.out.println("saveAnnotationSetFlag(), termName: " + getTermName());
 			System.out.println("saveAnnotationSetFlag(), FullAnnotation: " + getFullAnnotation());
 			System.out.println("saveAnnotationSetFlag(), nodeID: " + getNodeID());
@@ -816,11 +823,11 @@ public class AnnotationBacking implements Serializable {
 			this.dataYChange = deltaY;
 		}
 
-		public double getDataSXDuration() {
+		public double getDeltaX() {
 			return dataXChange;
 		}
 
-		public double getDataSYDuration() {
+		public double getDeltaY() {
 			return dataYChange;
 		}
 

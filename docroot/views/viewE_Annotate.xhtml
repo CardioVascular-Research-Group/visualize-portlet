@@ -117,7 +117,7 @@
 								<h:panelGroup id="dataEYHolder" layout="block"
 									rendered="#{!annotationBacking.singlePoint}">
 									<h:outputText id="dataSXDuration2" styleClass="dataValue"
-										value="#{annotationBacking.dataSXDuration}" />
+										value="#{annotationBacking.deltaX}" />
 								</h:panelGroup>
 	
 								<h:outputLabel value="Amplitude(μV)" styleClass="title" />
@@ -133,7 +133,7 @@
 								<h:panelGroup id="dataSXHolderDuration2" layout="block"
 									rendered="#{!annotationBacking.singlePoint}">
 									<h:outputText id="dataSYDuration2" styleClass="dataValue"
-										value="#{annotationBacking.dataSYDuration}" />
+										value="#{annotationBacking.deltaY}" />
 								</h:panelGroup>
 	
 								<h:outputLabel value="Adjust" styleClass="title" />
@@ -141,26 +141,25 @@
 									title="Fine tune the selected onset time." 
 									actionListener="#{annotationBacking.showNewAnnotationGraph}"
 									update="panelRightContainer"
-									oncomplete="fineTuningPoint=0;
-										renderSingleGraphFineTuner('#{annotationBacking.dataSX}', 
-																	true, 
-																	'#{annotationBacking.termName}');"/>
+									oncomplete="renderSingleGraphFineTuner('#{annotationBacking.dataSX}', 
+																	'#{annotationBacking.termName}',
+																	0, 
+																	true);"/>
 								<p:commandButton value="Chg"
 									title="Fine tune the selected Offset time."
 									rendered="#{!annotationBacking.singlePoint}"
 									actionListener="#{annotationBacking.showNewAnnotationGraph}"
 									update="panelRightContainer"
-									oncomplete="fineTuningPoint=1;
-										renderSingleGraphFineTuner('#{annotationBacking.dataOffsetX}', 
-																	true, 
-																	'#{annotationBacking.termName}');"/>
+									oncomplete="renderSingleGraphFineTuner('#{annotationBacking.dataOffsetX}', 
+																	'#{annotationBacking.termName}',
+																	1,  
+																	true);"/>
 								<p:commandButton value="All"
 									title="View the entire interval."
 									rendered="#{!annotationBacking.singlePoint}"
 									actionListener="#{annotationBacking.showNewAnnotationGraph}"
 									update="panelRightContainer"
-									oncomplete="fineTuningPoint=-1;
-										renderSingleGraphFullAnnotation('#{annotationBacking.dataSX}',
+									oncomplete="renderSingleGraphFineFullAnnotation('#{annotationBacking.dataSX}',
 																		'#{annotationBacking.dataOffsetX}',
 																		true);"/>
 							</h:panelGrid>
@@ -226,12 +225,12 @@
 										rendered="#{not annotationBacking.previousAnnotation}"
 										actionListener="#{annotationBacking.showNewAnnotationDetails}"
 										update="panelRightContainer"
-										oncomplete="fineTuningPoint=-1;updateFineTuning();" />
+										oncomplete="discardFineTuning();" />
 									<p:commandButton value="Close Graph"
 										title="Close the graph and show the numbers chart."
 										actionListener="#{annotationBacking.showNewAnnotationDetails}"
 										update="panelRightContainer"
-										oncomplete="fineTuningPoint=-1;updateFineTuning();" />
+										oncomplete="discardFineTuning();" />
 							</h:panelGroup>
 						</h:panelGrid>				
 					</p:panel>

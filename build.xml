@@ -3,4 +3,16 @@
 
 <project name="visualize-portlet" basedir="." default="deploy">
 	<import file="../build-common-portlet.xml" />
+	
+	<path id="utility.classpath">
+		<fileset dir="/opt/liferay/utility-jars">
+			<include name="*.jar"/>
+		</fileset>
+		<fileset dir="/opt/liferay/waveform3/tomcat-7.0.27/lib">
+			<include name="*.jar"/>
+		</fileset>
+		<fileset dir="/opt/liferay/waveform3/tomcat-7.0.27/lib/ext">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
 </project>
