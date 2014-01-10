@@ -57,6 +57,11 @@
 	<!-- START 12 lead container -->
 	<h:inputHidden id="voltCenterInputALL" value="50" immediate="true" />
 
+	<script>
+		calibrationCount = #{visualizeGraphBacking.calibrationCount};
+		graphCount = #{visualizeSharedBacking.leadCount};
+	</script>
+	
 	<h:panelGrid id="Container_12LeadDivOutside" layout="block" columns="2" styleClass="Container_12LeadDivOutside">
 		
 		<p:dataGrid var="i" value="#{visualizeGraphBacking.multiLeadLayoutList}"  rowIndexVar="col"  columns="#{visualizeGraphBacking.multiLeadColumnCount}">

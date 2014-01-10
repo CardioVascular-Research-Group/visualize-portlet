@@ -130,7 +130,7 @@ public class VisualizationData implements Serializable {
 
 		String sECGData="";
 		String sRow="";
-		if(dCol>13) dCol = 13;
+		
 		for(int row=0;row<dRow;row++){
 			sRow="";
 			if(row==0){

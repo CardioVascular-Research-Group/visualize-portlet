@@ -1,6 +1,8 @@
 package edu.jhu.cvrg.waveform.backing;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -329,7 +331,7 @@ public class VisualizeSharedBacking  implements Serializable {
     	return String.valueOf(getSharedStudyEntry().getSamplingRate()) + "Hz";
     }
     public String getDurationSec(){
-    	return String.valueOf(getSharedStudyEntry().getDurationSec()) + " seconds";
+    	return (getSharedStudyEntry().getDurationSec() + " seconds");
     }
 	public int getCurrentVisualizationOffset() {
 		return currentVisualizationOffset;

@@ -19,6 +19,8 @@ limitations under the License.
 * 
 */
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -149,36 +151,35 @@ public class VisualizeGraphBacking implements Serializable {
 	}
 
 	private ArrayList<MultiLeadLayout> getMultiLeadLayout(int leadCount){
-		switch (leadCount){
-			case 3:
-				setMultiLeadColumnCount(4);
-				break;
-			case 12:
-				setMultiLeadColumnCount(5);
-				break;
-			default:
-				setMultiLeadColumnCount(5);
-				break;
+		
+		if(leadCount > 0 && leadCount < 4){
+			setMultiLeadColumnCount(leadCount+1);
+		}else{
+			setMultiLeadColumnCount(5);
 		}
 		
 		ArrayList<MultiLeadLayout> alLayoutList = new ArrayList<MultiLeadLayout>();
-		int iRowCount = (int) ((leadCount/(this.getMultiLeadColumnCount()-1))+0.5);  // rows always start with a calibration column, so data column count is one less.
+		int iRowCount = (int) (new BigDecimal((double)leadCount/(this.getMultiLeadColumnCount()-1))).setScale(0, RoundingMode.UP).intValue();  // rows always start with a calibration column, so data column count is one less.
 		for(int row=0;row<iRowCount;row++){
 			String debug = "layout row: " + row;
 			for(int col=0;col<this.getMultiLeadColumnCount();col++){
-				MultiLeadLayout layout = new MultiLeadLayout();
+				MultiLeadLayout layout = null;
 				if(col ==  0){
 					// this is a calibration column
+					layout = new MultiLeadLayout();
 					layout.setLead(false);
 					layout.setLeadNumber(row);
 					debug += " cal"+ row;
-				}else{
+				}else if(row + ((col-1)*iRowCount) < leadCount){
 					// this is a lead data column
+					layout = new MultiLeadLayout();
 					layout.setLead(true);
 					layout.setLeadNumber(row + ((col-1)*iRowCount));
 					debug += ", L#"+ layout.getLeadNumber();
 				}
-				alLayoutList.add(layout);
+				if(layout!= null){
+					alLayoutList.add(layout);
+				}
 			}
 			log.debug(debug);
 		}
@@ -193,5 +194,10 @@ public class VisualizeGraphBacking implements Serializable {
 
 	public void setVisualizeSharedBacking(VisualizeSharedBacking visualizeSharedBacking) {
 		this.visualizeSharedBacking = visualizeSharedBacking;
+	}
+	
+	public int getCalibrationCount(){
+		return (new BigDecimal((double)this.getGraphedStudyEntry().getLeadCount()/(this.getMultiLeadColumnCount()-1))).setScale(0, RoundingMode.UP).intValue();
+				
 	}
 }
