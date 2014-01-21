@@ -79,13 +79,15 @@ public class VisualizeBacking implements Serializable {
 	public void init() { 
 		log.info("*************** VisualizeBacking.java, init() copied from analyze to replace initialize() **********************");
 		userModel = ResourceUtility.getCurrentUser();
-		if(fileTree == null){
-			log.info("*** creating new FileTree for user:" + userModel.getScreenName());
-			fileTree = new LocalFileTree(userModel.getUserId(), "hea");
-			fileTree.initialize(userModel.getUserId());
-			log.info("*** fileTree == null :" + (fileTree == null));
-		}else{
-			log.info("*** fileTree already exists *** ");
+		if(userModel != null){
+			if(fileTree == null){
+				log.info("*** creating new FileTree for user:" + userModel.getScreenName());
+				fileTree = new LocalFileTree(userModel.getUserId(), "hea");
+				fileTree.initialize(userModel.getUserId());
+				log.info("*** fileTree == null :" + (fileTree == null));
+			}else{
+				log.info("*** fileTree already exists *** ");
+			}
 		}
 			
 		log.info("*************** VisualizeBacking.java, init() finished **********************");
@@ -315,5 +317,7 @@ public class VisualizeBacking implements Serializable {
 		this.visualizeSharedBacking = visualizeSharedBacking;
 	}
 
-
+	public User getUser(){
+		return userModel;
+	}
 }

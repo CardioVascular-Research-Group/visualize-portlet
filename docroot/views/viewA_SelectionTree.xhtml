@@ -10,90 +10,97 @@
 
 		<h:panelGroup id="mainGroup" layout="block" >
 			<h:form id="formVisualize">
-				<p:layout id="layoutVisualizeInclude" style="width:100%;height:550px">
-					<p:layoutUnit styleClass="westpanel" position="west" header="Choose Files That Meet Your Criteria" 
-								  resizable="true" size="385" minSize="300" maxSize="600" collapsible="true" >
-								  
-						<p:tree id="docTree" 
-							dynamic="true"
-							selection="#{visualizeBacking.fileTree.selectedNodes}"
-							selectionMode="multiple"
-							value="#{visualizeBacking.fileTree.treeRoot}" 
-							var="node"
-							styleClass="waveformTree">
-							<p:ajax event="select" listener="#{visualizeBacking.folderSelect}" update="docTree"/>
-							<p:ajax event="unselect" listener="#{visualizeBacking.folderUnSelect}" update="docTree"/>
-							
-							<p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
-								<h:outputText value="#{node}" />
-							</p:treeNode>
-							
-							<p:treeNode type="document" icon="ui-icon ui-icon-document">
-								<h:outputText value="#{node}"/>
-							</p:treeNode>
-						</p:tree>
-						<div class="nav">
-							<p:commandButton id="btnDisplay" 
-								value="Click to Display Files"
-								update="availableStudy"
-								actionListener="#{visualizeBacking.displaySelectedMultiple}"
-								icon="ui-icon-disk" 
-								title="ViewA_Selection" />
-						</div>
-					</p:layoutUnit>
-					
-					<p:layoutUnit position="center" header="Select One ECG Record to View Leads" >
-						<p:dataTable id="availableStudy" 
-							var="studyHolder"
-							sortMode="multiple"
-							rowKey="#{studyHolder.documentRecordId}"
-							value="#{visualizeBacking.studyEntryList}"
-							selection="#{visualizeBacking.selectedStudyObject}"
-							selectionMode="single" 
-							paginator="true" 
-							rows="5"
-							resizableColumns="true" 
-							paginatorAlwaysVisible="false"
-							paginatorPosition="top"
-							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-							rowsPerPageTemplate="5,10,15,20"
-							style="width:100%">
-
-							<!-- <p:ajax event="rowSelect" listener="#{visualizeBacking.onRowSelect}"/> -->
-
-							<p:column headerText="Subject ID">
-								<h:outputText value="#{studyHolder.subjectId}" />
-							</p:column>
-
-							<p:column headerText="Lead Count">
-								<h:outputText value="#{studyHolder.leadCount}" style="text-align:right" />
-							</p:column>
-
-							<p:column headerText="Sampling Rate">
-								<h:outputText value="#{studyHolder.samplingRate}Hz" style="text-align:right" />
-							</p:column>
-
-							<p:column headerText="Duration(Sec)">
-								<h:outputText value="#{studyHolder.durationSec}" style="text-align:right" />
-							</p:column>
-
-							<p:column headerText="File Format">
-								<h:outputText value="#{studyHolder.originalFormat}" />
-							</p:column>
-
-							<p:column headerText="Recording Date">
-								<h:outputText value="#{studyHolder.dateOfRecording}" style="text-align:right" />
-							</p:column>
-							
-						</p:dataTable>
-						<div style="text-align: center;" class="ui-widget-header ui-corner-all">
-						<p:commandButton id="btnView12LeadECGTest" value="View ECG"
-									action="#{visualizeBacking.graphSelectedECG}"
-									icon="ui-icon-search"
-									title="View a graph of the selected ECG and its annotations" />
-						</div>
-					</p:layoutUnit>	
-				</p:layout>
+				<h:panelGroup rendered="#{visualizeBacking.user != null}">
+					<p:layout id="layoutVisualizeInclude" style="width:100%;height:550px">
+						<p:layoutUnit styleClass="westpanel" position="west" header="Choose Files That Meet Your Criteria" 
+									  resizable="true" size="385" minSize="300" maxSize="600" collapsible="true" >
+									  
+							<p:tree id="docTree" 
+								dynamic="true"
+								selection="#{visualizeBacking.fileTree.selectedNodes}"
+								selectionMode="multiple"
+								value="#{visualizeBacking.fileTree.treeRoot}" 
+								var="node"
+								styleClass="waveformTree">
+								<p:ajax event="select" listener="#{visualizeBacking.folderSelect}" update="docTree"/>
+								<p:ajax event="unselect" listener="#{visualizeBacking.folderUnSelect}" update="docTree"/>
+								
+								<p:treeNode expandedIcon="ui-icon-folder-open" collapsedIcon="ui-icon-folder-collapsed">
+									<h:outputText value="#{node}" />
+								</p:treeNode>
+								
+								<p:treeNode type="document" icon="ui-icon ui-icon-document">
+									<h:outputText value="#{node}"/>
+								</p:treeNode>
+							</p:tree>
+							<div class="nav">
+								<p:commandButton id="btnDisplay" 
+									value="Click to Display Files"
+									update="availableStudy"
+									actionListener="#{visualizeBacking.displaySelectedMultiple}"
+									icon="ui-icon-disk" 
+									title="ViewA_Selection" />
+							</div>
+						</p:layoutUnit>
+						
+						<p:layoutUnit position="center" header="Select One ECG Record to View Leads" >
+							<p:dataTable id="availableStudy" 
+								var="studyHolder"
+								sortMode="multiple"
+								rowKey="#{studyHolder.documentRecordId}"
+								value="#{visualizeBacking.studyEntryList}"
+								selection="#{visualizeBacking.selectedStudyObject}"
+								selectionMode="single" 
+								paginator="true" 
+								rows="5"
+								resizableColumns="true" 
+								paginatorAlwaysVisible="false"
+								paginatorPosition="top"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="5,10,15,20"
+								style="width:100%">
+	
+								<!-- <p:ajax event="rowSelect" listener="#{visualizeBacking.onRowSelect}"/> -->
+	
+								<p:column headerText="Subject ID">
+									<h:outputText value="#{studyHolder.subjectId}" />
+								</p:column>
+	
+								<p:column headerText="Lead Count">
+									<h:outputText value="#{studyHolder.leadCount}" style="text-align:right" />
+								</p:column>
+	
+								<p:column headerText="Sampling Rate">
+									<h:outputText value="#{studyHolder.samplingRate}Hz" style="text-align:right" />
+								</p:column>
+	
+								<p:column headerText="Duration(Sec)">
+									<h:outputText value="#{studyHolder.durationSec}" style="text-align:right" />
+								</p:column>
+	
+								<p:column headerText="File Format">
+									<h:outputText value="#{studyHolder.originalFormat}" />
+								</p:column>
+	
+								<p:column headerText="Recording Date">
+									<h:outputText value="#{studyHolder.dateOfRecording}" style="text-align:right" />
+								</p:column>
+								
+							</p:dataTable>
+							<div style="text-align: center;" class="ui-widget-header ui-corner-all">
+							<p:commandButton id="btnView12LeadECGTest" value="View ECG"
+										action="#{visualizeBacking.graphSelectedECG}"
+										icon="ui-icon-search"
+										title="View a graph of the selected ECG and its annotations" />
+							</div>
+						</p:layoutUnit>	
+					</p:layout>
+				</h:panelGroup>
+				<h:panelGroup rendered="#{visualizeBacking.user == null}">
+					<div class="signin">
+						Please <a href="/c/portal/login" rel="nofollow">Sign In</a>
+					</div>
+				</h:panelGroup>
 			</h:form>
 		</h:panelGroup>
 	</h:body>

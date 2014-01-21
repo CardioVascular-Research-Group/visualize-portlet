@@ -211,3 +211,7 @@ div.westpanel div.ui-widget-content .waveformTree{
 	height: 100%;
 	overflow: auto!important;
 }
+
+div.signin{
+	text-align: center;
+}
