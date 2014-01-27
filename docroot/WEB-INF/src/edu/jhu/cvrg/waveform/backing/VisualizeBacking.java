@@ -83,7 +83,6 @@ public class VisualizeBacking implements Serializable {
 			if(fileTree == null){
 				log.info("*** creating new FileTree for user:" + userModel.getScreenName());
 				fileTree = new LocalFileTree(userModel.getUserId(), "hea");
-				fileTree.initialize(userModel.getUserId());
 				log.info("*** fileTree == null :" + (fileTree == null));
 			}else{
 				log.info("*** fileTree already exists *** ");
