@@ -75,6 +75,7 @@ public class VisualizeBacking implements Serializable {
 	private User userModel;
 	private static Logger log = Logger.getLogger(VisualizeBacking.class);
 	
+	
 	@PostConstruct
 	public void init() { 
 		log.info("*************** VisualizeBacking.java, init() copied from analyze to replace initialize() **********************");
@@ -103,10 +104,15 @@ public class VisualizeBacking implements Serializable {
      * 
      */
     public String graphSelectedECG(){
-    	String nextView="";
+    	String nextView= null;
     	log.info("+++ VisualizeBacking.java, graphSelectedECG() +++ ");
-    	log.info("+ selected record:" + selectedStudyObject.getRecordName() + " lead count:" + selectedStudyObject.getLeadCount());
-   		nextView = "viewB_DisplayMultiLeads";
+    	
+    	if(selectedStudyObject != null){
+	    	log.info("+ selected record:" + selectedStudyObject.getRecordName() + " lead count:" + selectedStudyObject.getLeadCount());
+	   		nextView = "viewB_DisplayMultiLeads";
+    	}else{
+    		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validation Error" , "<br />Please select a file."));	
+    	}
     	
    		log.info("+ nextView:" + nextView); 
 		return nextView;
@@ -119,15 +125,17 @@ public class VisualizeBacking implements Serializable {
 	public void displaySelectedMultiple(ActionEvent event) {
 		log.info("-VisualizeBacking.displaySelectedMultiple() ");
 		selectedNodes = fileTree.getSelectedFileNodes();
-		log.info("--selectedNodes.size(): " + selectedNodes.size());
 		
-		Connection database = ConnectionFactory.createConnection();
+		if(selectedNodes != null && !selectedNodes.isEmpty()){
+			log.info("--selectedNodes.size(): " + selectedNodes.size());
+			Connection database = ConnectionFactory.createConnection();
 		
-		if(selectedNodes != null){
 			studyEntryList = new ArrayList<DocumentRecordDTO>();
 			for (FileTreeNode node : selectedNodes) {
 				studyEntryList.add(database.getDocumentRecordById(node.getDocumentRecordId()));
 			}
+		}else{
+			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning", "<br />Please select a file."));
 		}
 		
 		log.info("-VisualizeBacking.displaySelectedMultiple() DONE");
@@ -135,7 +143,7 @@ public class VisualizeBacking implements Serializable {
 	
 	public void folderSelect(NodeSelectEvent event){
 		TreeNode node = event.getTreeNode();
-		if(!node.getType().equals("document")){
+		if(!node.getType().equals(FileTreeNode.DEFAULT_TYPE)){
 			fileTree.selectAllChildNodes(node);
 		}
 	}
@@ -143,25 +151,17 @@ public class VisualizeBacking implements Serializable {
 	public void folderUnSelect(NodeUnselectEvent event){
 		TreeNode node = event.getTreeNode();
 		node.setSelected(false);
-		if(!node.getType().equals("document")){
+		if(!node.getType().equals(FileTreeNode.DEFAULT_TYPE)){
 			fileTree.unSelectAllChildNodes(node);
 		}
 	}
 
 	public void onRowSelect(SelectEvent event) {
-		selectedStudyObject = ((DocumentRecordDTO) event.getObject());
-		log.info(" onRowSelect() selectedStudyObject " + selectedStudyObject.toString()  );
-		FacesMessage msg = new FacesMessage("Selected Row", ((DocumentRecordDTO) event.getObject()).getDocumentRecordId().toString()); //FIXME [VILARDO] where is the study property? Using the document id.
-		FacesContext.getCurrentInstance().addMessage(null, msg);
-		log.info(" onRowSelect() selectedStudyObject DONE");
+		setSelectedStudyObject((DocumentRecordDTO) event.getObject());
 	}
 
 	public void onRowUnselect(UnselectEvent event) {
-		log.info(" onRowUnSelect() selectedStudyObject " + selectedStudyObject.toString()  );
-		DocumentRecordDTO studyentry = ((DocumentRecordDTO) event.getObject());
-		FacesMessage msg = new FacesMessage("Unselected Row",studyentry.getDocumentRecordId().toString());
-		FacesContext.getCurrentInstance().addMessage(null, msg);
-		log.info(" onRowUnSelect() selectedStudyObject DONE");
+		setSelectedStudyObject(null);
 	}
 	
 	public void hideGe(ActionEvent e){
