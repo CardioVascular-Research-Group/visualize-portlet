@@ -1,8 +1,6 @@
 package edu.jhu.cvrg.waveform.backing;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +10,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,7 +29,7 @@ import edu.jhu.cvrg.waveform.utility.ServerUtility;
 
 @ManagedBean(name = "visualizeSharedBacking")
 @SessionScoped
-public class VisualizeSharedBacking  implements Serializable {
+public class VisualizeSharedBacking extends BackingBean implements Serializable {
 	
 	private static final long serialVersionUID = -3526964652221486865L;
 	
@@ -49,8 +46,6 @@ public class VisualizeSharedBacking  implements Serializable {
 	private String[] saGraphTitle= {"I","II","III","aVR","aVL","aVF","V1","V2","V3","V4","V5","V6","VX","VY","VZ"}; // default values, should be replaced by the this.setGraphTitle() method, though usually the values are the same.
 	private DocumentRecordDTO sharedStudyEntry;
 
-	private static final Logger log = Logger.getLogger(VisualizeSharedBacking.class);
-	
 	/** 
 	 * Switches to the selection tree and list view.
      * Handles onclick event for the button "btnView12LeadECG" in the viewA_SelectionTree.xhtml view.
@@ -69,55 +64,55 @@ public class VisualizeSharedBacking  implements Serializable {
      * 
      * */
 	public void reloadData() {
-		log.info("--Entering function reloadData()");
+		this.getLog().info("--Entering function reloadData()");
 		fetchDisplayData();
-		log.info("--Exiting function reloadData()");
+		this.getLog().info("--Exiting function reloadData()");
 	}
 	public void panZeroSec() {
-		log.info("--Entering function panZeroSec()");
+		this.getLog().info("--Entering function panZeroSec()");
 		panToTime(0);
-		log.info("--Exiting function panZeroSec()");
+		this.getLog().info("--Exiting function panZeroSec()");
 	}
 	public void panRight() {
-		log.info("--Entering function panRight");
+		this.getLog().info("--Entering function panRight");
 		if(isGraphMultipleVisible()){
 			panToTime(currentVisualizationOffset + visualizationWidthMS);
 		}else{
 			panToTime(currentVisualizationOffset + durationMilliSeconds);
 		}
-		log.info("--Exiting function panRight");
+		this.getLog().info("--Exiting function panRight");
 	}
 	public void panLeft() {
-		log.info("--Entering function panLeft");
+		this.getLog().info("--Entering function panLeft");
 		if(isGraphMultipleVisible()){
 			panToTime(currentVisualizationOffset - visualizationWidthMS);	
 		}else{
 			panToTime(currentVisualizationOffset - durationMilliSeconds);
 		}
-		log.info("--Exiting function panLeft");
+		this.getLog().info("--Exiting function panLeft");
 	}
 	public void panEnd() {
-		log.info("--Entering function panRight");
+		this.getLog().info("--Entering function panRight");
 		int msInFullECG = getSharedStudyEntry().getMsecDuration();  //(int)((NumPts/sampRate)*1000.0); // number of milliseconds in full ECG file.
 		panToTime(msInFullECG);
-		log.info("--Exiting function panRight");
+		this.getLog().info("--Exiting function panRight");
 	}
 
 	public void panToMilliSec(){
-		log.info("-Entering function panToMilliSec, newMilliSec: \"" + getNewMilliSec() + "\"");
+		this.getLog().info("-Entering function panToMilliSec, newMilliSec: \"" + getNewMilliSec() + "\"");
 		int iStartPoint = parseToMilliSec(getNewMilliSec());
 		if(iStartPoint ==-1){
 			String message = "\"" + getNewMilliSec()  + "\" is not a recongnizable number. Please enter seconds in one of the following formats, \"123.45\", \"1.2345e2\" or \"1.2345 x 10^2\" ";
-			log.error("Unable to parse requested new time: "+ message);
+			this.getLog().error("Unable to parse requested new time: "+ message);
 		}else{
 			if(iStartPoint <= getSharedStudyEntry().getMsecDuration()){
 				panToTime(iStartPoint);
 			}else{
 				String message = iStartPoint + " is too large, this ECG contains " + (getSharedStudyEntry().getMsecDuration()/1000.0) + " seconds";
-				log.error(message);
+				this.getLog().error(message);
 			}
 		}
-		log.info("-Exiting function panToMilliSec");
+		this.getLog().info("-Exiting function panToMilliSec");
 	}
 	
 	private int parseToMilliSec(String newMilliSec){
@@ -138,7 +133,7 @@ public class VisualizeSharedBacking  implements Serializable {
 				newScrollTimeMS=-1;
 				success = false;
 				String message = "\"" + newMilliSec + "\" is not a recongnizable number. Please enter seconds in one of the following formats, \"123.45\", \"1.2345e2\" or \"1.2345 x 10^2\" ";
-				log.error(message);
+				this.getLog().error(message);
 			}
 		}
 		if(success){
@@ -154,7 +149,7 @@ public class VisualizeSharedBacking  implements Serializable {
 	 * @param iStartPoint - new start time of graph data in milliseconds.
 	 */
 	public void panToTime(int iStartPoint) {
-		log.info("--Entering function panToTime, iStartPoint:" + iStartPoint);
+		this.getLog().info("--Entering function panToTime, iStartPoint:" + iStartPoint);
 		int msInFullECG = getSharedStudyEntry().getMsecDuration();  //(int)((NumPts/sampRate)*1000.0); // number of milliseconds in full ECG file. 
 		int maxAllowableOffset=0;
 		
@@ -176,7 +171,7 @@ public class VisualizeSharedBacking  implements Serializable {
 		if(currentVisualizationOffset<0) currentVisualizationOffset = 0;
 		
 		fetchDisplayData();
-		log.info("--Exiting function panToTime");
+		this.getLog().info("--Exiting function panToTime");
 	}
 	
 	
@@ -184,7 +179,7 @@ public class VisualizeSharedBacking  implements Serializable {
 	 * @return - lead count
 	 */
 	protected int fetchDisplayData(){
-		log.info("--- fetchDisplayData() with iCurrentVisualizationOffset:" + currentVisualizationOffset + " and iDurationMilliSeconds:" + durationMilliSeconds);
+		this.getLog().info("--- fetchDisplayData() with iCurrentVisualizationOffset:" + currentVisualizationOffset + " and iDurationMilliSeconds:" + durationMilliSeconds);
 		boolean bTestPattern = false; // this will cause it to return 3 sine waves, and ignore all the other inputs.
 
 		Long userID = ResourceUtility.getCurrentUserId();
@@ -201,17 +196,17 @@ public class VisualizeSharedBacking  implements Serializable {
 		VisualizationData visData = VisualizationManager.fetchSubjectVisualizationData(userID, subjectID, files, currentVisualizationOffset, durationMilliSeconds, graphWidthPixels, bTestPattern, samplingRate, leadCount, samplesPerChannel);
 		
 		long estimatedTime = System.currentTimeMillis() - startTime;
-		log.info("--- - fetchSubjectVisualizationData() took " + estimatedTime +  " milliSeconds total. Sample Count:" + visData.getECGDataLength() + " Lead Count:" + visData.getECGDataLeads() );
+		this.getLog().info("--- - fetchSubjectVisualizationData() took " + estimatedTime +  " milliSeconds total. Sample Count:" + visData.getECGDataLength() + " Lead Count:" + visData.getECGDataLeads() );
 		
 		//	Check to see is the The Web Service is returning Data for the User Display.
 	    if (visData == null) {
 		    FacesContext msgs = FacesContext.getCurrentInstance();  
 		    msgs.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "The ECG lookup Web Service.", "reports failure!"));
-		    log.error("--- get12leadOnloadCallback WARNING: The  ECG lookup WebService failed! ");
+		    this.getLog().error("--- get12leadOnloadCallback WARNING: The  ECG lookup WebService failed! ");
 	    } else { 
 			String dataForJavaScript = visData.getECGDataSingleString();
 			dataForJavaScript = dataForJavaScript.replace("\n", "\\n");
-			log.info("--- get12leadOnloadCallback INFO:  dataForJavaScript.length: [" + dataForJavaScript.length() + "]");
+			this.getLog().info("--- get12leadOnloadCallback INFO:  dataForJavaScript.length: [" + dataForJavaScript.length() + "]");
 			try {
 				data = new JSONObject();
 				data.put("ECG", dataForJavaScript);
@@ -222,10 +217,7 @@ public class VisualizeSharedBacking  implements Serializable {
 			}
 	    }
 	    
-	    //TODO REMOVER TALVEZ?
-	    //setMultiLeadLayoutList( getMultiLeadLayout(visData.getECGDataLeads()) );
-	    
-	    log.info("---Exiting function fetchDisplayData()");
+	    this.getLog().info("---Exiting function fetchDisplayData()");
 		return visData.getECGDataLeads();
 	}
 
@@ -262,7 +254,7 @@ public class VisualizeSharedBacking  implements Serializable {
 	 * @param iLeadCount
 	 */
 	public void setGraphTitle(int[][] iaAnnCount, int iLeadCount){
-		log.info("--- Entering function setGraphTitle()");
+		this.getLog().info("--- Entering function setGraphTitle()");
 		ServerUtility util = new ServerUtility(false);
 
 		saGraphTitle = new String[iLeadCount+1];
@@ -273,9 +265,9 @@ public class VisualizeSharedBacking  implements Serializable {
 			}else{
 				saGraphTitle[iaACnt[0]-1] = sName + " (" +  iaACnt[1] + " annotations)";
 			}
-			log.debug(iaACnt[0]-1 + ":" + iaACnt[1] + ",");
+			this.getLog().debug(iaACnt[0]-1 + ":" + iaACnt[1] + ",");
 		}		
-		log.info("--- Exiting function setGraphTitle()");
+		this.getLog().info("--- Exiting function setGraphTitle()");
 	}
 	
 	public JSONArray getGraphTitle() {

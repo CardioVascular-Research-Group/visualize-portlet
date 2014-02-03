@@ -30,7 +30,6 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
-import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
@@ -49,7 +48,7 @@ import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 
 @ManagedBean(name = "visualizeBacking")
 @ViewScoped
-public class VisualizeBacking implements Serializable {
+public class VisualizeBacking extends BackingBean implements Serializable {
 
 	@ManagedProperty("#{visualizeSharedBacking}")
 	private VisualizeSharedBacking visualizeSharedBacking;  
@@ -58,7 +57,6 @@ public class VisualizeBacking implements Serializable {
 
 	private ArrayList<FileTreeNode> selectedNodes;
 	
-
 	private DocumentRecordDTO selectedStudyObject;  
 	
 	private ArrayList<DocumentRecordDTO> studyEntryList;
@@ -73,29 +71,27 @@ public class VisualizeBacking implements Serializable {
 	private JSONObject dataJson;
 	
 	private User userModel;
-	private static Logger log = Logger.getLogger(VisualizeBacking.class);
-	
 	
 	@PostConstruct
 	public void init() { 
-		log.info("*************** VisualizeBacking.java, init() copied from analyze to replace initialize() **********************");
+		this.getLog().info("*************** VisualizeBacking.java, init() copied from analyze to replace initialize() **********************");
 		userModel = ResourceUtility.getCurrentUser();
 		if(userModel != null){
 			if(fileTree == null){
-				log.info("*** creating new FileTree for user:" + userModel.getScreenName());
+				this.getLog().info("*** creating new FileTree for user:" + userModel.getScreenName());
 				fileTree = new LocalFileTree(userModel.getUserId(), "hea");
-				log.info("*** fileTree == null :" + (fileTree == null));
+				this.getLog().info("*** fileTree == null :" + (fileTree == null));
 			}else{
-				log.info("*** fileTree already exists *** ");
+				this.getLog().info("*** fileTree already exists *** ");
 			}
 		}
 			
-		log.info("*************** VisualizeBacking.java, init() finished **********************");
+		this.getLog().info("*************** VisualizeBacking.java, init() finished **********************");
 	}
     
     public void viewSelectTree(ActionEvent event){
-    	log.info("VisualizeBacking.java, viewSelectTree()");
-    	log.info("= graphVisible = " + graphVisible);
+    	this.getLog().info("VisualizeBacking.java, viewSelectTree()");
+    	this.getLog().info("= graphVisible = " + graphVisible);
     	setVisibleFragment(0); // show list/tree page fragment.
     }
 
@@ -105,16 +101,16 @@ public class VisualizeBacking implements Serializable {
      */
     public String graphSelectedECG(){
     	String nextView= null;
-    	log.info("+++ VisualizeBacking.java, graphSelectedECG() +++ ");
+    	this.getLog().info("+++ VisualizeBacking.java, graphSelectedECG() +++ ");
     	
     	if(selectedStudyObject != null){
-	    	log.info("+ selected record:" + selectedStudyObject.getRecordName() + " lead count:" + selectedStudyObject.getLeadCount());
+    		this.getLog().info("+ selected record:" + selectedStudyObject.getRecordName() + " lead count:" + selectedStudyObject.getLeadCount());
 	   		nextView = "viewB_DisplayMultiLeads";
     	}else{
     		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validation Error" , "<br />Please select a file."));	
     	}
     	
-   		log.info("+ nextView:" + nextView); 
+    	this.getLog().info("+ nextView:" + nextView); 
 		return nextView;
     }
 
@@ -123,11 +119,11 @@ public class VisualizeBacking implements Serializable {
      * @param event
      */
 	public void displaySelectedMultiple(ActionEvent event) {
-		log.info("-VisualizeBacking.displaySelectedMultiple() ");
+		this.getLog().info("-VisualizeBacking.displaySelectedMultiple() ");
 		selectedNodes = fileTree.getSelectedFileNodes();
 		
 		if(selectedNodes != null && !selectedNodes.isEmpty()){
-			log.info("--selectedNodes.size(): " + selectedNodes.size());
+			this.getLog().info("--selectedNodes.size(): " + selectedNodes.size());
 			Connection database = ConnectionFactory.createConnection();
 		
 			studyEntryList = new ArrayList<DocumentRecordDTO>();
@@ -138,7 +134,7 @@ public class VisualizeBacking implements Serializable {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning", "<br />Please select a file."));
 		}
 		
-		log.info("-VisualizeBacking.displaySelectedMultiple() DONE");
+		this.getLog().info("-VisualizeBacking.displaySelectedMultiple() DONE");
 	}
 	
 	public void folderSelect(NodeSelectEvent event){
@@ -175,7 +171,7 @@ public class VisualizeBacking implements Serializable {
 	public void setSelectedStudyObject(DocumentRecordDTO selectedStudyObject) {
 		this.selectedStudyObject = selectedStudyObject;
 		visualizeSharedBacking.setSharedStudyEntry(selectedStudyObject);
-		log.info("Graphed Study Object Set");
+		this.getLog().info("Graphed Study Object Set");
 	}
 
 	public DocumentRecordDTO getSelectedStudyObject() {
@@ -276,7 +272,7 @@ public class VisualizeBacking implements Serializable {
 	 * 2 = multiple lead (e.g. 3, 12 or 15) graph<BR>
 	 */
 	private void setVisibleFragment(int fragmentID){
-		log.info("VisualizeBacking.java, setVisibleFragment(" + fragmentID + ")");
+		this.getLog().info("VisualizeBacking.java, setVisibleFragment(" + fragmentID + ")");
 
 		// reset all
 		setSelectVisible(false);

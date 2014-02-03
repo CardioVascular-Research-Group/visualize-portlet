@@ -39,7 +39,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ComponentSystemEvent;
 
-import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 
 import com.liferay.portal.model.User;
@@ -52,7 +51,7 @@ import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
 
 @ViewScoped
 @ManagedBean(name="annotationBacking")
-public class AnnotationBacking implements Serializable {
+public class AnnotationBacking extends BackingBean implements Serializable {
 
 	private static final long serialVersionUID = -6719393176698520013L;
 
@@ -84,10 +83,8 @@ public class AnnotationBacking implements Serializable {
 	@ManagedProperty("#{visualizeSharedBacking}")
 	private VisualizeSharedBacking visualizeSharedBacking;   
 	
-	private static final Logger log = Logger.getLogger(AnnotationBacking.class);
-	
 	public void initialize(ComponentSystemEvent event) {
-    	log.info("*************** AnnotationBacking.java, initialize() **********************");
+    	this.getLog().info("*************** AnnotationBacking.java, initialize() **********************");
     	showAnnotationForLead();
 	}
         
@@ -98,7 +95,7 @@ public class AnnotationBacking implements Serializable {
 	 **/
 	@PostConstruct
 	public void showAnnotationForLead(){
-		log.info("***  New instance ****");
+		this.getLog().info("***  New instance ****");
 		RequestContext context = RequestContext.getCurrentInstance();
 		
 		setLeadName(visualizeSharedBacking.getSelectedLeadName());
@@ -131,7 +128,7 @@ public class AnnotationBacking implements Serializable {
 			setSinglePoint(true);
 
 			showNewAnnotationForLead();
-			log.info("+++ AnnotationBacking.java, viewAnnotationPoint() passedDataOnsetX: " + passedDataOnsetX + " passedDataSY: " + passedDataOnsetY + " +++ ");
+			this.getLog().info("+++ AnnotationBacking.java, viewAnnotationPoint() passedDataOnsetX: " + passedDataOnsetX + " passedDataSY: " + passedDataOnsetY + " +++ ");
 			setTermName("");
 			setFullAnnotation("");
 			setShowFineGraph(false);
@@ -162,9 +159,9 @@ public class AnnotationBacking implements Serializable {
 		
 		setSinglePoint(false);
 		
-		log.info("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
-		log.info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
-		log.info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDataSXDuration() + "  dataSYDuration: " + getDataSYDuration() + " +++ ");
+		this.getLog().info("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
+		this.getLog().info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
+		this.getLog().info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDataSXDuration() + "  dataSYDuration: " + getDataSYDuration() + " +++ ");
 		
 		setTermName("");
 		setFullAnnotation("");
@@ -195,15 +192,15 @@ public class AnnotationBacking implements Serializable {
 		
 		setSinglePoint(false);
 		
-		log.info("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
-		log.info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
-		log.info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDataSXDuration() + "  dataSYDuration: " + getDataSYDuration() + " +++ ");
+		this.getLog().info("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
+		this.getLog().info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
+		this.getLog().info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + getDataSXDuration() + "  dataSYDuration: " + getDataSYDuration() + " +++ ");
 		
 		showNewAnnotationForLead();
     }
     
     public String viewCurrentAnnotation(){
-    	log.info("+++ AnnotationBacking.java, viewCurrentAnnotation() +++");
+    	this.getLog().info("+++ AnnotationBacking.java, viewCurrentAnnotation() +++");
     	double DeltaX, DeltaY;
     	
     	FacesContext context = FacesContext.getCurrentInstance();
@@ -245,7 +242,7 @@ public class AnnotationBacking implements Serializable {
      * 
      */
     public String viewSingleGraph(){
-    	log.info("*** AnnotationBack.java, viewSingleGraph() ***");
+    	this.getLog().info("*** AnnotationBack.java, viewSingleGraph() ***");
 		return "viewD_SingleLead";
     }
 
@@ -255,8 +252,8 @@ public class AnnotationBacking implements Serializable {
 		String sDefinition= saOntDetail[1];
 		
 		setFullAnnotation(sDefinition);
-		log.info("*** showNodeID(), nodeID: \"" + getNodeID() + "\"");
-		log.info("*** showNodeID(), FullAnnotation: \"" + getFullAnnotation()  + "\"");
+		this.getLog().info("*** showNodeID(), nodeID: \"" + getNodeID() + "\"");
+		this.getLog().info("*** showNodeID(), FullAnnotation: \"" + getFullAnnotation()  + "\"");
 	     
      	Map<String, Object> data = new HashMap<String, Object>();
      	String dataFullAnnotation = getFullAnnotation();
@@ -265,7 +262,7 @@ public class AnnotationBacking implements Serializable {
 	}
 	
 	public void lookupDefinition(){
-		log.info("*** AnnotationBackup.lookupDefinition() ***");
+		this.getLog().info("*** AnnotationBackup.lookupDefinition() ***");
     	FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
 		
@@ -280,8 +277,8 @@ public class AnnotationBacking implements Serializable {
 		String sDefinition= saOntDetail[1];
 		
 		setFullAnnotation(sDefinition); // e.g. "The peak of the R Wave."
-		log.info("*** -- nodeID: \"" + getNodeID() + "\"");
-		log.info("*** -- FullAnnotation: \"" + getFullAnnotation()  + "\"");
+		this.getLog().info("*** -- nodeID: \"" + getNodeID() + "\"");
+		this.getLog().info("*** -- FullAnnotation: \"" + getFullAnnotation()  + "\"");
 	     
 	}
 	
@@ -295,18 +292,18 @@ public class AnnotationBacking implements Serializable {
 		context.addCallbackParam("saved", true);    //basic parameter
 		
 		//  callBack working
-		log.debug("saveAnnotationSetFlag(), SinglePoint: " + isSinglePoint());
-		log.debug("saveAnnotationSetFlag(), LeadName: " + getLeadName());
-		log.debug("saveAnnotationSetFlag(), leadnum: " + getLeadnum());
-		log.debug("saveAnnotationSetFlag(), dataSY: " + getDataSY());
-		log.debug("saveAnnotationSetFlag(), dataSX: " + getDataSX());
-		log.debug("saveAnnotationSetFlag(), DataOffsetX: " + getDataOffsetX());
-		log.debug("saveAnnotationSetFlag(), DataOffsetY: " + getDataOffsetY());			
-		log.debug("saveAnnotationSetFlag(), dataSYDuration : " + getDataSYDuration());
-		log.debug("saveAnnotationSetFlag(), dataSXDuration : " + getDataSXDuration());
-		log.debug("saveAnnotationSetFlag(), termName: " + getTermName());
-		log.debug("saveAnnotationSetFlag(), FullAnnotation: " + getFullAnnotation());
-		log.debug("saveAnnotationSetFlag(), nodeID: " + getNodeID());
+		this.getLog().debug("saveAnnotationSetFlag(), SinglePoint: " + isSinglePoint());
+		this.getLog().debug("saveAnnotationSetFlag(), LeadName: " + getLeadName());
+		this.getLog().debug("saveAnnotationSetFlag(), leadnum: " + getLeadnum());
+		this.getLog().debug("saveAnnotationSetFlag(), dataSY: " + getDataSY());
+		this.getLog().debug("saveAnnotationSetFlag(), dataSX: " + getDataSX());
+		this.getLog().debug("saveAnnotationSetFlag(), DataOffsetX: " + getDataOffsetX());
+		this.getLog().debug("saveAnnotationSetFlag(), DataOffsetY: " + getDataOffsetY());			
+		this.getLog().debug("saveAnnotationSetFlag(), dataSYDuration : " + getDataSYDuration());
+		this.getLog().debug("saveAnnotationSetFlag(), dataSXDuration : " + getDataSXDuration());
+		this.getLog().debug("saveAnnotationSetFlag(), termName: " + getTermName());
+		this.getLog().debug("saveAnnotationSetFlag(), FullAnnotation: " + getFullAnnotation());
+		this.getLog().debug("saveAnnotationSetFlag(), nodeID: " + getNodeID());
 
 //			 * Required values that need to be filled in are:
 //				 * 
@@ -348,7 +345,7 @@ public class AnnotationBacking implements Serializable {
 			 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Failure", "Annotation did not save properly"));
 		 }
 
-		 log.info("saveAnnotationSetFlag(), Complete.");
+		 this.getLog().info("saveAnnotationSetFlag(), Complete.");
 		
 		showAnnotations(context); // clears current annotations and reloads all, including the new one.
 		context.execute("SINGLELEAD_ShowAnnotationSingle()"); // need to redisplay all the annotations.
@@ -370,7 +367,7 @@ public class AnnotationBacking implements Serializable {
 		if(visualizeSharedBacking.getSharedStudyEntry() ==  null) sErrorMess += "visualizeSharedBacking.getSharedStudyEntry() is invalid | ";
 
 		if(sErrorMess.length() > 0){
-			log.error("AnnotationBacking.java, showAnnotations() failed: " + sErrorMess);
+			this.getLog().error("AnnotationBacking.java, showAnnotations() failed: " + sErrorMess);
 		}else{
 			List<AnnotationDTO> retrievedAnnotationList = ConnectionFactory.createConnection().getLeadAnnotationNode(userLifeRayModel.getUserId(), visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), leadIndex);
 
@@ -405,7 +402,7 @@ public class AnnotationBacking implements Serializable {
 	 * @param RetrieveECGDatabase
 	 */
 	public void showNewAnnotationForLead(){
-		log.info("### showNewAnnotationForLead ###");
+		this.getLog().info("### showNewAnnotationForLead ###");
 		RequestContext context = RequestContext.getCurrentInstance();
 		userLifeRayModel = ResourceUtility.getCurrentUser();
 		String sErrorMess = "";
@@ -416,7 +413,7 @@ public class AnnotationBacking implements Serializable {
 		if(visualizeSharedBacking.getSharedStudyEntry() ==  null) sErrorMess += "visualizeSharedBacking.getSharedStudyEntry() is invalid | ";
 
 		if(sErrorMess.length() > 0){
-			log.error("AnnotationBacking.java, showNewAnnotation() failed: " + sErrorMess);
+			this.getLog().error("AnnotationBacking.java, showNewAnnotation() failed: " + sErrorMess);
 		}else{
 			AnnotationDTO newAnnotation = new AnnotationDTO();
 			newAnnotation.setStartXcoord(getDataSX());
@@ -431,7 +428,7 @@ public class AnnotationBacking implements Serializable {
 				newAnnotation.setEndXcoord(getDataSX());
 				newAnnotation.setEndYcoord(getDataSY());
 			}
-			log.debug("### ### isSinglePoint: " + newAnnotation.isComment() 
+			this.getLog().debug("### ### isSinglePoint: " + newAnnotation.isComment() 
 						+ " getDataOffsetX(): " + newAnnotation.getEndXcoord()
 						+ " getDataOffsetY(): " + newAnnotation.getEndYcoord());
 			
@@ -451,11 +448,11 @@ public class AnnotationBacking implements Serializable {
 	}
 
 	public void showNewAnnotationGraph(){
-		log.info("*** showNewAnnotationGraph()");
+		this.getLog().info("*** showNewAnnotationGraph()");
 		setShowFineGraph(true);
 	}
 	public void showNewAnnotationDetails(){
-		log.info("*** showNewAnnotationDetails()");
+		this.getLog().info("*** showNewAnnotationDetails()");
 		setShowFineGraph(false);
 	}
 
@@ -476,7 +473,7 @@ public class AnnotationBacking implements Serializable {
 		String ontologyId; //e.g. = "Amplitude";
 		String fullAnnotation;//
 		Long annotationID;
-		log.debug("### ### addAnnotation() -- isSinglePoint: " + singleAnnotation.isSinglePoint() 
+		this.getLog().debug("### ### addAnnotation() -- isSinglePoint: " + singleAnnotation.isSinglePoint() 
 				+ " isComment: " + singleAnnotation.isComment()
 				+ " getDataOffsetX(): " + singleAnnotation.getEndXcoord()
 				+ " getDataOffsetY(): " + singleAnnotation.getEndYcoord());
@@ -516,7 +513,7 @@ public class AnnotationBacking implements Serializable {
 			if(firstX != (-999999999)){
 				flagLabel = String.valueOf(flagCount+1);   // label of Annotation
 
-				log.debug("Single point: " + flagLabel + " x: " + firstX);
+				this.getLog().debug("Single point: " + flagLabel + " x: " + firstX);
 				int finalHeight = heightMultiplier * 15;
 				// 	add annotaion from JAVA to JavaScript Dygraph 
 				context.execute("CVRG_addAnnotationHeight('" + series + "' , '" +  firstX + "', '" +  firstY + "','" 

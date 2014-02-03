@@ -30,15 +30,13 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 
-import org.apache.log4j.Logger;
-
 import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
 import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
 import edu.jhu.cvrg.waveform.model.MultiLeadLayout;
 
 @ManagedBean(name = "visualizeGraphBacking")
 @ViewScoped
-public class VisualizeGraphBacking implements Serializable {
+public class VisualizeGraphBacking extends BackingBean implements Serializable {
 
 
 	private static final long serialVersionUID = -3657756514965814260L;
@@ -48,15 +46,13 @@ public class VisualizeGraphBacking implements Serializable {
 	private ArrayList<MultiLeadLayout> multiLeadLayoutList;
 	private int multiLeadColumnCount = 5; //default value
 	
-	private static final Logger log = Logger.getLogger(VisualizeGraphBacking.class);
-	
 	@PostConstruct
 	public void init() {
-    	log.info("*************** VisualizeGraphBacking.java, initialize() **********************");
+		this.getLog().info("*************** VisualizeGraphBacking.java, initialize() **********************");
     	
     	viewMultiLeadGraph();
     	
-    	log.info("*************** DONE, initialize() **********************");
+    	this.getLog().info("*************** DONE, initialize() **********************");
 	}
 
     /** Switches to the selection tree and list view.
@@ -74,7 +70,7 @@ public class VisualizeGraphBacking implements Serializable {
 		// Multi lead displays always start at zero seconds (0 ms).
 		visualizeSharedBacking.setCurrentVisualizationOffset(0); 
 		
-		log.info("+++ VisualizeGraphBacking.java, viewSingleGraph2() passedLeadName: " + passedLeadName + " passedLeadNumber: " + passedLeadNumber + " +++ ");
+		this.getLog().info("+++ VisualizeGraphBacking.java, viewSingleGraph2() passedLeadName: " + passedLeadName + " passedLeadNumber: " + passedLeadNumber + " +++ ");
 		visualizeSharedBacking.setGraphMultipleVisible(false);
 		return "viewD_SingleLead";
     }
@@ -84,7 +80,7 @@ public class VisualizeGraphBacking implements Serializable {
      * 
      */
     public String viewMultiLeadGraph(){
-    	log.info("+ VisualizeGraphBacking.java, viewMultiLeadGraph() +++ ");
+    	this.getLog().info("+ VisualizeGraphBacking.java, viewMultiLeadGraph() +++ ");
     	
 		if(visualizeSharedBacking.getSharedStudyEntry() != null){
 			visualizeSharedBacking.setCurrentVisualizationOffset(0);	
@@ -93,7 +89,7 @@ public class VisualizeGraphBacking implements Serializable {
 			int iaAnnCount[][] = fetchAnnotationArray();
 			visualizeSharedBacking.setGraphTitle(iaAnnCount, iLeadCount);
 		}
-		log.info("+ Exiting viewMultiLeadGraph() +++ ");
+		this.getLog().info("+ Exiting viewMultiLeadGraph() +++ ");
 		visualizeSharedBacking.setGraphMultipleVisible(true);
 		return "viewB_DisplayMultiLeads";
     }
@@ -114,7 +110,7 @@ public class VisualizeGraphBacking implements Serializable {
 	 * @return
 	 */
 	private int[][] fetchAnnotationArray(){
-		log.info("--- fetchAnnotationArray()----");
+		this.getLog().info("--- fetchAnnotationArray()----");
 		int iaAnnCount[][] = null;
 		try {
 			if(visualizeSharedBacking.getSharedStudyEntry() != null){
@@ -125,12 +121,12 @@ public class VisualizeGraphBacking implements Serializable {
 				iaAnnCount = ConnectionFactory.createConnection().getAnnotationCountPerLead(docId, leadCount);
 				
 			}else{
-				log.error("--- fetchAnnotationArray() SharedStudyEntry not found.");
+				this.getLog().error("--- fetchAnnotationArray() SharedStudyEntry not found.");
 			}
-			log.info("--- exiting fetchAnnotationArray()");
+			this.getLog().info("--- exiting fetchAnnotationArray()");
 		} catch (Exception e) {
-			log.error("Localized message: " + e.getLocalizedMessage());
-			log.error("Detailed error message: " + e.getMessage());
+			this.getLog().error("Localized message: " + e.getLocalizedMessage());
+			this.getLog().error("Detailed error message: " + e.getMessage());
 			e.printStackTrace();
 		}
 		return iaAnnCount;
@@ -181,7 +177,7 @@ public class VisualizeGraphBacking implements Serializable {
 					alLayoutList.add(layout);
 				}
 			}
-			log.debug(debug);
+			this.getLog().debug(debug);
 		}
 		return alLayoutList;
 	}
