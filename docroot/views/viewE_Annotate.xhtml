@@ -20,15 +20,7 @@
 				font-family: arial, sans-serif;
 			}
 		</style>
-		<h:outputScript id="renderScript">
-//			var setThisAnnotation = function(){
-				//alert("setThisAnnotation() called.");
-
-//				renderSingleGraphFineTuner('#{annotationBacking.dataSX}', #{annotationBacking.showFineGraph}, '#{annotationBacking.termName}');
-//			};		
-		</h:outputScript>
 		<!-- 		knalb tfel yllanoitnetni egap siht \_|_/ this page intentionally left blank  -->
-		
 		<h:form id="formManualAnnotation">
 			<p:remoteCommand name="calledOnLoad"
 				oncomplete="renderSingleGraphFineTuner('#{annotationBacking.dataSX}', #{annotationBacking.showFineGraph}, '#{annotationBacking.termName}');" autoRun="true" />
