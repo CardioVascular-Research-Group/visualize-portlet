@@ -132,9 +132,7 @@ function loadConceptByName(conceptName) {
 
 /** This function gets call by flash when the swf has finished loading. */
 function appComplete(swfID) {
-//	alert("flash app finished loading: " + swfID);
-//	alert("appComplete() conceptName=" + conceptName);
-//	loadConceptByName(CVRG_conceptName);
+	//loadConceptByName(CVRG_conceptName);
 }
 
 /** Implement this function to listen for tree selection changes 
@@ -146,15 +144,8 @@ function appComplete(swfID) {
 function treeSelectionChanged(nodeID, nodeName, swfID) {
 	//alert("tree selection: " + nodeID + " - " + nodeName + " - " + swfID);
     lookupAnnotationParam([{name:'nodeID', value:nodeID}, {name:'nodeName', value:nodeName}]);
-    
-	return false;
+    return false;
 }
-
-//
-//function sendnodeName(){ $("div#display_time");}
-//var t=setInterval("timer()",30000);
-
-
 
 /** Implement this function to listen for tree double click events 
  * nodeID - same as returned by getSelectedConceptID()
@@ -163,13 +154,13 @@ function treeSelectionChanged(nodeID, nodeName, swfID) {
  * e.g. "ECGOntologyv0:ECG000000318", "Negative_Electrode", "OntologyTree"
  */
 function treeNodeDoubleClicked(nodeID, nodeName, swfID) {
-	alert("tree node double clicked: " + nodeID + " - " + nodeName + " - " + swfID);
-	alert("ontologyID:" + getOntologyID() );
+    lookupAnnotationParam([{name:'nodeID', value:nodeID}, {name:'nodeName', value:nodeName}]);
+    return false;
 }
 
 /** Implement this function to listen for error messages when loading an ontology */
 function errorLoadingOntology(errorMsg, swfID) {
-//	alert("Error: " + errorMsg);
+	//alert("Error: " + errorMsg);
 }
 
 
