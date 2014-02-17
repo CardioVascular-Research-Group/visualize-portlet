@@ -34,7 +34,8 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ComponentSystemEvent;
@@ -49,7 +50,7 @@ import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
 
-@ViewScoped
+@SessionScoped
 @ManagedBean(name="annotationBacking")
 public class AnnotationBacking extends BackingBean implements Serializable {
 
@@ -750,6 +751,10 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 
 	public void setPreviousAnnotation(boolean previousAnnotation) {
 		this.previousAnnotation = previousAnnotation;
+	}
+	
+	public boolean isNewTree(){
+		return false;
 	}
 
 }

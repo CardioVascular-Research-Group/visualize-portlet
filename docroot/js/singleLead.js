@@ -115,8 +115,24 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 				}
 			);
 		
-		var newWidth = 800; 
-		var newHeight= 400;
+		var oneEm = 16; //correlative 1em = +/- 16px (using this for the actual css style)
+		
+		var cWidth = WAVEFORM_getElementByIdEndsWith("div", "graphContainerDiv_content").clientWidth;
+		var sWidth = WAVEFORM_getElementByIdEndsWith("div", "sliderVoltCenterSingle").clientWidth;
+		
+		var lHeight = WAVEFORM_getElementByIdEndsWith("div", "ecgGraphLayout").clientHeight;
+		var c1Height = WAVEFORM_getElementByIdEndsWith("div", "graphContainerDiv").clientHeight;
+		var c2Height = WAVEFORM_getElementByIdEndsWith("div", "graphContainerDiv_content").clientHeight;
+		
+		var sHeight = WAVEFORM_getElementByIdEndsWith("div", "status_div").clientHeight;
+		var tHeight = WAVEFORM_getElementByIdEndsWith("div", "title_div").clientHeight;
+		
+		var newWidth = cWidth - (sWidth) - (2*oneEm); 
+		
+		var newHeight= (lHeight - ((c1Height - c2Height) + sHeight + tHeight) - oneEm) * 0.98;
+		
+		//var newWidth = 800; 
+		//var newHeight= 400;
 		ecg_graph.resize(newWidth, newHeight);
 		CVRG_setLabels(displayMinV2, displayMaxV2, yLabel);
 		CVRG_InitHorizontalLines(1, divName, singleLeadNamespace);
@@ -493,18 +509,18 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 			
 			SINGLELEAD_ShowAnnotationSingle();	
 		}				
-	}
+	};
 
 	  var centerFineScaleVoltage = function(startTime,endTime){
 	    	CVRG_unhighlightCrosshairs(1);
 	    	var ext = getFineDataMinMax(startTime,endTime);
 	    	var deltaV = (ext.dataMax-ext.dataMin);
 	    	
-			displayMinV2 = ext.dataMin-(deltaV*.1); // leave a 10% space at the bottom
-			displayMaxV2 = ext.dataMax+(deltaV*.1); // leave a 10% space at the top
+			var fineDisplayMinV2 = ext.dataMin-(deltaV*.1); // leave a 10% space at the bottom
+			var fineDisplayMaxV2 = ext.dataMax+(deltaV*.1); // leave a 10% space at the top
 	    	
 			ecg_graph.updateOptions({
-				valueRange: [displayMinV2, displayMaxV2]
+				valueRange: [fineDisplayMinV2, fineDisplayMaxV2]
 			});
 
 	    };
@@ -541,3 +557,16 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	    	
 	    	return ret;
 	    };
+
+    var showManualGraphPanel = function(){
+    	$(".fineTuningGraph").css('display', 'block');
+    	$(".fineTuningGraph").animate({width:'49%'}, {queue: false });
+    	$(".annotationData").animate({width:'50%'}, {queue: false });
+    };
+    
+    var hideManualGraphPanel = function(){
+    	$(".fineTuningGraph").animate({width:'0%'}, {queue: false });
+    	$(".annotationData").animate({width:'99.9%'}, {queue: false });
+    	$(".fineTuningGraph").css('display', 'none');
+    };
+	    
