@@ -49,7 +49,8 @@ public class VisualizeGraphBacking extends BackingBean implements Serializable {
 	@PostConstruct
 	public void init() {
 		this.getLog().info("*************** VisualizeGraphBacking.java, initialize() **********************");
-    	
+		//set the default duration 
+		visualizeSharedBacking.setDurationMilliSeconds(2500);
     	viewMultiLeadGraph();
     	
     	this.getLog().info("*************** DONE, initialize() **********************");

@@ -19,10 +19,12 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 
+import edu.jhu.cvrg.dbapi.dto.AnnotationDTO;
 import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
 import edu.jhu.cvrg.dbapi.dto.FileInfoDTO;
 import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
 import edu.jhu.cvrg.waveform.main.VisualizationManager;
+import edu.jhu.cvrg.waveform.model.AnnotationVO;
 import edu.jhu.cvrg.waveform.model.VisualizationData;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 import edu.jhu.cvrg.waveform.utility.ServerUtility;
@@ -46,6 +48,12 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 	private String[] saGraphTitle= {"I","II","III","aVR","aVL","aVF","V1","V2","V3","V4","V5","V6","VX","VY","VZ"}; // default values, should be replaced by the this.setGraphTitle() method, though usually the values are the same.
 	private DocumentRecordDTO sharedStudyEntry;
 
+	private AnnotationVO sessionAnn;
+	
+	private boolean previousAnnotation=false;
+    private boolean showFineGraph=false;
+	public int annotationCount;
+	
 	/** 
 	 * Switches to the selection tree and list view.
      * Handles onclick event for the button "btnView12LeadECG" in the viewA_SelectionTree.xhtml view.
@@ -248,6 +256,104 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 	}
 	
 	
+	/* - START - Methods moved from AnnotationBacking, to have only one session bean.*/
+	
+	/** 
+	 * Switches to the single annotation creation/editing view.
+     * Handles interactionModel.mouseup event (via WAVEFORM3_mouseup() in JavaScript) for the single dygraph in the viewD_SingleLead.xhtml view.
+     */
+	public String viewAnnotationPoint(){
+
+    	FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
+		
+		String passedDataOnsetX = (String) map.get("DataOnsetX");
+		String passedDataOnsetY = (String) map.get("DataOnsetY");
+
+		
+		sessionAnn = new AnnotationVO(Double.parseDouble(passedDataOnsetX), Double.parseDouble(passedDataOnsetY),
+									  0, 0, null, "", "", "", true);
+		
+		this.getLog().info("+++ AnnotationBacking.java, viewAnnotationPoint() passedDataOnsetX: " + passedDataOnsetX + " passedDataSY: " + passedDataOnsetY + " +++ ");
+		
+		setShowFineGraph(false);
+		setPreviousAnnotation(false);// this is an new annotation, allow editing.
+		
+		return "viewE_Annotate";
+    }
+	
+    public String viewAnnotationInterval(){
+
+    	FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
+		
+		String passedDataOnsetX = (String) map.get("DataOnsetX");
+		String passedDataOnsetY = (String) map.get("DataOnsetY");
+		String passedDataOffsetX = (String) map.get("DataOffsetX");
+		String passedDataOffsetY = (String) map.get("DataOffsetY");
+		String passedDeltaX = (String) map.get("DeltaX");
+		String passedDeltaY = (String) map.get("DeltaY");
+		
+		sessionAnn = new AnnotationVO(Double.parseDouble(passedDataOnsetX), Double.parseDouble(passedDataOnsetY),
+									  Double.parseDouble(passedDataOffsetX), Double.parseDouble(passedDataOffsetY), 
+									  null, "", "", "", false);
+
+		this.getLog().info("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
+		this.getLog().info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
+		this.getLog().info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + sessionAnn.getDataXChange() + "  dataSYDuration: " + sessionAnn.getDataYChange() + " +++ ");
+		
+		setPreviousAnnotation(false);// this is an new annotation, allow editing.
+		
+		return "viewE_Annotate";
+    }
+    
+    public String viewCurrentAnnotation(){
+    	this.getLog().info("+++ AnnotationBacking.java, viewCurrentAnnotation() +++");
+    	
+    	FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
+		
+		String passedAnnotationID = (String) map.get("annotationID");
+		
+		AnnotationDTO retrievedAnnotation = ConnectionFactory.createConnection().getAnnotationById(ResourceUtility.getCurrentUserId(), Long.valueOf(passedAnnotationID));
+		
+		sessionAnn = new AnnotationVO(retrievedAnnotation.getStartXcoord(), retrievedAnnotation.getStartYcoord(),
+									  retrievedAnnotation.getEndXcoord(), retrievedAnnotation.getEndYcoord(), 
+									  retrievedAnnotation.getBioportalID(), retrievedAnnotation.getName(), retrievedAnnotation.getValue(), 
+									  retrievedAnnotation.getDescription(), retrievedAnnotation.isSinglePoint());
+		
+		setPreviousAnnotation(true);// this is an existing annotation, do not allow editing.
+
+		return "viewE_Annotate";
+    }
+	   
+    
+
+	
+
+	public boolean isShowFineGraph() {
+		return showFineGraph;
+	}
+
+	/** Set to true to show fine tuning graph, to false for text details of new annotation.
+	 *  
+	 * @param showFineGraph
+	 */
+	public void setShowFineGraph(boolean showFineGraph) {
+		this.showFineGraph = showFineGraph;
+	}
+
+	public boolean isPreviousAnnotation() {
+		return previousAnnotation;
+	}
+
+	public void setPreviousAnnotation(boolean previousAnnotation) {
+		this.previousAnnotation = previousAnnotation;
+	}
+	
+	/* - END - Methods moved from AnnotationBacking, to have only one session bean.*/
+    
+    
 	/** Creates the titles for the multi-lead graphs.
 	 * 
 	 * @param iaAnnCount
@@ -355,4 +461,17 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 	public void setVisualizationWidthMS(int visualizationWidthMS) {
 		this.visualizationWidthMS = visualizationWidthMS;
 	}
+
+	public int getAnnotationCount() {
+		return annotationCount;
+	}
+
+	public void setAnnotationCount(int annotationCount) {
+		this.annotationCount = annotationCount;
+	}
+
+	public AnnotationVO getSessionAnn() {
+		return sessionAnn;
+	}
+
 }

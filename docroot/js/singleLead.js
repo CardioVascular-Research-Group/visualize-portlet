@@ -61,12 +61,42 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	 * @returns
 	 */	
 	var SINGLELEAD_drawECGgraph = function(divName, namespace, dateStartMS, dateWidthMS){
+		
 		singleLeadNamespace = namespace;
 		dataSingle = SINGLELEAD_getSingleLeadData(CVRG_getLeadNum());
+		
+		var newWidth = 800; 
+		var newHeight= 400;
+		
+		var oneEm = 16; //correlative 1em = +/- 16px (using this for the actual css style)
+		
+		var cWidth = WAVEFORM_getElementByIdEndsWith("div", "graphContainerDiv_content").clientWidth;
+		var sWidth = WAVEFORM_getElementByIdEndsWith("div", "sliderVoltCenterSingle").clientWidth;
+		
+		var lHeight = WAVEFORM_getElementByIdEndsWith("div", "ecgGraphLayout").clientHeight;
+		var c1Height = WAVEFORM_getElementByIdEndsWith("div", "graphContainerDiv").clientHeight;
+		var c2Height = WAVEFORM_getElementByIdEndsWith("div", "graphContainerDiv_content").clientHeight;
+		
+		var sHeight = WAVEFORM_getElementByIdEndsWith("div", "status_div").clientHeight;
+		var tHeight = WAVEFORM_getElementByIdEndsWith("div", "title_div").clientHeight;
+		
+		newWidth = cWidth - (sWidth) - (2*oneEm); 
+		newHeight= (lHeight - ((c1Height - c2Height) + sHeight + tHeight) - oneEm) * 0.98;
+		
+		var bDots = CVRG_bShowDots();
+		var newTimeLabel = CVRG_getnewTimeLabel();
+		
 		ecg_graph = new Dygraph( 
 				WAVEFORM_getElementByIdEndsWith("div",divName),
 				dataSingle,
 				{
+					valueRange: [displayMinV2, displayMaxV2],
+					drawPoints: bDots,
+					xlabel: newTimeLabel,
+					ylabel: yLabel,
+					width: newWidth,
+					height: newHeight,
+					
 					stepPlot: false,
 					labels: labelSingle,
 					labelsDiv: WAVEFORM_getElementByIdEndsWith("div","status_div"),
@@ -100,7 +130,6 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 					highlightCircleSize: 5,
 					strokeWidth: 1,
 
-					drawPoints: false,
 					padding: {left: 1, right: 1, top: 5, bottom: 5},
 		            showRangeSelector: true,
 		            rangeSelectorPlotStrokeColor: 'black',
@@ -115,28 +144,14 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 				}
 			);
 		
-		var oneEm = 16; //correlative 1em = +/- 16px (using this for the actual css style)
-		
-		var cWidth = WAVEFORM_getElementByIdEndsWith("div", "graphContainerDiv_content").clientWidth;
-		var sWidth = WAVEFORM_getElementByIdEndsWith("div", "sliderVoltCenterSingle").clientWidth;
-		
-		var lHeight = WAVEFORM_getElementByIdEndsWith("div", "ecgGraphLayout").clientHeight;
-		var c1Height = WAVEFORM_getElementByIdEndsWith("div", "graphContainerDiv").clientHeight;
-		var c2Height = WAVEFORM_getElementByIdEndsWith("div", "graphContainerDiv_content").clientHeight;
-		
-		var sHeight = WAVEFORM_getElementByIdEndsWith("div", "status_div").clientHeight;
-		var tHeight = WAVEFORM_getElementByIdEndsWith("div", "title_div").clientHeight;
-		
-		var newWidth = cWidth - (sWidth) - (2*oneEm); 
-		
-		var newHeight= (lHeight - ((c1Height - c2Height) + sHeight + tHeight) - oneEm) * 0.98;
-		
-		//var newWidth = 800; 
-		//var newHeight= 400;
-		ecg_graph.resize(newWidth, newHeight);
-		CVRG_setLabels(displayMinV2, displayMaxV2, yLabel);
 		CVRG_InitHorizontalLines(1, divName, singleLeadNamespace);
 		CVRG_InitVerticalLines(divName, namespace);
+		
+		if(bDots != CVRG_bShowDots()){
+			ecg_graph.updateOptions({
+				drawPoints: CVRG_bShowDots()
+			});
+		}
 	};
 
 	/** Sets the annotations of the single lead graph object to the values transferred from the backing bean.
@@ -180,36 +195,54 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 			annotationID: "New point" // Unique annotation ID (primary key) as found in the database.  			
 		};
 		
-		tempAnnotations[2] = ann;
+		tempAnnotations[tempAnnotations.length] = ann;	
 		
 		CVRG_last_ann++; // redundent counter
 	};
 	
 	var fineTuningPoint = -1;
+	var singlePoint = false;
 	var updateFineTuning = function(){
-		if(tempAnnotations.length == 3){
-			if(fineTuningPoint >= 0){
-				tempAnnotations[fineTuningPoint].x = tempAnnotations[2].x;
-				tempAnnotations[fineTuningPoint].y = tempAnnotations[2].y;
+		if(singlePoint){
+			if(tempAnnotations.length == 2){
+				updateOnsetOffset();
 			}
-			tempAnnotations.pop();
-			updateFineTuneValues(tempAnnotations[0].x, tempAnnotations[1].x);
+		}else{
+			if(tempAnnotations.length == 3){
+				updateOnsetOffset();
+			}
 		}
 	};
 	
-	var updateFineTuneValues = function(onX, offX){
-		var col = CVRG_getLeadNum()+1; // zero column is timestamp
-		var onY = ecg_graph.getValue(onX, col);
-		var offY = ecg_graph.getValue(offX, col);
-		
-		var deltaX = offX - onX;
-		var deltaY = offY - onY;
-		updateAnnotationIntervalEdit([{name:'DataOnsetX', value:onX},
-				                    {name:'DataOnsetY', value:onY}, 
-				                    {name:'DataOffsetX', value:offX},
-				                    {name:'DataOffsetY', value:offY},
-				                    {name:'DeltaX', value:deltaX},
-		                            {name:'DeltaY', value:deltaY}]);
+	function updateOnsetOffset(){
+		if(fineTuningPoint >= 0){
+			tempAnnotations[fineTuningPoint].x = tempAnnotations[tempAnnotations.length-1].x;
+			tempAnnotations[fineTuningPoint].y = tempAnnotations[tempAnnotations.length-1].y;
+			
+			updateSelectedPoint([{name:'fineTuningPoint', value:fineTuningPoint},
+						              {name:'X', value:tempAnnotations[fineTuningPoint].x}, 
+						              {name:'Y', value:tempAnnotations[fineTuningPoint].y}]);
+			
+		}
+		tempAnnotations.pop();
+	}
+	
+	var discardFineTuning = function(){
+		if(singlePoint){
+			if(fineTuningPoint >= 0){
+				discardSelectedPoint([{name:'fineTuningPoint', value:fineTuningPoint}]);
+				if(tempAnnotations.length == 2){
+					tempAnnotations.pop();
+				}
+			}
+		}else{
+			if(fineTuningPoint >= 0){
+				discardSelectedPoint([{name:'fineTuningPoint', value:fineTuningPoint}]);
+				if(tempAnnotations.length == 3){
+					tempAnnotations.pop();
+				}
+			}
+		}
 	};
 	
 	var zoomTime = function() {
@@ -307,7 +340,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		ecg_graph.updateOptions({
 			valueRange: [newDisplayMinV, newDisplayMaxV]
 		});
-    }
+    };
 
 	// Adds the annotation's details to the list.  Also generates a unique ID for each annotation so that Javascript can bold/unbold. 
 	var SINGLELEAD_drawCallback = function(ecg_graph) {
@@ -419,12 +452,26 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		dataSingle = SINGLELEAD_getSingleLeadData(CVRG_getLeadNum());
 		var graphDiv = WAVEFORM_getElementByIdEndsWith("div",divName);
 		var labelDiv = WAVEFORM_getElementByIdEndsWith("div","status_div");
+		
+		var newWidth = 600; 
+		var newHeight= 300;
+		
+		var bDots = CVRG_bShowDots();
+		var newTimeLabel = CVRG_getnewTimeLabel();
+		
 		if((graphDiv!=null)&(labelDiv!=null)){
 			ecg_graph = null;
 			ecg_graph = new Dygraph( 
 				graphDiv,
 				dataSingle,
 				{
+					valueRange: [displayMinV2, displayMaxV2],
+					drawPoints: bDots,
+					xlabel: newTimeLabel,
+					ylabel: yLabel,
+					width: newWidth,
+					height: newHeight,
+					
 					stepPlot: false,
 					labels: labelSingle,
 					labelsDiv: labelDiv,
@@ -445,7 +492,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 						} 
 					},
 					annotationClickHandler:    SINGLELEAD_annotationClickHandler, 
-					annotationDblClickHandler: CVRG_annotationDblClickHandler, 
+					annotationDblClickHandler: CVRG_annotationDblClickHandler,
 					pointClickCallback:        SINGLELEAD_FineTune_pointClickCallback,
 					zoomCallback:              SINGLELEAD_zoomCallback,
 					underlayCallback:          SINGLELEAD_underlayCallback,
@@ -457,7 +504,6 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 					highlightCircleSize: 5,
 					strokeWidth: 1,
 
-					drawPoints: true,
 					padding: {left: 1, right: 1, top: 5, bottom: 5},
 			        connectSeparatedPoints: false,
 			        drawGapEdgePoints: true,
@@ -465,10 +511,13 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 				}
 			);
 		}
-		var newWidth = 600; 
-		var newHeight= 300;
-		ecg_graph.resize(newWidth, newHeight);
-		CVRG_setLabels(displayMinV2, displayMaxV2, yLabel);
+
+		if(bDots != CVRG_bShowDots()){
+			ecg_graph.updateOptions({
+				drawPoints: CVRG_bShowDots()
+			});
+		}
+
 	};
 	
 
@@ -479,7 +528,6 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	 */
 	var renderSingleGraphFineTuner = function(centerPoint, bShowGraph, termName){
 		isMultigraph=false;
-		fineTuningPoint=0;
 		
 		CVRG_setConceptName(termName);
 		loadConceptByName(CVRG_conceptName);

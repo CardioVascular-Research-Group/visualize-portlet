@@ -30,15 +30,9 @@
 		</script>
 
 		<h:form>
-			<p:remoteCommand name="viewAnnotationPointEdit"
-				action="#{annotationBacking.viewAnnotationPoint}" />
-
-			<p:remoteCommand name="viewAnnotationIntervalEdit"
-				action="#{annotationBacking.viewAnnotationInterval}" />
-
-			<p:remoteCommand name="viewCurrentAnnotationNoEdit"
-				partialSubmit="false"
-				action="#{annotationBacking.viewCurrentAnnotation}" />
+			<p:remoteCommand name="viewAnnotationPointEdit" 	action="#{visualizeSharedBacking.viewAnnotationPoint}" />
+			<p:remoteCommand name="viewAnnotationIntervalEdit" 	action="#{visualizeSharedBacking.viewAnnotationInterval}" />
+			<p:remoteCommand name="viewCurrentAnnotationNoEdit" action="#{visualizeSharedBacking.viewCurrentAnnotation}" partialSubmit="false" />
 		</h:form>
 		
 		<h:panelGroup id="backgroundofContentDiv" layout="block" styleClass="backgroundofContent">
@@ -55,7 +49,7 @@
 						<h:panelGrid columns="2" border="0" id="Container_1LeadOutside">
 							<h:outputText value="" />
 							<h:panelGroup id="title_div" layout="block" >
-								<h:outputText id="TitleDiv0" value="#{annotationBacking.leadDescription}" styleClass="title" />
+								<h:outputText id="TitleDiv0" value="#{singleLeadBacking.leadDescription}" styleClass="title" />
 							</h:panelGroup>
 
 							<p:slider id="sliderVoltCenterSingle"
