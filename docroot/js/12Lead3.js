@@ -368,7 +368,6 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 				}
 			);
 			
-			//graphCal.resize(40, graphHeightPx);
 			graphCalSet[i] = graphCal;
 		}
 	};
@@ -717,59 +716,11 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	};
 	
 	var stretchToContentMulti = function(){
-		var extraSpaceForVScroll = 25; 
 		
-		var graphFooter = 35;
-		var graphHeader = 22;
-		
-		// lookup all the relevent widths
-		var contentArea = WAVEFORM_getElementByIdEndsWith("div", "ecgGraphLayout");
-		var contentWidth = parseInt(contentArea.clientWidth) - extraSpaceForVScroll;  // removes the "px" at the end
-		
-		var graphContainer = WAVEFORM_getElementByIdEndsWith("table", "Container_12LeadDivOutside");
-		var gcWidth = parseInt(graphContainer.clientWidth);  // removes the "px" at the end
-		
-		var graphZero = WAVEFORM_getElementByIdEndsWith("div", "graphDiv0");
-		var g0Width = parseInt(graphZero.clientWidth);  // removes the "px" at the end
-		var g0Height = parseInt(graphZero.clientHeight);  // removes the "px" at the end
-		
-		var containerGraphZero = WAVEFORM_getElementByIdEndsWith("div", "ContainerDiv0");
-		var cg0Width = parseInt(containerGraphZero.clientWidth);  // removes the "px" at the end
-
-		var calZero = WAVEFORM_getElementByIdEndsWith("div", "graphDivCal0");
-		var c0Width = parseInt(calZero.clientWidth);  // removes the "px" at the end
-		
-		var containerCalZero = WAVEFORM_getElementByIdEndsWith("div", "ContainerCal0");
-		var cc0Width = parseInt(containerCalZero.clientWidth);  // removes the "px" at the end
-		
-		var yLabelZero = WAVEFORM_getElementByIdEndsWith("span", "yLabel0");
-		var yl0Width = parseInt(yLabelZero.offsetWidth);  // removes the "px" at the end
-		
-		var graphColumns = graphCount;
-		var callOverGraph = 0.3333;
-		if(graphCount > 4){
-			graphColumns = 4;
-		}else{
-			callOverGraph = callOverGraph / (4 - graphColumns);
-		}
-		
-		// calculations
-		var nonGraphWidth =(gcWidth -((g0Width+(cg0Width-g0Width))*graphColumns) - (c0Width+(cc0Width-c0Width-yl0Width)));
-		var AvailableGraphWidth = contentWidth - nonGraphWidth;
-		
-		var gWidthNew = AvailableGraphWidth/(graphColumns+callOverGraph);
-		var cWidthNew = gWidthNew*callOverGraph;
-		
-		var zoomRatio = (gWidthNew/g0Width);
-		
-		var height = g0Height*zoomRatio;
-		
-		if(height > (graphContainer.clientHeight-graphHeader-graphFooter)){
-			height = graphContainer.clientHeight-graphHeader-graphFooter;
-		}
+		calculateGraphSizes();
 		
 		// Set graph sizes
-		resizeMultiGraphParts(gWidthNew, height, cWidthNew, height);
+		resizeMultiGraphParts(graphWidth, graphHeight, callGraphWidth, graphHeight);
 
 	};
 	
