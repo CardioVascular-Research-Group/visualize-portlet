@@ -30,6 +30,68 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	var calibrationCount = 3;
 	var graphCount = 12;
 	
+	var graphHeight = 150;
+	var graphWidth = 120;
+	var callGraphWidth = 40;
+	
+	function calculateGraphSizes() {
+	
+		var extraSpaceForVScroll = 25; 
+		
+		var graphFooter = 35;
+		var graphHeader = 22;
+		
+		// lookup all the relevent widths
+		var contentArea = WAVEFORM_getElementByIdEndsWith("div", "ecgGraphLayout");
+		var contentWidth = parseInt(contentArea.clientWidth) - extraSpaceForVScroll;  // removes the "px" at the end
+		
+		var graphContainer = WAVEFORM_getElementByIdEndsWith("table", "Container_12LeadDivOutside");
+		var gcWidth = parseInt(graphContainer.clientWidth);  // removes the "px" at the end
+		
+		var g0Width = graphWidth;
+		var g0Height = graphHeight;
+		
+		var containerGraphZero = WAVEFORM_getElementByIdEndsWith("div", "ContainerDiv0");
+		var cg0Width = parseInt(containerGraphZero.clientWidth);  // removes the "px" at the end
+	
+		var c0Width = callGraphWidth;
+		
+		var containerCalZero = WAVEFORM_getElementByIdEndsWith("div", "ContainerCal0");
+		var cc0Width = parseInt(containerCalZero.clientWidth);  // removes the "px" at the end
+		
+		var yLabelZero = WAVEFORM_getElementByIdEndsWith("span", "yLabel0");
+		var yl0Width = parseInt(yLabelZero.offsetWidth);  // removes the "px" at the end
+		
+		var graphColumns = graphCount;
+		var callOverGraph = 0.3333;
+		if(graphCount > 4){
+			graphColumns = 4;
+		}else{
+			callOverGraph = callOverGraph / (4 - graphColumns);
+		}
+		
+		// calculations
+		var nonGraphWidth =(gcWidth -((g0Width+(cg0Width-g0Width))*graphColumns) - (c0Width+(cc0Width-c0Width-yl0Width)));
+		var AvailableGraphWidth = contentWidth - nonGraphWidth;
+		
+		var gWidthNew = AvailableGraphWidth/(graphColumns+callOverGraph);
+		var cWidthNew = gWidthNew*callOverGraph;
+		
+		var zoomRatio = (gWidthNew/g0Width);
+		
+		var height = g0Height*zoomRatio;
+		
+		if(height > (graphContainer.clientHeight-graphHeader-graphFooter)){
+			height = graphContainer.clientHeight-graphHeader-graphFooter;
+		}
+		
+		// Set graph sizes
+		graphHeight = height;
+		graphWidth = gWidthNew;
+		callGraphWidth = cWidthNew;
+	};
+	
+	
 	function show12LeadData() {
 		// Turning on the Dygrahs Display
 		WAVEFORM_showGraphs();
@@ -39,9 +101,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	// This function is kept on the .xhtml page, because it contains code specific to this layout. 
      var WAVEFORM_showGraphs = function(){
          var graphDurationMS = 1200;
-         var graphWidthPx = 250;
-         var graphHeightPx = 150;
-         populateGraphsCalibrations(graphDurationMS, graphWidthPx, graphHeightPx, dataFull, calibrationCount);
+         calculateGraphSizes();
+         populateGraphsCalibrations(graphDurationMS, dataFull, calibrationCount);
      };
 	
 	var parseJSONdata = function(){					
@@ -60,7 +121,6 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		parseJSONdata();
 		if(isMultigraph){
 			show12LeadData();
-			stretchToContentMulti();
 		}else{
 			renderSingleGraphAndAnnotations();
 		}
@@ -149,14 +209,14 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		}
 	}; 
 
-	var createXLine = function(lineIdName){
+	var createXLine = function(lineIdName, graphHeightPx){
 		var xlineX = document.createElement("div");
 		xlineX.id = lineIdName;
 		xlineX.className="crossHairVert";
 		xlineX.style.display = ""; // "none";
 		xlineX.style.width = "1px";
 		xlineX.style.height = "100%";
-		xlineX.style.top = "-150px";
+		xlineX.style.top = "-"+graphHeightPx+"px";
 		xlineX.style.left = "0px";
 		xlineX.style.backgroundColor = "purple";
 		xlineX.style.position = "relative";
@@ -168,10 +228,10 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	/** Creates and populates all the data graphs(one lead per) and all the calibration graphs.
 	 * 
 	 */
-	var populateGraphsCalibrations = function(graphDurationMS, graphWidthPx, graphHeightPx, dataFull, calibrationCount){
+	var populateGraphsCalibrations = function(graphDurationMS, dataFull, calibrationCount){
 		
-		makeCalibrationMarks(calibrationCount, graphHeightPx, graphDivCalPrefix, labelCalPrefix);
-		populate12Graphs(graphDurationMS, graphWidthPx, graphHeightPx, dataFull, namespaceGlobal);
+		makeCalibrationMarks(calibrationCount, callGraphWidth, graphHeight, graphDivCalPrefix, labelCalPrefix);
+		populate12Graphs(graphDurationMS, graphWidth, graphHeight, dataFull, namespaceGlobal);
        
 	};
 	
@@ -202,7 +262,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 										graphWidthPx, graphHeightPx));
 
 
-			var xLine = createXLine(lineIdName); // document.getElementById(lineIdName); // 
+			var xLine = createXLine(lineIdName, graphHeightPx); // document.getElementById(lineIdName); // 
 			WAVEFORM_getElementByIdEndsWith("div", graphDivName).appendChild(xLine);
 			xLineSet[col] = xLine;
 		}
@@ -222,6 +282,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 			graphDiv,
 			dataFull,
 			{
+				width: graphWidthPx,
+				height: graphHeightPx,
 				clickCallback: function(e, x, points){
 					CVRG_clickCallCommon(leadNumber);
 				},
@@ -259,7 +321,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		return graph;
 	};
 
-	var makeCalibrationMarks = function(markCount, graphHeightPx, graphDivName, labelDivName){
+	var makeCalibrationMarks = function(markCount, graphWidthPx, graphHeightPx, graphDivName, labelDivName){
 		for (var i = 0; i < markCount; i++) {
 			blockRedraw=true;
 			var graphDiv = WAVEFORM_getElementByIdEndsWith("div", graphDivName + i);
@@ -276,6 +338,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 				graphDiv,
 				calibrationData,
 				{
+					height: graphHeightPx,
+					width: graphWidthPx,
 					dateWindow: [ 0, 400],
 					colors: ["#000000"],
 					labelsDiv: labelDiv,
@@ -303,7 +367,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 					drawCallback: WAVEFORM_drawCallback // called every time the dygraph is drawn. 			 	
 				}
 			);
-			graphCal.resize(40, graphHeightPx);
+			
+			//graphCal.resize(40, graphHeightPx);
 			graphCalSet[i] = graphCal;
 		}
 	};
