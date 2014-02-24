@@ -171,9 +171,11 @@ public class AnnotationBacking extends BackingBean implements Serializable {
     	FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
 		
+		String ontologyID = (String) map.get("ontologyID");
 		String passedNodeID = (String) map.get("nodeID");
 		String passedNodeName = (String) map.get("nodeName");
 
+		this.getAnnotation().setOntologyID(Long.valueOf(ontologyID)); // e.g. "48037"
 		this.getAnnotation().setNodeID(passedNodeID); // e.g. "ECGTermsv1:ECG_000000460"
 		this.getAnnotation().setTermName(passedNodeName); // e.g. "R_Peak"
 
@@ -226,7 +228,7 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		
 					
 		AnnotationDTO ann = new AnnotationDTO(ResourceUtility.getCurrentUserId(), ResourceUtility.getCurrentGroupId(), ResourceUtility.getCurrentCompanyId(),
-				 							   visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), "manual", "ANNOTATION", this.getAnnotation().getTermName(), null /*bioportalID*/, "",
+				 							   visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), "manual", "ANNOTATION", this.getAnnotation().getTermName(), this.getAnnotation().getOntologyID(), this.getAnnotation().getNodeID(), "",
 				 							   getLeadnum(), "", this.getAnnotation().getComment(), this.getAnnotation().getFullAnnotation(), Calendar.getInstance(),null, null, null, null, 
 				 							   null, visualizeSharedBacking.getSharedStudyEntry().getRecordName(), visualizeSharedBacking.getSharedStudyEntry().getSubjectId());
 		 

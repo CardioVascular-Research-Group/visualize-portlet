@@ -132,7 +132,8 @@ function loadConceptByName(conceptName) {
 
 /** This function gets call by flash when the swf has finished loading. */
 function appComplete(swfID) {
-	//loadConceptByName(CVRG_conceptName);
+	//alert("Tree Done");
+	setTimeout(calledOnLoad, 500);
 }
 
 /** Implement this function to listen for tree selection changes 
@@ -143,7 +144,7 @@ function appComplete(swfID) {
  */
 function treeSelectionChanged(nodeID, nodeName, swfID) {
 	//alert("tree selection: " + nodeID + " - " + nodeName + " - " + swfID);
-    lookupAnnotationParam([{name:'nodeID', value:nodeID}, {name:'nodeName', value:nodeName}]);
+    lookupAnnotationParam([{name:'ontologyID', value:getOntologyID()}, {name:'nodeID', value:nodeID}, {name:'nodeName', value:nodeName}]);
     return false;
 }
 
@@ -154,7 +155,7 @@ function treeSelectionChanged(nodeID, nodeName, swfID) {
  * e.g. "ECGOntologyv0:ECG000000318", "Negative_Electrode", "OntologyTree"
  */
 function treeNodeDoubleClicked(nodeID, nodeName, swfID) {
-    lookupAnnotationParam([{name:'nodeID', value:nodeID}, {name:'nodeName', value:nodeName}]);
+	treeSelectionChanged(nodeID, nodeName, swfID);
     return false;
 }
 
@@ -173,3 +174,14 @@ function errorLoadingOntology(errorMsg, swfID) {
 var CVRG_setConceptName = function(conceptName){
 	CVRG_conceptName = conceptName;
 };
+
+function loadFlashTree(ontologyId, conceptId){
+	if(ontologyId != '' && ontologyId != '48037') {
+		loadOntology(ontologyId);
+		if(conceptId != ''){
+			setTimeout("loadConceptByID('"+conceptId+"')", 500);
+		}
+	}else if(conceptId != ''){
+		loadConceptByID(conceptId);	
+	}
+}

@@ -64,22 +64,25 @@
         canvas.shadowBlur = 0;
         canvas.shadowColor = '#82B4D2';
     	for(var h=0;h < highlightQueue.length;h++){
-            var top_left = g.toDomCoords(highlightQueue[h].xStart, (highlightQueue[h].yStart - 400 -(h*50)) ); // + highlightQueue[h].fhStart ;
-            var bottom_right = g.toDomCoords(highlightQueue[h].xEnd, (highlightQueue[h].yStart - 600-(h*50)) );; // + highlightQueue[h].fhStart ;
-
-            var leftX = top_left[0];
-            var topY = top_left[1];
-            var rightX = bottom_right[0];
-            var bottomY = bottom_right[1];
-            
-            var width = rightX-leftX;
-            var height = bottomY-topY;
-            
-            canvas.fillStyle = fillStyleList[h%5];
-            canvas.shadowOffsetX = 2*h;
-            canvas.shadowOffsetY = 2*h;
-            if(h>2) canvas.shadowBlur = 5;
-            canvas.fillRect(leftX, topY, width, height);        	
+    		
+    		if(highlightQueue[h].xEnd > dataSingle[calPointCount+1][0]){
+	            var top_left = g.toDomCoords(highlightQueue[h].xStart, (highlightQueue[h].yStart - 400 -(h*50)) ); // + highlightQueue[h].fhStart ;
+	            var bottom_right = g.toDomCoords(highlightQueue[h].xEnd, (highlightQueue[h].yStart - 600-(h*50)) );; // + highlightQueue[h].fhStart ;
+	
+	            var leftX = top_left[0];
+	            var topY = top_left[1];
+	            var rightX = bottom_right[0];
+	            var bottomY = bottom_right[1];
+	            
+	            var width = rightX-leftX;
+	            var height = bottomY-topY;
+	            
+	            canvas.fillStyle = fillStyleList[h%5];
+	            canvas.shadowOffsetX = 2*h;
+	            canvas.shadowOffsetY = 2*h;
+	            if(h>2) canvas.shadowBlur = 5;
+	            canvas.fillRect(leftX, topY, width, height);
+    		}
     	};    	
         canvas.shadowOffsetX = 0;
         canvas.shadowOffsetY = 0;

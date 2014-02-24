@@ -2,6 +2,8 @@ package edu.jhu.cvrg.waveform.model;
 
 import java.io.Serializable;
 
+import edu.jhu.cvrg.dbapi.dto.AnnotationDTO;
+
 public class AnnotationVO implements Serializable, Cloneable{
 
 	private static final long serialVersionUID = -709730496507285517L;
@@ -11,7 +13,8 @@ public class AnnotationVO implements Serializable, Cloneable{
 	private double dataOffsetX;
 	private double dataOffsetY;
 	private double dataXChange; 
-	private double dataYChange; 
+	private double dataYChange;
+	private Long ontologyID;
 	private String nodeID; // equivalent to Concept ID (AnnotationData.ConceptID) e.g. "ECGOntology:ECG_000000243".
 	private String termName;
 	private String fullAnnotation;
@@ -19,7 +22,7 @@ public class AnnotationVO implements Serializable, Cloneable{
 	private boolean singlePoint=true;
 
 	public AnnotationVO(double dataOnsetX, double dataOnsetY,
-			double dataOffsetX, double dataOffsetY, String nodeID, String termName,
+			double dataOffsetX, double dataOffsetY, Long ontologyID, String nodeID, String termName,
 			String fullAnnotation, String comment, boolean singlePoint) {
 		super();
 		this.dataOnsetX = dataOnsetX;
@@ -28,6 +31,7 @@ public class AnnotationVO implements Serializable, Cloneable{
 		this.dataOffsetY = dataOffsetY;
 		this.singlePoint = singlePoint;
 		
+		this.ontologyID = ontologyID;
 		this.nodeID = nodeID;
 		this.termName = termName;
 		this.fullAnnotation = fullAnnotation;
@@ -133,5 +137,15 @@ public class AnnotationVO implements Serializable, Cloneable{
 		} catch (CloneNotSupportedException e) {
 			return null;
 		}
+	}
+
+
+	public Long getOntologyID() {
+		return ontologyID == null ? AnnotationDTO.ECG_TERMS_ONTOLOGY_ID : ontologyID;
+	}
+
+
+	public void setOntologyID(Long ontologyID) {
+		this.ontologyID = ontologyID;
 	}
 }

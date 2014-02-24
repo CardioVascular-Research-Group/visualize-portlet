@@ -17,6 +17,7 @@ var calPointCount = 300;
 CVRG_sSecondSuffix = sSecondSuffix;
 CVRG_timeLabelPrefix = timeLabelPrefix; 
 
+
 	var SINGLELEAD_getSingleLeadData = function(leadNum2){
 		var singleDataCol = [];
 		var fields = [];
@@ -158,7 +159,17 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	 * 
 	 */
 	var SINGLELEAD_ShowAnnotationSingle = function() {
-		ecg_graph.setAnnotations(tempAnnotations);
+		var auxIndex = 0;
+		var auxArray = [];
+		for(var i =0; i < tempAnnotations.length;i++){
+		    if(parseInt(tempAnnotations[i].x) > dataSingle[calPointCount+1][0]){
+		    	auxArray[auxIndex] = tempAnnotations[i];
+		    	auxIndex++;
+		    }
+		}
+		if(auxIndex > 0){
+			ecg_graph.setAnnotations(auxArray);
+		}
 	};
 
 	/** SINGLELEAD_pointClickCallback(); 
@@ -528,9 +539,6 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	 */
 	var renderSingleGraphFineTuner = function(centerPoint, bShowGraph, termName){
 		isMultigraph=false;
-		
-		CVRG_setConceptName(termName);
-		loadConceptByName(CVRG_conceptName);
 
 		if(bShowGraph){
 			centerPoint = parseFloat(centerPoint);

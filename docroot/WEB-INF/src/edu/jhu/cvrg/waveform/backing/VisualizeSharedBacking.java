@@ -272,7 +272,7 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 
 		
 		sessionAnn = new AnnotationVO(Double.parseDouble(passedDataOnsetX), Double.parseDouble(passedDataOnsetY),
-									  0, 0, null, "", "", "", true);
+									  0, 0, null,null, "", "", "", true);
 		
 		this.getLog().info("+++ AnnotationBacking.java, viewAnnotationPoint() passedDataOnsetX: " + passedDataOnsetX + " passedDataSY: " + passedDataOnsetY + " +++ ");
 		
@@ -296,7 +296,7 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 		
 		sessionAnn = new AnnotationVO(Double.parseDouble(passedDataOnsetX), Double.parseDouble(passedDataOnsetY),
 									  Double.parseDouble(passedDataOffsetX), Double.parseDouble(passedDataOffsetY), 
-									  null, "", "", "", false);
+									  null,null, "", "", "", false);
 
 		this.getLog().info("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
 		this.getLog().info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
@@ -319,7 +319,7 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 		
 		sessionAnn = new AnnotationVO(retrievedAnnotation.getStartXcoord(), retrievedAnnotation.getStartYcoord(),
 									  retrievedAnnotation.getEndXcoord(), retrievedAnnotation.getEndYcoord(), 
-									  retrievedAnnotation.getBioportalID(), retrievedAnnotation.getName(), retrievedAnnotation.getValue(), 
+									  retrievedAnnotation.getBioportalOntologyID(), retrievedAnnotation.getBioportalConceptID(), retrievedAnnotation.getName(), retrievedAnnotation.getValue(), 
 									  retrievedAnnotation.getDescription(), retrievedAnnotation.isSinglePoint());
 		
 		setPreviousAnnotation(true);// this is an existing annotation, do not allow editing.
