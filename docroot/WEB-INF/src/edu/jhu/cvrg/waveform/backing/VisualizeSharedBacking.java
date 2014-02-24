@@ -291,8 +291,6 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 		String passedDataOnsetY = (String) map.get("DataOnsetY");
 		String passedDataOffsetX = (String) map.get("DataOffsetX");
 		String passedDataOffsetY = (String) map.get("DataOffsetY");
-		String passedDeltaX = (String) map.get("DeltaX");
-		String passedDeltaY = (String) map.get("DeltaY");
 		
 		sessionAnn = new AnnotationVO(Double.parseDouble(passedDataOnsetX), Double.parseDouble(passedDataOnsetY),
 									  Double.parseDouble(passedDataOffsetX), Double.parseDouble(passedDataOffsetY), 
@@ -328,14 +326,12 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
     }
 	   
     
-
-	
-
 	public boolean isShowFineGraph() {
 		return showFineGraph;
 	}
 
-	/** Set to true to show fine tuning graph, to false for text details of new annotation.
+	/** 
+	 * Set to true to show fine tuning graph, to false for text details of new annotation.
 	 *  
 	 * @param showFineGraph
 	 */
@@ -353,8 +349,8 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 	
 	/* - END - Methods moved from AnnotationBacking, to have only one session bean.*/
     
-    
-	/** Creates the titles for the multi-lead graphs.
+    /** 
+	 * Creates the titles for the multi-lead graphs.
 	 * 
 	 * @param iaAnnCount
 	 * @param iLeadCount
@@ -461,17 +457,36 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 	public void setVisualizationWidthMS(int visualizationWidthMS) {
 		this.visualizationWidthMS = visualizationWidthMS;
 	}
-
 	public int getAnnotationCount() {
 		return annotationCount;
 	}
-
 	public void setAnnotationCount(int annotationCount) {
 		this.annotationCount = annotationCount;
 	}
-
 	public AnnotationVO getSessionAnn() {
 		return sessionAnn;
+	}
+	
+	public void reset(){
+		selectedLeadName="";
+		selectedLeadNumber="";
+		currentVisualizationOffset=0;
+		durationMilliSeconds = 2500; // 2.5 second of data
+		visualizationWidthMS = 1200;
+		graphWidthPixels = 1200; //width of the longest graph which will use this data. Sets the maximum amount of data compression allowable.
+		newMilliSec = "";
+		data = null;
+		graphMultipleVisible = false;
+
+		saGraphTitle = new String[]{"I","II","III","aVR","aVL","aVF","V1","V2","V3","V4","V5","V6","VX","VY","VZ"}; // default values, should be replaced by the this.setGraphTitle() method, though usually the values are the same.
+		sharedStudyEntry = null;
+
+		sessionAnn = null;
+		
+		previousAnnotation=false;
+	    showFineGraph=false;
+		annotationCount = 0;
+		
 	}
 
 }

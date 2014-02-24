@@ -84,8 +84,13 @@ public class VisualizeGraphBacking extends BackingBean implements Serializable {
     	this.getLog().info("+ VisualizeGraphBacking.java, viewMultiLeadGraph() +++ ");
     	
 		if(visualizeSharedBacking.getSharedStudyEntry() != null){
-			visualizeSharedBacking.setCurrentVisualizationOffset(0);	
-			int iLeadCount = visualizeSharedBacking.fetchDisplayData();
+			
+			int iLeadCount = visualizeSharedBacking.getSharedStudyEntry().getLeadCount();
+			if(visualizeSharedBacking.getData() == null){
+				iLeadCount = visualizeSharedBacking.fetchDisplayData();	
+			}
+			
+			visualizeSharedBacking.setCurrentVisualizationOffset(0);
 			setMultiLeadLayoutList( getMultiLeadLayout(iLeadCount) );
 			int iaAnnCount[][] = fetchAnnotationArray();
 			visualizeSharedBacking.setGraphTitle(iaAnnCount, iLeadCount);

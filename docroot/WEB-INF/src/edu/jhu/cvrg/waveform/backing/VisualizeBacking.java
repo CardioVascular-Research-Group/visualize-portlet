@@ -77,6 +77,7 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 		this.getLog().info("*************** VisualizeBacking.java, init() copied from analyze to replace initialize() **********************");
 		userModel = ResourceUtility.getCurrentUser();
 		if(userModel != null){
+			visualizeSharedBacking.reset();
 			if(fileTree == null){
 				this.getLog().info("*** creating new FileTree for user:" + userModel.getScreenName());
 				fileTree = new LocalFileTree(userModel.getUserId(), "hea");
