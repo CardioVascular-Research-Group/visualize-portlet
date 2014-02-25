@@ -30,7 +30,6 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
-import org.json.JSONObject;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.SelectEvent;
@@ -60,15 +59,7 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 	private DocumentRecordDTO selectedStudyObject;  
 	
 	private ArrayList<DocumentRecordDTO> studyEntryList;
-	private boolean geVisible = true;
 	private LocalFileTree fileTree;
-	private boolean selectVisible = true, graphVisible = false, graphMultipleVisible=false;
-	private int iCurrentVisualizationOffset=0; // 12 lead displays always start at zero seconds (0 ms).
-	private int iVisualizationWidthMS = 2500;
-	private int iDurationMilliSeconds = 2500; // 2.5 second of data is needed for rhythm strip(s) at the bottom of the page. 
-	private int iSingleLeadWidthMS = 2500;
-	private int iGraphWidthPixels = 2500; //width of the longest graph which will use this data. Sets the maximum amount of data compression allowable.
-	private JSONObject dataJson;
 	
 	private User userModel;
 	
@@ -90,13 +81,7 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 		this.getLog().info("*************** VisualizeBacking.java, init() finished **********************");
 	}
     
-    public void viewSelectTree(ActionEvent event){
-    	this.getLog().info("VisualizeBacking.java, viewSelectTree()");
-    	this.getLog().info("= graphVisible = " + graphVisible);
-    	setVisibleFragment(0); // show list/tree page fragment.
-    }
-
-    /** Loads the data for the selected ecg file and switches to the 12 lead graph panel.
+   /** Loads the data for the selected ecg file and switches to the 12 lead graph panel.
      * Handles onclick event for the button "btnView12LeadECG" in the viewA_SelectionTree.xhtml view.
      * 
      */
@@ -161,14 +146,6 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 		setSelectedStudyObject(null);
 	}
 	
-	public void hideGe(ActionEvent e){
-		this.geVisible = false;
-	}
-	
-	public void showGe(ActionEvent e){
-		this.geVisible = true;
-	}
-
 	public void setSelectedStudyObject(DocumentRecordDTO selectedStudyObject) {
 		this.selectedStudyObject = selectedStudyObject;
 		visualizeSharedBacking.setSharedStudyEntry(selectedStudyObject);
@@ -179,17 +156,6 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 		return selectedStudyObject;
 	}
 
-	/**
-	 * @return
-	 */
-	public boolean isGeVisible() {
-		return geVisible;
-	}
-
-	public void setGeVisible(boolean geVisible) {
-		this.geVisible = geVisible;
-	}
-
 	public LocalFileTree getFileTree() {
 		return fileTree;
 	}
@@ -198,111 +164,12 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 		this.fileTree = fileTree;
 	}
 
-
-	public boolean isSelectVisible() {
-		return selectVisible;
-	}
-	public void setSelectVisible(boolean selectVisible) {
-		this.selectVisible = selectVisible;
-	}
-
-	public boolean isGraphVisible() {
-		return graphVisible;
-	}
-	public void setGraphVisible(boolean graphVisible) {
-		this.graphVisible = graphVisible;
-	}
-
-	public boolean isGraphMultipleVisible() {
-		return graphMultipleVisible;
-	}
-	public void setGraphMultipleVisible(boolean graphMultipleVisible) {
-		this.graphMultipleVisible = graphMultipleVisible;
-	}
-
 	public ArrayList<DocumentRecordDTO> getStudyEntryList() {
 		return studyEntryList;
 	}
 
 	public void setStudyEntryList(ArrayList<DocumentRecordDTO> studyEntryList) {
 		this.studyEntryList = studyEntryList;
-	}
-
-	public int getCurrentVisualizationOffset() {
-		return iCurrentVisualizationOffset;
-	}
-
-	public int getVisualizationWidthMS() {
-		return iVisualizationWidthMS;
-	}
-
-	public void setVisualizationWidthMS(int visualizationWidthMS) {
-		this.iVisualizationWidthMS = visualizationWidthMS;
-	}
-
-	public int getSingleLeadWidthMS() {
-		return iSingleLeadWidthMS;
-	}
-
-	public void setSingleLeadWidthMS(int iSingleLeadWidthMS) {
-		this.iSingleLeadWidthMS = iSingleLeadWidthMS;
-		this.setDurationMilliSeconds(iSingleLeadWidthMS);
-	}
-
-	public int getDurationMilliSeconds() {
-		return iDurationMilliSeconds;
-	}
-
-	public void setDurationMilliSeconds(int durationMilliSeconds) {
-		this.iDurationMilliSeconds = durationMilliSeconds;
-	}
-
-	public int getGraphWidthPixels() {
-		return iGraphWidthPixels;
-	}
-
-	public void setGraphWidthPixels(int graphWidthPixels) {
-		this.iGraphWidthPixels = graphWidthPixels;
-	}
-
-	/** Set booleans so that only one page fragment is displayed.
-	 * 
-	 * @param fragmentID :<BR>
-	 * 0 = selection tree/lists<BR>
-	 * 1 = single lead graph<BR>
-	 * 2 = multiple lead (e.g. 3, 12 or 15) graph<BR>
-	 */
-	private void setVisibleFragment(int fragmentID){
-		this.getLog().info("VisualizeBacking.java, setVisibleFragment(" + fragmentID + ")");
-
-		// reset all
-		setSelectVisible(false);
-		setGraphVisible(false);
-		setGraphMultipleVisible(false);
-		
-		// set specified fragment
-		switch(fragmentID){
-			case 0: // show only selection tree/lists page.
-				setSelectVisible(true);
-				break;
-			case 1: // show only single lead graph page.
-				setGraphVisible(true);
-				break;
-			case 2: // show only multiple lead (e.g. 3, 12 or 15) graph page.
-				setGraphMultipleVisible(true);
-				break;
-			default: 
-				setSelectVisible(true);
-				break;
-		}
-	}
-
-	public JSONObject getData() {
-		return dataJson;
-	}
-
-	public void setData(JSONObject dataJson) {
-		this.dataJson = dataJson;
 	}
 
 	public VisualizeSharedBacking getVisualizeSharedBacking() {
