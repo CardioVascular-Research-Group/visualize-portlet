@@ -24,7 +24,6 @@ import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
 import edu.jhu.cvrg.dbapi.dto.FileInfoDTO;
 import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
 import edu.jhu.cvrg.waveform.main.VisualizationManager;
-import edu.jhu.cvrg.waveform.model.AnnotationVO;
 import edu.jhu.cvrg.waveform.model.VisualizationData;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 import edu.jhu.cvrg.waveform.utility.ServerUtility;
@@ -48,7 +47,7 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 	private String[] saGraphTitle= {"I","II","III","aVR","aVL","aVF","V1","V2","V3","V4","V5","V6","VX","VY","VZ"}; // default values, should be replaced by the this.setGraphTitle() method, though usually the values are the same.
 	private DocumentRecordDTO sharedStudyEntry;
 
-	private AnnotationVO sessionAnn;
+	private AnnotationDTO sessionAnn;
 	
 	private boolean previousAnnotation=false;
     private boolean showFineGraph=false;
@@ -267,12 +266,14 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
     	FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
 		
-		String passedDataOnsetX = (String) map.get("DataOnsetX");
-		String passedDataOnsetY = (String) map.get("DataOnsetY");
+		double passedDataOnsetX = Double.parseDouble(map.get("DataOnsetX"));
+		double passedDataOnsetY = Double.parseDouble(map.get("DataOnsetY"));
 
-		
-		sessionAnn = new AnnotationVO(Double.parseDouble(passedDataOnsetX), Double.parseDouble(passedDataOnsetY),
-									  0, 0, null,null, "", "", "", true);
+		sessionAnn = new AnnotationDTO();
+		sessionAnn.setStartXcoord(passedDataOnsetX);
+		sessionAnn.setStartYcoord(passedDataOnsetY);
+		sessionAnn.setEndXcoord(passedDataOnsetX);
+		sessionAnn.setEndYcoord(passedDataOnsetY);
 		
 		this.getLog().info("+++ AnnotationBacking.java, viewAnnotationPoint() passedDataOnsetX: " + passedDataOnsetX + " passedDataSY: " + passedDataOnsetY + " +++ ");
 		
@@ -287,19 +288,22 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
     	FacesContext context = FacesContext.getCurrentInstance();
 		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
 		
-		String passedDataOnsetX = (String) map.get("DataOnsetX");
-		String passedDataOnsetY = (String) map.get("DataOnsetY");
-		String passedDataOffsetX = (String) map.get("DataOffsetX");
-		String passedDataOffsetY = (String) map.get("DataOffsetY");
+		double passedDataOnsetX = Double.parseDouble(map.get("DataOnsetX"));
+		double passedDataOnsetY = Double.parseDouble(map.get("DataOnsetY"));
+		double passedDataOffsetX = Double.parseDouble(map.get("DataOffsetX"));
+		double passedDataOffsetY = Double.parseDouble(map.get("DataOffsetY"));
 		
-		sessionAnn = new AnnotationVO(Double.parseDouble(passedDataOnsetX), Double.parseDouble(passedDataOnsetY),
-									  Double.parseDouble(passedDataOffsetX), Double.parseDouble(passedDataOffsetY), 
-									  null,null, "", "", "", false);
-
+		sessionAnn = new AnnotationDTO();
+		sessionAnn.setStartXcoord(passedDataOnsetX);
+		sessionAnn.setStartYcoord(passedDataOnsetY);
+		sessionAnn.setEndXcoord(passedDataOffsetX);
+		sessionAnn.setEndYcoord(passedDataOffsetY);
+		
 		this.getLog().info("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
 		this.getLog().info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
 		this.getLog().info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + sessionAnn.getDataXChange() + "  dataSYDuration: " + sessionAnn.getDataYChange() + " +++ ");
 		
+		setShowFineGraph(false);
 		setPreviousAnnotation(false);// this is an new annotation, allow editing.
 		
 		return "viewE_Annotate";
@@ -313,13 +317,9 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 		
 		String passedAnnotationID = (String) map.get("annotationID");
 		
-		AnnotationDTO retrievedAnnotation = ConnectionFactory.createConnection().getAnnotationById(ResourceUtility.getCurrentUserId(), Long.valueOf(passedAnnotationID));
+		sessionAnn = ConnectionFactory.createConnection().getAnnotationById(ResourceUtility.getCurrentUserId(), Long.valueOf(passedAnnotationID));
 		
-		sessionAnn = new AnnotationVO(retrievedAnnotation.getStartXcoord(), retrievedAnnotation.getStartYcoord(),
-									  retrievedAnnotation.getEndXcoord(), retrievedAnnotation.getEndYcoord(), 
-									  retrievedAnnotation.getBioportalOntologyID(), retrievedAnnotation.getBioportalConceptID(), retrievedAnnotation.getName(), retrievedAnnotation.getValue(), 
-									  retrievedAnnotation.getDescription(), retrievedAnnotation.isSinglePoint());
-		
+		setShowFineGraph(false);
 		setPreviousAnnotation(true);// this is an existing annotation, do not allow editing.
 
 		return "viewE_Annotate";
@@ -463,7 +463,7 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 	public void setAnnotationCount(int annotationCount) {
 		this.annotationCount = annotationCount;
 	}
-	public AnnotationVO getSessionAnn() {
+	public AnnotationDTO getSessionAnn() {
 		return sessionAnn;
 	}
 	

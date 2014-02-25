@@ -42,7 +42,6 @@ import org.primefaces.context.RequestContext;
 import edu.jhu.cvrg.dbapi.dto.AnnotationDTO;
 import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
 import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
-import edu.jhu.cvrg.waveform.model.AnnotationVO;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
 
@@ -54,11 +53,12 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 
 	public int leadnum;
     private String leadName;
+    
     private int annotationCount=0;
 	private int flagCount = 0;
 	private char cIntervalLabel = 'A';
 	
-	private AnnotationVO annotation;
+	private AnnotationDTO annotation;
 	
 	@ManagedProperty("#{visualizeSharedBacking}")
 	private VisualizeSharedBacking visualizeSharedBacking;   
@@ -90,12 +90,10 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		String passedDataOffsetX = (String) map.get("DataOffsetX");
 		String passedDataOffsetY = (String) map.get("DataOffsetY");
 		
-		this.getAnnotation().setDataOnsetX(Double.parseDouble(passedDataOnsetX));
-		this.getAnnotation().setDataOnsetY(Double.parseDouble(passedDataOnsetY));
-		this.getAnnotation().setDataOffsetX(Double.parseDouble(passedDataOffsetX));
-		this.getAnnotation().setDataOffsetY(Double.parseDouble(passedDataOffsetY));
-		
-		this.getAnnotation().setSinglePoint(false);
+		this.getAnnotation().setStartXcoord(Double.parseDouble(passedDataOnsetX));
+		this.getAnnotation().setStartYcoord(Double.parseDouble(passedDataOnsetY));
+		this.getAnnotation().setEndXcoord(Double.parseDouble(passedDataOffsetX));
+		this.getAnnotation().setEndYcoord(Double.parseDouble(passedDataOffsetY));
 		
 		this.getLog().info("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
 		this.getLog().info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
@@ -114,11 +112,18 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		
 		if(fineTuningPonit != null && fineTuningPonit >= 0){
 			if(fineTuningPonit == 0){
-				this.getAnnotation().setDataOnsetX(Double.parseDouble(x));
-				this.getAnnotation().setDataOnsetY(Double.parseDouble(y));	
+				
+				this.getAnnotation().setStartXcoord(Double.parseDouble(x));
+				this.getAnnotation().setStartYcoord(Double.parseDouble(y));
+				
+				if(this.getVisualizeSharedBacking().getSessionAnn().isSinglePoint()){
+					this.getAnnotation().setEndXcoord(Double.parseDouble(x));
+					this.getAnnotation().setEndYcoord(Double.parseDouble(y));
+				}
+				
 			}else if(fineTuningPonit == 1){ 
-				this.getAnnotation().setDataOffsetX(Double.parseDouble(x));
-				this.getAnnotation().setDataOffsetY(Double.parseDouble(y));
+				this.getAnnotation().setEndXcoord(Double.parseDouble(x));
+				this.getAnnotation().setEndYcoord(Double.parseDouble(y));
 			}
 		}
 		showNewAnnotationForLead();
@@ -132,11 +137,17 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		
 		if(fineTuningPonit != null && fineTuningPonit >= 0){
 			if(fineTuningPonit == 0){
-				this.getAnnotation().setDataOnsetX(this.getVisualizeSharedBacking().getSessionAnn().getDataOnsetX());
-				this.getAnnotation().setDataOnsetY(this.getVisualizeSharedBacking().getSessionAnn().getDataOnsetY());	
+				this.getAnnotation().setStartXcoord(this.getVisualizeSharedBacking().getSessionAnn().getStartXcoord());
+				this.getAnnotation().setStartYcoord(this.getVisualizeSharedBacking().getSessionAnn().getStartYcoord());
+				
+				if(this.getVisualizeSharedBacking().getSessionAnn().isSinglePoint()){
+					this.getAnnotation().setEndXcoord(this.getVisualizeSharedBacking().getSessionAnn().getEndXcoord());
+					this.getAnnotation().setEndYcoord(this.getVisualizeSharedBacking().getSessionAnn().getEndYcoord());
+				}
+				
 			}else if(fineTuningPonit == 1){ 
-				this.getAnnotation().setDataOffsetX(this.getVisualizeSharedBacking().getSessionAnn().getDataOffsetX());
-				this.getAnnotation().setDataOffsetY(this.getVisualizeSharedBacking().getSessionAnn().getDataOffsetY());
+				this.getAnnotation().setEndXcoord(this.getVisualizeSharedBacking().getSessionAnn().getEndXcoord());
+				this.getAnnotation().setEndYcoord(this.getVisualizeSharedBacking().getSessionAnn().getEndYcoord());
 			}
 		}
 		showNewAnnotationForLead();
@@ -153,15 +164,15 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 
 
 	public void showNodeID(){
-		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getAnnotation().getNodeID()); // ECGTermsv1:ECG_000000103 
+		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getAnnotation().getBioportalConceptID()); // ECGTermsv1:ECG_000000103 
 		String sDefinition= saOntDetail[1];
 		
-		this.getAnnotation().setFullAnnotation(sDefinition);
-		this.getLog().info("*** showNodeID(), nodeID: \"" + this.getAnnotation().getNodeID() + "\"");
-		this.getLog().info("*** showNodeID(), FullAnnotation: \"" + this.getAnnotation().getFullAnnotation()  + "\"");
+		this.getAnnotation().setValue(sDefinition);
+		this.getLog().info("*** showNodeID(), nodeID: \"" + this.getAnnotation().getBioportalConceptID() + "\"");
+		this.getLog().info("*** showNodeID(), FullAnnotation: \"" + this.getAnnotation().getValue() + "\"");
 	     
      	Map<String, Object> data = new HashMap<String, Object>();
-     	String dataFullAnnotation = this.getAnnotation().getFullAnnotation();
+     	String dataFullAnnotation = this.getAnnotation().getValue();
         
      	data.put("*", dataFullAnnotation);
 	}
@@ -175,17 +186,17 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		String passedNodeID = (String) map.get("nodeID");
 		String passedNodeName = (String) map.get("nodeName");
 
-		this.getAnnotation().setOntologyID(Long.valueOf(ontologyID)); // e.g. "48037"
-		this.getAnnotation().setNodeID(passedNodeID); // e.g. "ECGTermsv1:ECG_000000460"
-		this.getAnnotation().setTermName(passedNodeName); // e.g. "R_Peak"
+		this.getAnnotation().setBioportalOntologyID(Long.valueOf(ontologyID)); // e.g. "48037"
+		this.getAnnotation().setBioportalConceptID(passedNodeID); // e.g. "ECGTermsv1:ECG_000000460"
+		this.getAnnotation().setName(passedNodeName); // e.g. "R_Peak"
 
 		
-		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getAnnotation().getNodeID()); // ECGTermsv1:ECG_000000103 
+		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getAnnotation().getBioportalConceptID()); // ECGTermsv1:ECG_000000103 
 		String sDefinition= saOntDetail[1];
 		
-		this.getAnnotation().setFullAnnotation(sDefinition); // e.g. "The peak of the R Wave."
-		this.getLog().info("*** -- nodeID: \"" + this.getAnnotation().getNodeID() + "\"");
-		this.getLog().info("*** -- FullAnnotation: \"" + this.getAnnotation().getFullAnnotation()  + "\"");
+		this.getAnnotation().setValue(sDefinition); // e.g. "The peak of the R Wave."
+		this.getLog().info("*** -- nodeID: \"" + this.getAnnotation().getBioportalConceptID() + "\"");
+		this.getLog().info("*** -- FullAnnotation: \"" + this.getAnnotation().getValue() + "\"");
 	     
 	}
 	
@@ -202,15 +213,16 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		this.getLog().debug("saveAnnotationSetFlag(), SinglePoint: " + this.getAnnotation().isSinglePoint());
 		this.getLog().debug("saveAnnotationSetFlag(), LeadName: " + getLeadName());
 		this.getLog().debug("saveAnnotationSetFlag(), leadnum: " + getLeadnum());
-		this.getLog().debug("saveAnnotationSetFlag(), dataSY: " + this.getAnnotation().getDataOnsetY());
-		this.getLog().debug("saveAnnotationSetFlag(), dataSX: " + this.getAnnotation().getDataOnsetX());
-		this.getLog().debug("saveAnnotationSetFlag(), DataOffsetX: " + this.getAnnotation().getDataOffsetX());
-		this.getLog().debug("saveAnnotationSetFlag(), DataOffsetY: " + this.getAnnotation().getDataOffsetY());			
-		this.getLog().debug("saveAnnotationSetFlag(), dataSYDuration : " + this.getAnnotation().getDataYChange());
-		this.getLog().debug("saveAnnotationSetFlag(), dataSXDuration : " + this.getAnnotation().getDataXChange());
-		this.getLog().debug("saveAnnotationSetFlag(), termName: " + this.getAnnotation().getTermName());
-		this.getLog().debug("saveAnnotationSetFlag(), FullAnnotation: " + this.getAnnotation().getFullAnnotation());
-		this.getLog().debug("saveAnnotationSetFlag(), nodeID: " + this.getAnnotation().getNodeID());
+		this.getLog().debug("saveAnnotationSetFlag(), getStartYcoord: " + this.getAnnotation().getStartYcoord());
+		this.getLog().debug("saveAnnotationSetFlag(), getStartXcoord: " + this.getAnnotation().getStartXcoord());
+		this.getLog().debug("saveAnnotationSetFlag(), getEndXcoord: " + this.getAnnotation().getEndXcoord());
+		this.getLog().debug("saveAnnotationSetFlag(), getEndYcoord: " + this.getAnnotation().getEndYcoord());			
+		this.getLog().debug("saveAnnotationSetFlag(), getDataYChange : " + this.getAnnotation().getDataYChange());
+		this.getLog().debug("saveAnnotationSetFlag(), getDataXChange : " + this.getAnnotation().getDataXChange());
+		this.getLog().debug("saveAnnotationSetFlag(), getName: " + this.getAnnotation().getName());
+		this.getLog().debug("saveAnnotationSetFlag(), getValue: " + this.getAnnotation().getValue());
+		this.getLog().debug("saveAnnotationSetFlag(), getBioportalConceptID: " + this.getAnnotation().getBioportalConceptID());
+		this.getLog().debug("saveAnnotationSetFlag(), getBioportalOntologyID: " + this.getAnnotation().getBioportalOntologyID());
 
 //			 * Required values that need to be filled in are:
 //				 * 
@@ -228,20 +240,20 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		
 					
 		AnnotationDTO ann = new AnnotationDTO(ResourceUtility.getCurrentUserId(), ResourceUtility.getCurrentGroupId(), ResourceUtility.getCurrentCompanyId(),
-				 							   visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), "manual", "ANNOTATION", this.getAnnotation().getTermName(), this.getAnnotation().getOntologyID(), this.getAnnotation().getNodeID(), "",
-				 							   getLeadnum(), "", this.getAnnotation().getComment(), this.getAnnotation().getFullAnnotation(), Calendar.getInstance(),null, null, null, null, 
+				 							   visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), "manual", "ANNOTATION", this.getAnnotation().getName(), this.getAnnotation().getBioportalOntologyID(), this.getAnnotation().getBioportalConceptID(), "",
+				 							   getLeadnum(), "", this.getAnnotation().getDescription(), this.getAnnotation().getValue(), Calendar.getInstance(),null, null, null, null, 
 				 							   null, visualizeSharedBacking.getSharedStudyEntry().getRecordName(), visualizeSharedBacking.getSharedStudyEntry().getSubjectId());
 		 
 		 if(this.getAnnotation().isSinglePoint()){
-			 ann.setStartXcoord(this.getAnnotation().getDataOnsetX());
-			 ann.setStartYcoord(this.getAnnotation().getDataOnsetY());
-			 ann.setEndXcoord(this.getAnnotation().getDataOnsetX());
-			 ann.setEndYcoord(this.getAnnotation().getDataOnsetY());
+			 ann.setStartXcoord(this.getAnnotation().getStartXcoord());
+			 ann.setStartYcoord(this.getAnnotation().getStartYcoord());
+			 ann.setEndXcoord(this.getAnnotation().getStartXcoord());
+			 ann.setEndYcoord(this.getAnnotation().getStartYcoord());
 		 }else{
-			 ann.setStartXcoord(this.getAnnotation().getDataOnsetX());
-			 ann.setStartYcoord(this.getAnnotation().getDataOnsetY());
-			 ann.setEndXcoord(this.getAnnotation().getDataOffsetX());
-			 ann.setEndYcoord(this.getAnnotation().getDataOffsetY());
+			 ann.setStartXcoord(this.getAnnotation().getStartXcoord());
+			 ann.setStartYcoord(this.getAnnotation().getStartYcoord());
+			 ann.setEndXcoord(this.getAnnotation().getEndXcoord());
+			 ann.setEndYcoord(this.getAnnotation().getEndYcoord());
 		 }
 		 
 		 
@@ -276,17 +288,17 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 			this.getLog().error("AnnotationBacking.java, showNewAnnotation() failed: " + sErrorMess);
 		}else{
 			AnnotationDTO newAnnotation = new AnnotationDTO();
-			newAnnotation.setStartXcoord(this.getAnnotation().getDataOnsetX());
-			newAnnotation.setStartYcoord(this.getAnnotation().getDataOnsetY());
-			newAnnotation.setValue(this.getAnnotation().getFullAnnotation());
+			newAnnotation.setStartXcoord(this.getAnnotation().getStartXcoord());
+			newAnnotation.setStartYcoord(this.getAnnotation().getStartYcoord());
+			newAnnotation.setValue(this.getAnnotation().getValue());
 			newAnnotation.setName(this.getLeadName());
 
 			if(!this.getAnnotation().isSinglePoint()){
-				newAnnotation.setEndXcoord(this.getAnnotation().getDataOffsetX());
-				newAnnotation.setEndYcoord(this.getAnnotation().getDataOffsetY());
+				newAnnotation.setEndXcoord(this.getAnnotation().getEndXcoord());
+				newAnnotation.setEndYcoord(this.getAnnotation().getEndYcoord());
 			}else{
-				newAnnotation.setEndXcoord(this.getAnnotation().getDataOnsetX());
-				newAnnotation.setEndYcoord(this.getAnnotation().getDataOnsetY());
+				newAnnotation.setEndXcoord(this.getAnnotation().getStartXcoord());
+				newAnnotation.setEndYcoord(this.getAnnotation().getStartYcoord());
 			}
 			this.getLog().debug("### ### isSinglePoint: " + newAnnotation.isComment() 
 						+ " getDataOffsetX(): " + newAnnotation.getEndXcoord()
@@ -330,8 +342,8 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		long firstX;
 		long firstY = -999;
 		String flagLabel; //e.g. = "1";
-		String ontologyId; //e.g. = "Amplitude";
-		String fullAnnotation;//
+		String ontologyId = ""; //e.g. = "Amplitude";
+		String fullAnnotation = "";//
 		Long annotationID;
 		this.getLog().debug("### ### addAnnotation() -- isSinglePoint: " + singleAnnotation.isSinglePoint() 
 				+ " isComment: " + singleAnnotation.isComment()
@@ -341,8 +353,14 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		firstX = (long) singleAnnotation.getStartXcoord().longValue();	// time or "X" coordinate 
 		firstY = (long) singleAnnotation.getStartYcoord().longValue();	//voltage or "Y" coordinate, not needed for dygraph annotation flag, but might be used by our code later.
 
-		ontologyId = singleAnnotation.getName();
-		fullAnnotation = singleAnnotation.getValue();
+		if(singleAnnotation.getName() != null){
+			ontologyId = singleAnnotation.getName();	
+		}
+		
+		if(singleAnnotation.getValue() != null){
+			fullAnnotation = singleAnnotation.getValue();
+		}
+		
 		annotationID = singleAnnotation.getAnnotationId();
 
 		Double xPosition = Double.valueOf(firstX);
@@ -455,7 +473,7 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		return false;
 	}
 
-	public AnnotationVO getAnnotation() {
+	public AnnotationDTO getAnnotation() {
 		return annotation;
 	}
 
