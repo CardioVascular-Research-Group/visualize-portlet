@@ -206,7 +206,14 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 			annotationID: "New point" // Unique annotation ID (primary key) as found in the database.  			
 		};
 		
-		tempAnnotations[tempAnnotations.length] = ann;	
+		var selectedPointIndex =  tempAnnotations.length;
+		if(singlePoint){
+			selectedPointIndex = 1;
+		}else{
+			selectedPointIndex = 2;
+		}
+			
+		tempAnnotations[selectedPointIndex] = ann;
 		
 		CVRG_last_ann++; // redundent counter
 	};
