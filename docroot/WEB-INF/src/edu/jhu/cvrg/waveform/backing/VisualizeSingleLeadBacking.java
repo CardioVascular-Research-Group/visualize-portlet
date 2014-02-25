@@ -17,6 +17,7 @@ limitations under the License.
 */
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,6 +53,9 @@ public class VisualizeSingleLeadBacking extends BackingBean implements Serializa
 	
 	private int flagCount = 0;
 	private char cIntervalLabel = 'A';
+	
+	
+	private List<AnnotationDTO> wholeLeadAnnotations; 
 	
 	@ManagedProperty("#{visualizeSharedBacking}")
 	private VisualizeSharedBacking visualizeSharedBacking;   
@@ -105,10 +109,13 @@ public class VisualizeSingleLeadBacking extends BackingBean implements Serializa
 			if(retrievedAnnotationList != null){
 				String series = this.getLeadName();
 				HashMap<Double, Integer> duplicates = new HashMap<Double, Integer>();
+				wholeLeadAnnotations = new ArrayList<AnnotationDTO>();
 				
 				for (AnnotationDTO annotationDTO : retrievedAnnotationList) {
 					if(!annotationDTO.isWholeLead()){
 						duplicates = this.addAnnotation(context, series, annotationDTO, duplicates);	
+					}else{
+						wholeLeadAnnotations.add(annotationDTO);
 					}
 				}
 			}
@@ -257,6 +264,14 @@ public class VisualizeSingleLeadBacking extends BackingBean implements Serializa
 
 	public int getAnnotationCount() {
 		return annotationCount;
+	}
+
+	public List<AnnotationDTO> getWholeLeadAnnotations() {
+		return wholeLeadAnnotations;
+	}
+
+	public void setWholeLeadAnnotations(List<AnnotationDTO> wholeLeadAnnotations) {
+		this.wholeLeadAnnotations = wholeLeadAnnotations;
 	}
 
 }
