@@ -16,9 +16,10 @@
 		<h:panelGroup layout="block">
 				<p:layout id="graphView" style="width:100%;height:550px">
 					<p:layoutUnit id="ecgGraphLayout" position="center">
-						<h:panelGroup id="panelMultipleGraph" autoUpdate="true">
+						
+						<h:panelGroup id="panelMultipleGraph" layout="block" autoUpdate="true">
 							<script>
-								namespaceGlobal ='#{facesContext.externalContext.encodeNamespace('')}';								
+								namespaceGlobal ='#{facesContext.externalContext.encodeNamespace('')}';
 							</script>
 							<ui:include src="include/multiLead_DIV.xhtml" />
 						</h:panelGroup>
