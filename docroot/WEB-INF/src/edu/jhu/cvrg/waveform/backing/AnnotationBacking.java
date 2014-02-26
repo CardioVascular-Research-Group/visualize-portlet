@@ -392,9 +392,14 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 
 				this.getLog().debug("Single point: " + flagLabel + " x: " + firstX);
 				int finalHeight = heightMultiplier * 15;
+				
+				if(singleAnnotation.getDescription() != null){
+					fullAnnotation +=( "/" + singleAnnotation.getDescription());
+				}
+				
 				// 	add annotaion from JAVA to JavaScript Dygraph 
 				context.execute("CVRG_addAnnotationHeight('" + series + "' , '" +  firstX + "', '" +  firstY + "','" 
-					+ flagLabel + "','" + ontologyId + "','" + fullAnnotation + "/" + singleAnnotation.getDescription() + "',' " 
+					+ flagLabel + "','" + ontologyId + "','" + fullAnnotation  + "',' " 
 					+ finalHeight + "','" + annotationID + "')");
 				flagCount++;
 			}
