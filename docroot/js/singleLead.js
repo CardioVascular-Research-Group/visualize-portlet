@@ -162,7 +162,7 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		var auxIndex = 0;
 		var auxArray = [];
 		for(var i =0; i < tempAnnotations.length;i++){
-		    if(parseInt(tempAnnotations[i].x) > dataSingle[calPointCount+1][0]){
+		    if(parseInt(tempAnnotations[i].x) >= dataSingle[calPointCount+1][0] && parseInt(tempAnnotations[i].x) <= dataSingle[dataSingle.length-1][0]){
 		    	auxArray[auxIndex] = tempAnnotations[i];
 		    	auxIndex++;
 		    }
@@ -548,10 +548,27 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		isMultigraph=false;
 
 		if(bShowGraph){
+			
+			var firstPoint = dataSingle[calPointCount+1][0];
+			var lastPoint = dataSingle[dataSingle.length-1][0];
 			centerPoint = parseFloat(centerPoint);
+			
 			var startMS = centerPoint - 15.0;
 			var endMS = centerPoint + 15.0;
-			var widthMS = 30.0;
+			
+			if(endMS >= lastPoint){
+				var dif = endMS - lastPoint;
+				startMS = startMS - dif;
+				endMS = lastPoint;
+			}
+			
+			if(startMS <= firstPoint){
+				var dif = firstPoint - startMS;
+				endMS = endMS + dif;
+				startMS = firstPoint;
+			}
+			
+			var widthMS = endMS - startMS;
 			SINGLELEAD_drawFineTuner("fineTune_div", startMS, widthMS);	
 			centerFineScaleVoltage(startMS, endMS);
 
@@ -561,6 +578,9 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 	
 	var renderSingleGraphFullAnnotation = function(startMS, endMS, bShowGraph){
 		if(bShowGraph){
+			var firstPoint = dataSingle[calPointCount+1][0];
+			var lastPoint = dataSingle[dataSingle.length-1][0];
+			
 			startMS = parseFloat(startMS);
 			endMS = parseFloat(endMS);
 			var offsetMS = startMS - 5.0;

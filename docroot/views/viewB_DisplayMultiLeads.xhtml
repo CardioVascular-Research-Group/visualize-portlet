@@ -15,6 +15,25 @@
 
 		<h:panelGroup layout="block">
 				<p:layout id="graphView" style="width:100%;height:550px">
+				
+					<p:layoutUnit id="annotationLayout" position="west" header="Whole ECG Annotations" collapsed="true" collapsible="true" resizable="true" size="300">
+						<h:form>
+							<p:dataTable id="annotationTable" var="ann" value="#{visualizeGraphBacking.wholeEcgAnnotations}" stickyHeader="true">  
+						        <p:column sortBy="createdBy" headerText="Created by">  
+						            <h:outputText value="#{ann.createdBy}" />  
+						        </p:column>  
+						  
+						        <p:column sortBy="name" headerText="Name">  
+						            <h:outputText value="#{ann.name}" />  
+						        </p:column>  
+						  
+						        <p:column sortBy="value" headerText="Value">  
+						            <h:outputText value="#{ann.value}" />  
+						        </p:column>  
+						    </p:dataTable>  
+						</h:form>
+					</p:layoutUnit>
+				
 					<p:layoutUnit id="ecgGraphLayout" position="center">
 						
 						<h:panelGroup id="panelMultipleGraph" layout="block" autoUpdate="true">

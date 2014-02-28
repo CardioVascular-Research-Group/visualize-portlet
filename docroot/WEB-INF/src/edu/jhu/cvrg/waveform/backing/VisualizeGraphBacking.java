@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -30,9 +31,11 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 
+import edu.jhu.cvrg.dbapi.dto.AnnotationDTO;
 import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
 import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
 import edu.jhu.cvrg.waveform.model.MultiLeadLayout;
+import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 
 @ManagedBean(name = "visualizeGraphBacking")
 @ViewScoped
@@ -46,13 +49,15 @@ public class VisualizeGraphBacking extends BackingBean implements Serializable {
 	private ArrayList<MultiLeadLayout> multiLeadLayoutList;
 	private int multiLeadColumnCount = 5; //default value
 	
+	private List<AnnotationDTO> wholeEcgAnnotations;
+	
 	@PostConstruct
 	public void init() {
 		this.getLog().info("*************** VisualizeGraphBacking.java, initialize() **********************");
 		//set the default duration 
 		visualizeSharedBacking.setDurationMilliSeconds(2500);
     	viewMultiLeadGraph();
-    	
+    	populateWholeECGAnnotations();
     	this.getLog().info("*************** DONE, initialize() **********************");
 	}
 
@@ -201,5 +206,19 @@ public class VisualizeGraphBacking extends BackingBean implements Serializable {
 	public int getCalibrationCount(){
 		return (new BigDecimal((double)this.getGraphedStudyEntry().getLeadCount()/(this.getMultiLeadColumnCount()-1))).setScale(0, RoundingMode.UP).intValue();
 				
+	}
+	
+	private void populateWholeECGAnnotations(){
+		
+		List<AnnotationDTO> retrievedAnnotationList = ConnectionFactory.createConnection().getLeadAnnotationNode(ResourceUtility.getCurrentUserId(), visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), null);
+		this.setWholeEcgAnnotations(retrievedAnnotationList);
+	}
+
+	public List<AnnotationDTO> getWholeEcgAnnotations() {
+		return wholeEcgAnnotations;
+	}
+
+	public void setWholeEcgAnnotations(List<AnnotationDTO> wholeEcgAnnotations) {
+		this.wholeEcgAnnotations = wholeEcgAnnotations;
 	}
 }
