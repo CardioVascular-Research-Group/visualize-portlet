@@ -25,6 +25,8 @@ limitations under the License.
 * 
 */
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -164,11 +166,14 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 
 
 	public void showNodeID(){
-		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getAnnotation().getBioportalConceptID()); // ECGTermsv1:ECG_000000103 
-		String sDefinition= saOntDetail[1];
 		
-		this.getAnnotation().setValue(sDefinition);
-		this.getLog().info("*** showNodeID(), nodeID: \"" + this.getAnnotation().getBioportalConceptID() + "\"");
+		String key = "definition";
+		
+		Map<String, String> saOntDetail =  WebServiceUtility.lookupOntology(this.getAnnotation().getBioportalOntology(), this.getAnnotation().getBioportalClassId(), key); // ECGTermsv1:ECG_000000103 
+		
+		this.getAnnotation().setValue(saOntDetail.get(key));
+		
+		this.getLog().info("*** showNodeID(), nodeID: \"" + this.getAnnotation().getBioportalClassId() + "\"");
 		this.getLog().info("*** showNodeID(), FullAnnotation: \"" + this.getAnnotation().getValue() + "\"");
 	     
      	Map<String, Object> data = new HashMap<String, Object>();
@@ -184,18 +189,19 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		
 		String ontologyID = (String) map.get("ontologyID");
 		String passedNodeID = (String) map.get("nodeID");
-		String passedNodeName = (String) map.get("nodeName");
-
-		this.getAnnotation().setBioportalOntologyID(Long.valueOf(ontologyID)); // e.g. "48037"
-		this.getAnnotation().setBioportalConceptID(passedNodeID); // e.g. "ECGTermsv1:ECG_000000460"
-		this.getAnnotation().setName(passedNodeName); // e.g. "R_Peak"
-
 		
-		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getAnnotation().getBioportalConceptID()); // ECGTermsv1:ECG_000000103 
-		String sDefinition= saOntDetail[1];
+		this.getAnnotation().setBioportalOntology(ontologyID); // e.g. "48037"
+		try {
+			this.getAnnotation().setBioportalClassId(URLDecoder.decode(passedNodeID, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			this.getAnnotation().setBioportalClassId(passedNodeID);
+		}
 		
-		this.getAnnotation().setValue(sDefinition); // e.g. "The peak of the R Wave."
-		this.getLog().info("*** -- nodeID: \"" + this.getAnnotation().getBioportalConceptID() + "\"");
+		Map<String, String> saOntDetail =  WebServiceUtility.lookupOntology(ontologyID, passedNodeID,  "definition", "prefLabel"); // http://data.bioontology.org/ontologies/ECGT/classes/http%3A%2F%2Fwww.cvrgrid.org%2Ffiles%2FECGTermsv1.owl%23ECG_000000477
+		this.getAnnotation().setValue(saOntDetail.get("definition")); // e.g. "The peak of the R Wave."
+		this.getAnnotation().setName(saOntDetail.get("prefLabel"));
+		
+		this.getLog().info("*** -- nodeID: \"" + this.getAnnotation().getBioportalClassId() + "\"");
 		this.getLog().info("*** -- FullAnnotation: \"" + this.getAnnotation().getValue() + "\"");
 	     
 	}
@@ -221,8 +227,8 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		this.getLog().debug("saveAnnotationSetFlag(), getDataXChange : " + this.getAnnotation().getDataXChange());
 		this.getLog().debug("saveAnnotationSetFlag(), getName: " + this.getAnnotation().getName());
 		this.getLog().debug("saveAnnotationSetFlag(), getValue: " + this.getAnnotation().getValue());
-		this.getLog().debug("saveAnnotationSetFlag(), getBioportalConceptID: " + this.getAnnotation().getBioportalConceptID());
-		this.getLog().debug("saveAnnotationSetFlag(), getBioportalOntologyID: " + this.getAnnotation().getBioportalOntologyID());
+		this.getLog().debug("saveAnnotationSetFlag(), getBioportalConceptID: " + this.getAnnotation().getBioportalClassId());
+		this.getLog().debug("saveAnnotationSetFlag(), getBioportalOntologyID: " + this.getAnnotation().getBioportalOntology());
 
 //			 * Required values that need to be filled in are:
 //				 * 
@@ -240,7 +246,7 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		
 					
 		AnnotationDTO ann = new AnnotationDTO(ResourceUtility.getCurrentUserId(), ResourceUtility.getCurrentGroupId(), ResourceUtility.getCurrentCompanyId(),
-				 							   visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), "manual", "ANNOTATION", this.getAnnotation().getName(), this.getAnnotation().getBioportalOntologyID(), this.getAnnotation().getBioportalConceptID(), "",
+				 							   visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), "manual", "ANNOTATION", this.getAnnotation().getName(), this.getAnnotation().getBioportalOntology(), this.getAnnotation().getBioportalClassId(), null,
 				 							   getLeadnum(), "", this.getAnnotation().getDescription(), this.getAnnotation().getValue(), Calendar.getInstance(),null, null, null, null, 
 				 							   null, visualizeSharedBacking.getSharedStudyEntry().getRecordName(), visualizeSharedBacking.getSharedStudyEntry().getSubjectId());
 		 
@@ -474,12 +480,19 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		return annotationCount;
 	}
 
-	public boolean isNewTree(){
-		return false;
-	}
-
 	public AnnotationDTO getAnnotation() {
 		return annotation;
 	}
+	
+	public String getBioportalExternalLink(){
+		return AnnotationDTO.generateURL(this.getAnnotation().getBioportalOntology(), this.getAnnotation().getBioportalClassId());
+	}
 
+	public String getBioportalClassId(){
+		return this.getAnnotation().getBioportalClassId() != null ? '\''+this.getAnnotation().getBioportalClassId()+'\'' : "null";
+	}
+	
+	public String getBioportalOntology(){
+		return this.getAnnotation().getBioportalOntology() != null ? this.getAnnotation().getBioportalOntology() : AnnotationDTO.ECG_TERMS_ONTOLOGY;
+	}
 }

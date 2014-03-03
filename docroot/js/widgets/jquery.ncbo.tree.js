@@ -58,12 +58,13 @@
     TREE.option = $.extend(TREE.option, opt);
 
     // Add the autocomplete code
+    /* Removed by avilard4 from Waveform team.
     $.ajax({
       url: TREE.option.ncboUIURL + "/widgets/jquery.ncbo.autocomplete.js",
       type: "GET",
       async: false,
       dataType: "script"
-    });
+    });*/
 
     // Required options
     if (TREE.option.apikey == null)
@@ -116,16 +117,17 @@
       TREE.css("width", TREE.option.width);
 
       // Empty out the tree container
-      $(TREE_CONTAINER).html("");
+      $(TREE_CONTAINER).html("")
 
       // Add the autocomplete
       var autocompleteContainer = $("<div>").addClass(TREE.option.autocompleteClass).addClass("ncboTree");
-      var input = $("<input>")
-        .addClass(TREE.option.autocompleteClass)
-        .css("width", TREE.option.width)
-        .attr("placeholder", "Search for class...");
+      var input = $("<input>").addClass(TREE.option.autocompleteClass)
+			      .css("width", TREE.option.width)
+			      .attr("placeholder", "Search for class...");
+
       autocompleteContainer.append(input);
-      /*input.NCBOAutocomplete({
+
+      input.NCBOAutocomplete({
         url: TREE.option.ncboAPIURL + "/search",
         searchParameter: "q",
         resultAttribute: "collection",
@@ -141,7 +143,8 @@
           no_context: true,
           ontologies: TREE.option.ontology
         }
-      });*/
+      });
+
       $(TREE_CONTAINER).append(autocompleteContainer);
 
       // Add the actual tree
@@ -194,6 +197,11 @@
           contentType: 'json',
           crossDomain: true,
           success: function(roots){
+        	  
+        	if(jQuery.type(roots) == 'string' && roots != null){
+        	   roots = jQuery.parseJSON(roots);
+        	}
+        	  
             ROOT.html(TREE.formatNodes(roots));
             TREE.setTreeNodes(ROOT, false);
 
@@ -250,7 +258,12 @@
             contentType: 'json',
             timeout: TREE.option.timeout,
             success: function(response) {
-              var nodes = TREE.formatNodes(response.collection);
+
+              if(jQuery.type(response) == 'string' && response != null){
+                response = jQuery.parseJSON(response);
+              }
+
+              var nodes = TREE.formatNodes(response.collection)
               node.removeAttr('class');
               node.html(nodes);
               $.extend(node, {url:url});
@@ -412,6 +425,11 @@
             contentType: 'json',
             crossDomain: true,
             success: function(roots){
+
+              if(jQuery.type(roots) == 'string' && roots != null){
+                roots = jQuery.parseJSON(roots);
+              }
+
               ROOT.append(TREE.formatNodes(roots));
               TREE.setTreeNodes(ROOT, false);
             }
