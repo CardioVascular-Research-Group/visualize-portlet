@@ -35,22 +35,21 @@
 			
 			<p:layout id="manualAnnotation" style="width:100%;height:550px" >
 			
-				<p:layoutUnit id="ontologyTree" position="west" header="Bioportal" size="400px" collapsible="true" resizable="true">
+				<p:layoutUnit id="ontologyTree" position="west" header="Bioportal" size="350" minSize="300" collapsible="true" resizable="true">
 					<ui:remove> <!-- *****************  Left Panel, Ontology Tree ************************* --> </ui:remove>
-					<h:panelGroup id="panelLeft" style="background-color:#d0e4f6; padding:20 0; height:360px; width:400px">
+					<h:panelGroup id="panelLeft" style="background-color:#d0e4f6; padding:20 0; height:360px; width:325px">
 						<script src="/visualize-portlet/js/widgets/jquery.ncbo.tree.js"></script>
 						<script src="/visualize-portlet/js/widgets/jquery.ncbo.autocomplete.js"></script>
 						<link rel="stylesheet" type="text/css" href="/visualize-portlet/css/widgets/jquery.ncbo.tree.css"></link>
 						<div id="tree"></div>
 						<script>
 							var widget_tree = $("#tree").NCBOTree({
-							  apikey: "24e0e602-54e0-11e0-9d7b-005056aa3316",
-							  
+							  apikey: "#{annotationBacking.bioportalApikey}",
 							  ontology: "#{annotationBacking.bioportalOntology}",
-							  ncboUIURL: "http://bioportal.bioontology.org",
-							  ncboAPIURL: "http://data.bioontology.org",
-							  
-							  startingClass: #{annotationBacking.bioportalClassId} ,
+							  ncboUIURL: "#{annotationBacking.bioportalUIUrl}",
+							  ncboAPIURL: "#{annotationBacking.bioportalAPIUrl}",
+							  width: 325,
+							  startingClass: #{annotationBacking.bioportalClassId},
 							  
 							  afterSelect: NEWTREE_afterSelect,
 							  afterJumpToClass: NEWTREE_afterJumpToClass

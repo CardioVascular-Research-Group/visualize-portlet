@@ -495,4 +495,17 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 	public String getBioportalOntology(){
 		return this.getAnnotation().getBioportalOntology() != null ? this.getAnnotation().getBioportalOntology() : AnnotationDTO.ECG_TERMS_ONTOLOGY;
 	}
+	
+	public String getBioportalAPIUrl(){
+		return ResourceUtility.getBioportalAPIServerURL();
+	}
+	
+	public String getBioportalUIUrl(){
+		return ResourceUtility.getBioportalUIServerURL();
+	}
+	
+	public String getBioportalApikey(){
+		return ResourceUtility.getBioportalApikey();
+	}
+	
 }
