@@ -58,13 +58,13 @@
 	<h:inputHidden id="voltCenterInputALL" value="50" immediate="true" />
 
 	<script>
-		calibrationCount = #{visualizeGraphBacking.calibrationCount};
+		calibrationCount = #{wfbean.calibrationCount};
 		graphCount = #{visualizeSharedBacking.leadCount};
 	</script>
 	
 	<h:panelGrid id="Container_12LeadDivOutside" layout="block" columns="2" styleClass="Container_12LeadDivOutside">
 		
-		<p:dataGrid var="i" value="#{visualizeGraphBacking.multiLeadLayoutList}"  rowIndexVar="col"  columns="#{visualizeGraphBacking.multiLeadColumnCount}">
+		<p:dataGrid var="i" value="#{wfbean.multiLeadLayoutList}"  rowIndexVar="col"  columns="#{wfbean.multiLeadColumnCount}">
 		    <graph:calibrationGraph number="#{i.leadNumber}" rendered="#{!i.lead}"/>
 		    <graph:leadGraph number="#{i.leadNumber}" rendered="#{i.lead}"/>
 		</p:dataGrid>

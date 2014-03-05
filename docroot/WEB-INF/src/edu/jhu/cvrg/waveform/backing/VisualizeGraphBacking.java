@@ -37,16 +37,17 @@ import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
 import edu.jhu.cvrg.waveform.model.MultiLeadLayout;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 
-@ManagedBean(name = "visualizeGraphBacking")
 @ViewScoped
+@ManagedBean(name = "visualizeGraphBacking")
 public class VisualizeGraphBacking extends BackingBean implements Serializable {
 
-
-	private static final long serialVersionUID = -3657756514965814260L;
-
 	@ManagedProperty("#{visualizeSharedBacking}")
-	private VisualizeSharedBacking visualizeSharedBacking;         
+	private VisualizeSharedBacking visualizeSharedBacking;
+	
+	private static final long serialVersionUID = -3657756514965814260L;
+	
 	private ArrayList<MultiLeadLayout> multiLeadLayoutList;
+	
 	private int multiLeadColumnCount = 5; //default value
 	
 	private List<AnnotationDTO> wholeEcgAnnotations;

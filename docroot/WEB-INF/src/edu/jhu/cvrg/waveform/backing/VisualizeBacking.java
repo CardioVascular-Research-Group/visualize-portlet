@@ -18,7 +18,6 @@ limitations under the License.
 * @author Chris Jurado, Scott Alger, Mike Shipway
 * 
 */
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -45,8 +44,8 @@ import edu.jhu.cvrg.waveform.model.FileTreeNode;
 import edu.jhu.cvrg.waveform.model.LocalFileTree;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 
-@ManagedBean(name = "visualizeBacking")
 @ViewScoped
+@ManagedBean(name = "visualizeBacking")
 public class VisualizeBacking extends BackingBean implements Serializable {
 
 	@ManagedProperty("#{visualizeSharedBacking}")

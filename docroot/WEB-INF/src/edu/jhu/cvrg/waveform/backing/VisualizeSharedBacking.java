@@ -28,8 +28,8 @@ import edu.jhu.cvrg.waveform.model.VisualizationData;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 import edu.jhu.cvrg.waveform.utility.ServerUtility;
 
-@ManagedBean(name = "visualizeSharedBacking")
 @SessionScoped
+@ManagedBean(name = "visualizeSharedBacking")
 public class VisualizeSharedBacking extends BackingBean implements Serializable {
 	
 	private static final long serialVersionUID = -3526964652221486865L;
