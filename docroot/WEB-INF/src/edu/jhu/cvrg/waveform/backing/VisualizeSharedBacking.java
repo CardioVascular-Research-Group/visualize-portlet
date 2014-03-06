@@ -52,6 +52,7 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 	private boolean previousAnnotation=false;
     private boolean showFineGraph=false;
 	public int annotationCount;
+	private List<AnnotationDTO> wholeEcgAnnotations;
 	
 	/** 
 	 * Switches to the selection tree and list view.
@@ -466,6 +467,15 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 	public AnnotationDTO getSessionAnn() {
 		return sessionAnn;
 	}
+
+	public List<AnnotationDTO> getWholeEcgAnnotations() {
+		return wholeEcgAnnotations;
+	}
+
+	public void setWholeEcgAnnotations(List<AnnotationDTO> wholeEcgAnnotations) {
+		this.wholeEcgAnnotations = wholeEcgAnnotations;
+	}
+	
 	
 	public void reset(){
 		selectedLeadName="";

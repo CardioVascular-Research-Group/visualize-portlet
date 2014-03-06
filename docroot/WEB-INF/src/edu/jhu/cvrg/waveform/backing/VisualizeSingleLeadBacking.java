@@ -119,6 +119,15 @@ public class VisualizeSingleLeadBacking extends BackingBean implements Serializa
 					}
 				}
 			}
+			
+			if(visualizeSharedBacking.getWholeEcgAnnotations() != null){
+				if(wholeLeadAnnotations != null){
+					wholeLeadAnnotations.addAll(visualizeSharedBacking.getWholeEcgAnnotations());
+				}else{
+					wholeLeadAnnotations = new ArrayList<AnnotationDTO>(visualizeSharedBacking.getWholeEcgAnnotations());
+				}	
+			}
+			
 		}
 	}
 

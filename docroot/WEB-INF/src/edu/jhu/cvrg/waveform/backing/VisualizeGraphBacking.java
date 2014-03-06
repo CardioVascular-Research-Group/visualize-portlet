@@ -50,8 +50,6 @@ public class VisualizeGraphBacking extends BackingBean implements Serializable {
 	
 	private int multiLeadColumnCount = 5; //default value
 	
-	private List<AnnotationDTO> wholeEcgAnnotations;
-	
 	@PostConstruct
 	public void init() {
 		this.getLog().info("*************** VisualizeGraphBacking.java, initialize() **********************");
@@ -212,14 +210,8 @@ public class VisualizeGraphBacking extends BackingBean implements Serializable {
 	private void populateWholeECGAnnotations(){
 		
 		List<AnnotationDTO> retrievedAnnotationList = ConnectionFactory.createConnection().getLeadAnnotationNode(ResourceUtility.getCurrentUserId(), visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), null);
-		this.setWholeEcgAnnotations(retrievedAnnotationList);
+		visualizeSharedBacking.setWholeEcgAnnotations(retrievedAnnotationList);
+		
 	}
 
-	public List<AnnotationDTO> getWholeEcgAnnotations() {
-		return wholeEcgAnnotations;
-	}
-
-	public void setWholeEcgAnnotations(List<AnnotationDTO> wholeEcgAnnotations) {
-		this.wholeEcgAnnotations = wholeEcgAnnotations;
-	}
 }
