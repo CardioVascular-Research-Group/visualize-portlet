@@ -130,25 +130,29 @@
 								<p:panelGrid style="width:100%;" id="selectedAnnotationData">  
 								    <f:facet name="header">  
 								        <p:row>
-								        	<p:column ></p:column>  
+								        	<p:column>
+												<p:commandButton value="All Selection"
+														 title="View the entire interval."
+														 rendered="#{!annotationBacking.annotation.singlePoint}"
+														 actionListener="#{annotationBacking.showNewAnnotationGraph}"
+														 update="panelRightAlternate"
+														 oncomplete="fineTuningPoint=-1; renderSingleGraphFullAnnotation('#{annotationBacking.annotation.startXcoord}', '#{annotationBacking.annotation.endXcoord}', true);showManualGraphPanel();"/>
+											</p:column>  
 								            <p:column >Onset</p:column>
 								            <p:column >Offset</p:column>
-								            <p:column >Change</p:column>  
 								        </p:row>
 							        </f:facet>
 							          
 									<p:row>
-										<p:column style="font-weight: bold;">Time(mSec)</p:column>
-										<p:column><h:outputText id="dataSX" styleClass="dataValue" value="#{annotationBacking.annotation.startXcoord}" /></p:column>
-										<p:column><h:outputText id="dataSXDuration" styleClass="dataValue" value="#{annotationBacking.annotation.endXcoord}" rendered="#{!annotationBacking.annotation.singlePoint}"/></p:column>
-										<p:column><h:outputText id="dataSXDuration2" styleClass="dataValue" value="#{annotationBacking.annotation.dataXChange}" rendered="#{!annotationBacking.annotation.singlePoint}"/></p:column>
+										<p:column style="font-weight: bold;">Time ( X 10^#{annotationBacking.annotation.expTimeInSec} Sec)</p:column>
+										<p:column><h:outputText id="dataSX" styleClass="dataValue" value="#{annotationBacking.onSet}" /></p:column>
+										<p:column><h:outputText id="dataSXDuration" styleClass="dataValue" value="#{annotationBacking.offSet}" rendered="#{!annotationBacking.annotation.singlePoint}"/></p:column>
 									</p:row>
 									
 									<p:row>
 										<p:column style="font-weight: bold;">Amplitude(μV)</p:column>
 										<p:column><h:outputText id="dataSY" styleClass="dataValue" value="#{annotationBacking.annotation.startYcoord}" /></p:column>
 										<p:column><h:outputText id="dataSYDuration" styleClass="dataValue" value="#{annotationBacking.annotation.endYcoord}" rendered="#{!annotationBacking.annotation.singlePoint}" /></p:column>
-										<p:column><h:outputText id="dataSYDuration2" styleClass="dataValue" value="#{annotationBacking.annotation.dataYChange}" rendered="#{!annotationBacking.annotation.singlePoint}"/></p:column>
 									</p:row>
 									
 									<f:facet name="footer">
@@ -168,14 +172,6 @@
 														 actionListener="#{annotationBacking.showNewAnnotationGraph}"
 														 update="panelRightAlternate"
 														 oncomplete="fineTuningPoint=1; renderSingleGraphFineTuner('#{annotationBacking.annotation.endXcoord}', true, '#{annotationBacking.annotation.name}');showManualGraphPanel();"/>
-											</p:column>
-											<p:column>
-												<p:commandButton value="All"
-														 title="View the entire interval."
-														 rendered="#{!annotationBacking.annotation.singlePoint}"
-														 actionListener="#{annotationBacking.showNewAnnotationGraph}"
-														 update="panelRightAlternate"
-														 oncomplete="fineTuningPoint=-1; renderSingleGraphFullAnnotation('#{annotationBacking.annotation.startXcoord}', '#{annotationBacking.annotation.endXcoord}', true);showManualGraphPanel();"/>
 											</p:column>
 										</p:row>
 									</f:facet>

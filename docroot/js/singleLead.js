@@ -84,6 +84,8 @@ CVRG_timeLabelPrefix = timeLabelPrefix;
 		newWidth = cWidth - (sWidth) - (2*oneEm); 
 		newHeight= (lHeight - ((c1Height - c2Height) + sHeight + tHeight) - oneEm) * 0.98;
 		
+		CVRG_setTimeExponent(dataSingle[0][0]); //set the right timescale
+		
 		var bDots = CVRG_bShowDots();
 		var newTimeLabel = CVRG_getnewTimeLabel();
 		

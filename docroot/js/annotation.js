@@ -369,46 +369,6 @@
 	};
 	
 	
-	var CVRG_TimeExponent = 0;
-	/** Sets the global variable CVRG_TimeExponent for the exponent used on the time axis labels.
-	 * Will be used to modify the time axis label.
-	 * 
-	 * @param msMinTime - time, in milliseconds to calculate the Seconds' exponent from.
-	 * @param chart - the dygraph chart object which the value refers to.
-	 * @returns void
-	 */
-	var CVRG_setTimeExponent = function(msMinTime, chart){
-		var secMinTime = msMinTime/1000;
-		var temp_TimeExponent=-1;
-		for (var i = 0; i < 10; i++) {
-			if(secMinTime/Math.pow(10, i) < 10){
-				temp_TimeExponent = i;
-				break;
-			}
-		}
-		
-		// runs only once per scale change to avoid infinate recursion loop.
-		if(temp_TimeExponent != CVRG_TimeExponent){
-			CVRG_TimeExponent = temp_TimeExponent;
-		}
-	};
-	
-	var CVRG_MsPerPixel = 1 ;
-	/** Sets the global valiable CVRG_MsPerPixel for the number of millisecond between one pixel and the next.
-	 * Will be used to decide when to display the data points as dots on the line (e.g. when zoomed in far enough)
-	 * 
-	 * @param msPerPixel - value to be persisted.
-	 * @param chart - the dygraph chart object which the value refers to.
-	 * @returns void
-	 */
-	var CVRG_setMsPerPixel = function(msPerPixel, chart){
-		//TODO: call Java code to adjust the display
-		if (CVRG_MsPerPixel != msPerPixel){
-			CVRG_MsPerPixel = msPerPixel;
-		}
-	};
-	
-
 	/**
 	 * Add ticks when the x axis has numbers on it (instead of dates)
 	 * @param minV - minimum value of the window on this axis

@@ -448,6 +448,28 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		return duplicates;
 	}
 	
+	
+	public Double getOnSet(){
+		return convertToExpValue(this.getAnnotation().getStartXcoord());
+	}
+
+	public Double getOffSet(){
+		return convertToExpValue(this.getAnnotation().getEndXcoord());
+	}
+	
+	private Double convertToExpValue(Double x) {
+		if(x != null){
+			int expSec = this.getAnnotation().getExpTimeInSec();
+			if(expSec > 0){
+				return (x/1000)/Math.pow(10, expSec);
+			}else{
+				return (x/1000);
+			}
+		}
+		return null;
+	}
+	
+	
 	public DocumentRecordDTO getStudyEntry(){
 		return visualizeSharedBacking.getSharedStudyEntry();
 	}

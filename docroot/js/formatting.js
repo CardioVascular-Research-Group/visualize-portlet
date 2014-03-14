@@ -105,14 +105,11 @@
 	 */
 	var CVRG_TickerCommonFormatting = function(minV, maxV, pixels, axis_props, self, forced_vals, pixelsPerTick, msecLargeTime, msecSmallTime) {
 		var msecWidth = maxV-minV; // values spanned by the graph area (voltage or time).
-//		var msecLargeTime=200; // time span between the dark grid lines 1/5 second (5 millimeter)on paper ECG, equal to 5 small time blocks
-//		var msecSmallTime=40;  // time span between the light grid lines 1/25 second (1 mm) on paper ECG
 		var pixLargeTime = (pixels*msecLargeTime)/msecWidth; // pixels spanned by the dark grid lines (1/5 second)
 		var msPerPixel = msecWidth/pixels; // milliseconds between one pixel and then next
 		var pixSmallTime = (pixels*msecSmallTime)/msecWidth; // pixels spanned by the light grid lines (1/25 second)
 		var pixMinSmallTime = 1;  // small time blocks must be at least this many pixels wide.
 		
-//		var bLabelsKMB = attr("labelsKMB");
 		var ticks = [];
 		
 		CVRG_setTimeExponent(minV,self);
@@ -180,11 +177,6 @@
 							if(msSubSec%msecLargeTime > 1){// light grid lines on 25ths of a second, if between 5ths of a second lines.
 								if (pixSmallTime > pixelsPerTick){
 									ticks.push( {v: tickV} ); // use default label on fractional seconds
-//									if(tickV > 0){
-//										ticks.push( {label: msSubSec/1000.0, v: tickV} ); // only show the milliseconds
-//									}else{
-//										ticks.push( {label: (msSubSec-1000)/1000.0, v: tickV} ); // only show the milliseconds					
-//									}
 								}else{
 									ticks.push( {label: "", v: tickV} ); // don't label small squares, overrides default label.
 								}
