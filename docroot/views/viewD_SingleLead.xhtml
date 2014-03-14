@@ -52,8 +52,8 @@
 					        </p:column>  
 					  
 					  		<p:column headerText="Type">  
-					            <h:outputText value="ECG" rendered="#{ann.lead != null}"/>
-					            <h:outputText value="LEAD" rendered="#{ann.lead == null}"/>  
+					            <h:outputText value="ECG" rendered="#{ann.lead == null}"/>
+					            <h:outputText value="LEAD" rendered="#{ann.lead != null}"/>  
 					        </p:column>
 					  
 					        <p:column sortBy="name" headerText="Name">  
