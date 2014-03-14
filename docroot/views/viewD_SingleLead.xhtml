@@ -79,8 +79,9 @@
 							<p:graphicImage value="/image/graph-loader.gif" title="graph loading indicator" alt="graph loading indicator"></p:graphicImage>
 						</p:blockUI>
 
-						<h:panelGrid columns="2" border="0" id="Container_1LeadOutside">
-							<h:outputText value="" />
+						<h:panelGrid columns="2" border="0" id="Container_1LeadOutside" styleClass="Container_1LeadOutside">
+							<h:outputText value="" styleClass="stubTd"/>
+							
 							<h:panelGroup id="title_div" layout="block" >
 								<h:outputText id="TitleDiv0" value="#{singleLeadBacking.leadDescription}" styleClass="title" />
 							</h:panelGroup>
@@ -107,17 +108,17 @@
 
 				<p:layoutUnit id="viewChangeButtons" position="east" resizable="true" size="150" minSize="50" maxSize="550" collapsible="true" header="Nav Menu">
 					<h:form>
-						<p:commandButton id="returnToList" value="View ECG List"
+						<p:commandButton id="returnToList" value="Back to List"
 							action="#{visualizeSharedBacking.viewSelectionTree}" ajax="true"
 							icon="ui-icon-document" styleClass="navigationButton"
-							title="View the ECG selection tree." />
+							title="View ECG file selection tree." />
 
-						<p:commandButton id="showMultiLead" value="View Multi-Lead"
+						<p:commandButton id="showMultiLead" value="Back to Leads"
 							action="#{visualizeSharedBacking.viewMultiLeadGraph}" ajax="true"
 							icon="ui-icon-arrowreturnthick-1-w" styleClass="navigationButton" 
-							title="View multiple lead graphs."/>
+							title="View all lead graphs for this ECG."/>
 
-						<p:button id="voltCenterButton" value="center" type="button"
+<!-- 						<p:button id="voltCenterButton" value="center" type="button"
 							styleClass="navigationButton" icon="ui-icon-arrowthick-2-n-s"
 							title="Center the graph, while using the standard voltage scale (+/- 2000uV)."
 							onclick="centerVoltage();return false;" />
@@ -126,7 +127,7 @@
 							type="button" styleClass="navigationButton"
 							icon="ui-icon-arrowthick-2-n-s"
 							title="Center the graph, stretching the voltage scale."
-							onclick="centerScaleVoltage();return false;" />
+							onclick="centerScaleVoltage();return false;" /> -->
 
 						<p:button id="voltResetButton" value="reset" type="button"
 							icon="ui-icon-circle-plus" styleClass="navigationButton"

@@ -168,6 +168,10 @@
 	z-index:1004;
 }
  */
+.instruction12Lead td, .Container_1LeadOutside td{
+	font-size:11px;
+	padding:5px;
+}
 /* 
 .crossHairVert{
 	position: "relative";

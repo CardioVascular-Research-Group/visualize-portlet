@@ -36,12 +36,12 @@
 
 				<p:layoutUnit id="viewChangeButtons" header="Nav Menu" position="east" resizable="true" size="130" minSize="50" maxSize="550" collapsible="true">
 					<h:form>
-						<p:commandButton id="returnToList" value="View ECG List"
+						<p:commandButton id="returnToList" value="Back to List"
 							action="#{visualizeSharedBacking.viewSelectionTree}" ajax="true"
 							icon="ui-icon-document" styleClass="navigationButton"
-							title="View the ECG selection tree." />
+							title="View ECG file selection tree." />
 
-						<p:button id="voltCenterButtonMulti" value="center" type="button"
+<!-- 						<p:button id="voltCenterButtonMulti" value="center" type="button"
 							icon="ui-icon-arrowthick-2-n-s" styleClass="navigationButton"
 							title="Center each graph on it's median, while using the standard voltage scale (+/- 2000uV)."
 							onclick="centerVoltageMulti();return false;"></p:button>
@@ -55,7 +55,7 @@
 							value="center and scale" type="button"
 							icon="ui-icon-arrowthick-2-n-s" styleClass="navigationButton"
 							title="Center each graph on it's median, stretching the voltage scale of each independently."
-							onclick="centerScaleVoltageMulti();return false;"></p:button>
+							onclick="centerScaleVoltageMulti();return false;"></p:button> -->
 
 						<p:button id="voltResetButtonMulti" value="reset" type="button"
 							icon="ui-icon-circle-plus" styleClass="navigationButton"

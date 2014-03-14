@@ -111,3 +111,6 @@ font-color:#000000!important;
   border-size: 0 !important;
   font-family: helvetica !important; }
 
+.ui-tree {
+  border: 0!important; }
+
