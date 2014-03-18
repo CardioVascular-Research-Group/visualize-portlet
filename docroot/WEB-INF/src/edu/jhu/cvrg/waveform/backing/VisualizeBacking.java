@@ -20,6 +20,8 @@ limitations under the License.
 */
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -27,7 +29,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
@@ -37,9 +38,9 @@ import org.primefaces.model.TreeNode;
 
 import com.liferay.portal.model.User;
 
-import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
 import edu.jhu.cvrg.dbapi.factory.Connection;
 import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
+import edu.jhu.cvrg.waveform.model.DocumentDragVO;
 import edu.jhu.cvrg.waveform.model.FileTreeNode;
 import edu.jhu.cvrg.waveform.model.LocalFileTree;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
@@ -53,11 +54,9 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 	
 	private static final long serialVersionUID = -4006126553152259063L;
 
-	private ArrayList<FileTreeNode> selectedNodes;
+	private DocumentDragVO selectedStudyObject;  
 	
-	private DocumentRecordDTO selectedStudyObject;  
-	
-	private ArrayList<DocumentRecordDTO> studyEntryList;
+	private ArrayList<DocumentDragVO> tableList;
 	private LocalFileTree fileTree;
 	
 	private User userModel;
@@ -89,7 +88,7 @@ public class VisualizeBacking extends BackingBean implements Serializable {
     	this.getLog().info("+++ VisualizeBacking.java, graphSelectedECG() +++ ");
     	
     	if(selectedStudyObject != null){
-    		this.getLog().info("+ selected record:" + selectedStudyObject.getRecordName() + " lead count:" + selectedStudyObject.getLeadCount());
+    		this.getLog().info("+ selected record:" + selectedStudyObject.getDocumentRecord().getRecordName() + " lead count:" + selectedStudyObject.getDocumentRecord().getLeadCount());
 	   		nextView = "viewB_DisplayMultiLeads";
     	}else{
     		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validation Error" , "<br />Please select a file."));	
@@ -99,30 +98,7 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 		return nextView;
     }
 
-    /** Determines which files are selected in the fileTree and displays them in the StudyEntryList.
-     * Handles the click event from the button "btnDisplay".
-     * @param event
-     */
-	public void displaySelectedMultiple(ActionEvent event) {
-		this.getLog().info("-VisualizeBacking.displaySelectedMultiple() ");
-		selectedNodes = fileTree.getSelectedFileNodes();
-		
-		if(selectedNodes != null && !selectedNodes.isEmpty()){
-			this.getLog().info("--selectedNodes.size(): " + selectedNodes.size());
-			Connection database = ConnectionFactory.createConnection();
-		
-			studyEntryList = new ArrayList<DocumentRecordDTO>();
-			for (FileTreeNode node : selectedNodes) {
-				studyEntryList.add(database.getDocumentRecordById(node.getDocumentRecordId()));
-			}
-		}else{
-			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Warning", "<br />Please select a file."));
-		}
-		
-		this.getLog().info("-VisualizeBacking.displaySelectedMultiple() DONE");
-	}
-	
-	public void folderSelect(NodeSelectEvent event){
+    public void folderSelect(NodeSelectEvent event){
 		TreeNode node = event.getTreeNode();
 		if(!node.getType().equals(FileTreeNode.DEFAULT_TYPE)){
 			fileTree.selectAllChildNodes(node);
@@ -137,21 +113,78 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 		}
 	}
 
+	public void treeToTable() {
+        Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        String property = params.get("property");
+        String type = params.get("type");
+        
+        if(property!=null && !property.isEmpty()){
+        	Connection con = ConnectionFactory.createConnection();
+        	
+        	if(tableList == null){
+        		tableList = new ArrayList<DocumentDragVO>();
+        	}
+        	
+        	DocumentDragVO vo = null;
+        	
+        	if("leaf".equals(type)){
+        		FileTreeNode node = fileTree.getNodeByReference(property);
+            	if(node != null){
+            		vo = new DocumentDragVO(node, con.getDocumentRecordById(node.getDocumentRecordId()));
+            		if(!tableList.contains(vo)){
+            			tableList.add(vo);	
+            		}
+            	}	
+        	}else if("parent".equals(type)){
+        		List<FileTreeNode> nodes = fileTree.getNodesByReference(property);
+            	if(nodes!=null){
+            		for (FileTreeNode node : nodes) {
+            			
+            			vo = new DocumentDragVO(node, con.getDocumentRecordById(node.getDocumentRecordId()));
+            			if(!tableList.contains(vo)){
+                    		tableList.add(vo);	
+                    	}			
+					}
+            	}
+            }
+        }else{
+        	System.err.println("DRAGDROP = ERROR");
+        }
+    }
+    
+    public void removeTableItem(){
+    	Map<String,String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        String index = params.get("index");
+        
+    	if(index != null ){
+    		int indexTableToRemove = Integer.parseInt(index);
+    		
+    		if(indexTableToRemove >= 0 && (tableList != null && tableList.size() > indexTableToRemove)){
+    			tableList.remove(indexTableToRemove);
+    		}
+    	}
+    }
+	
+	
 	public void onRowSelect(SelectEvent event) {
-		setSelectedStudyObject((DocumentRecordDTO) event.getObject());
+		setSelectedStudyObject((DocumentDragVO) event.getObject());
 	}
 
 	public void onRowUnselect(UnselectEvent event) {
 		setSelectedStudyObject(null);
 	}
 	
-	public void setSelectedStudyObject(DocumentRecordDTO selectedStudyObject) {
+	public void setSelectedStudyObject(DocumentDragVO selectedStudyObject) {
 		this.selectedStudyObject = selectedStudyObject;
-		visualizeSharedBacking.setSharedStudyEntry(selectedStudyObject);
+		if(selectedStudyObject != null){
+			visualizeSharedBacking.setSharedStudyEntry(selectedStudyObject.getDocumentRecord());
+		}else{
+			visualizeSharedBacking.setSharedStudyEntry(null);
+		}
 		this.getLog().info("Graphed Study Object Set");
 	}
 
-	public DocumentRecordDTO getSelectedStudyObject() {
+	public DocumentDragVO getSelectedStudyObject() {
 		return selectedStudyObject;
 	}
 
@@ -161,14 +194,6 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 
 	public void setFileTree(LocalFileTree fileTree) {
 		this.fileTree = fileTree;
-	}
-
-	public ArrayList<DocumentRecordDTO> getStudyEntryList() {
-		return studyEntryList;
-	}
-
-	public void setStudyEntryList(ArrayList<DocumentRecordDTO> studyEntryList) {
-		this.studyEntryList = studyEntryList;
 	}
 
 	public VisualizeSharedBacking getVisualizeSharedBacking() {
@@ -181,5 +206,13 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 
 	public User getUser(){
 		return userModel;
+	}
+
+	public ArrayList<DocumentDragVO> getTableList() {
+		return tableList;
+	}
+
+	public void setTableList(ArrayList<DocumentDragVO> tableList) {
+		this.tableList = tableList;
 	}
 }
