@@ -2,9 +2,10 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
-	
-	<p:panel id="dragPanelPanZoom" header="Data Frame" styleClass="dragPanelPanZoom clearfix hoverShadow ">
+	    
+		<h:outputText value="" styleClass="navSpacerElement"/>
 		<p:commandButton id="moveToBegin" 
+		    styleClass="graphNav"
 			icon="ui-icon-seek-first" 
 			value="First" 
 			title="Move to Beginning" 
@@ -13,6 +14,7 @@
 			oncomplete="renderData();"
 			actionListener="#{visualizeSharedBacking.panZeroSec}" />
 		<p:commandButton id="moveToLast" 
+		    styleClass="graphNav"
 			icon="ui-icon-seek-end" 
 			value="Last" 
 			title="Move to End" 
@@ -21,6 +23,7 @@
 			oncomplete="renderData();"
 			actionListener="#{visualizeSharedBacking.panEnd}" />
 		<p:commandButton id="moveBack"
+		    styleClass="graphNav"
 			icon="ui-icon-seek-prev" 
 			value="Back" 
 			title="Move Back" 
@@ -29,6 +32,7 @@
 			oncomplete="renderData();"
 			actionListener="#{visualizeSharedBacking.panLeft}" />
 		<p:commandButton  id="moveNext"
+		    styleClass="graphNav"
 			icon="ui-icon-seek-next"
 			value="Next" 
 			title="Move Forward" 
@@ -36,20 +40,21 @@
 			update=":#{p:component('ecgDataHidden')}" 
 			oncomplete="renderData();"
 			actionListener="#{visualizeSharedBacking.panRight}" />
-			
+		<h:outputText value="" styleClass="navSpacerElement"/>
 		<p:inputText id="newMilliSec" 
+		    styleClass="graphNav"
 			size="10"
 			onkeypress="if (event.keyCode == 13) { $('.myButton').click(); return false; }"
 			value="#{visualizeSharedBacking.newMilliSec}"  />			
 		<p:commandButton  id="jumpTo"
+		    styleClass="graphNav"
 			icon="ui-icon-seek-next" 
-			value="Jump to time (Seconds)" 
-			title="Jump directly to the time entered above." 
-			alt="Jump directly to the time entered above."
+			value="Jump to time (Sec)" 
+			title="Jump directly to the time entered." 
+			alt="Jump directly to the time entered."
 			update=":#{p:component('ecgDataHidden')}" 
 			oncomplete="renderData();"
-			actionListener="#{visualizeSharedBacking.panToMilliSec}" />			
-	</p:panel>
+			actionListener="#{visualizeSharedBacking.panToMilliSec}" />	
 
 	<p:panel id="ecgDataHidden" visible="false">
 		<script>
