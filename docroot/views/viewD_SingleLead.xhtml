@@ -8,9 +8,6 @@
 	<h:head />
 	<h:body>
 		<style>
-			.navigationButton {
-				width: 120px;
-			}
 			div.ui-widget-overlay{
 				background: #EEF0F2!important;
 				opacity: 1!important;
@@ -44,10 +41,10 @@
 			
 			<p:layout id="graphView" style="width:100%;height:550px" >
 				
-				<p:layoutUnit id="annotationLayout" position="west" header="Whole lead Annotations" collapsed="true" collapsible="true" resizable="true" size="300">
+				<p:layoutUnit id="annotationLayout" position="west" header="Whole lead Annotations" collapsed="false" collapsible="true" resizable="true" size="270">
 					<h:form>
-						<p:dataTable id="annotationTable" var="ann" value="#{singleLeadBacking.wholeLeadAnnotations}" stickyHeader="true">  
-					        <p:column sortBy="createdBy" headerText="Created by">  
+						<p:dataTable styleClass="wlAnnotationTable" id="annotationTable" var="ann" value="#{singleLeadBacking.wholeLeadAnnotations}" resizableColumns="true">  
+					        <p:column sortBy="createdBy" headerText="Author">  
 					            <h:outputText value="#{ann.createdBy}" />  
 					        </p:column>  
 					  
@@ -106,19 +103,20 @@
 					</p:panel>
 				</p:layoutUnit>
 
-				<p:layoutUnit id="viewChangeButtons" position="east" resizable="true" size="150" minSize="50" maxSize="550" collapsible="true" header="Nav Menu">
+				<p:layoutUnit id="viewChangeButtons" position="north" resizable="true" collapsible="true">
+<!-- 				<p:panel id="dragPanelPanZoom" styleClass="dragPanelPanZoom clearfix hoverShadow "> -->
 					<h:form>
 						<p:commandButton id="returnToList" value="Back to List"
 							action="#{visualizeSharedBacking.viewSelectionTree}" ajax="true"
-							icon="ui-icon-document" styleClass="navigationButton"
-							title="View ECG file selection tree." />
+							styleClass="navigationButton" title="View ECG file selection tree." />
 
 						<p:commandButton id="showMultiLead" value="Back to Leads"
 							action="#{visualizeSharedBacking.viewMultiLeadGraph}" ajax="true"
-							icon="ui-icon-arrowreturnthick-1-w" styleClass="navigationButton" 
-							title="View all lead graphs for this ECG."/>
+							styleClass="navigationButton" title="View all lead graphs for this ECG."/>
 
 <!-- 						<p:button id="voltCenterButton" value="center" type="button"
+							icon="ui-icon-document"
+							icon="ui-icon-arrowreturnthick-1-w"
 							styleClass="navigationButton" icon="ui-icon-arrowthick-2-n-s"
 							title="Center the graph, while using the standard voltage scale (+/- 2000uV)."
 							onclick="centerVoltage();return false;" />
@@ -128,14 +126,15 @@
 							icon="ui-icon-arrowthick-2-n-s"
 							title="Center the graph, stretching the voltage scale."
 							onclick="centerScaleVoltage();return false;" /> -->
-
+							
+						<h:outputText value="" styleClass="navSpacerElement"/>
 						<p:button id="voltResetButton" value="reset" type="button"
 							icon="ui-icon-circle-plus" styleClass="navigationButton"
 							title="Reset the graph to zero volts at the center, using the standard voltage scale (+/- 2000uV)"
 							onclick="setVoltageZoom(-2000,2000);return false;" />
-							
 						<ui:include src="include/includePanZoom.xhtml" />
-						<h:selectOneMenu id="singleLeadWidth" value="#{visualizeSharedBacking.durationMilliSeconds}" >
+					    <h:outputText value="" styleClass="navSpacerElement"/>
+						<h:selectOneMenu id="singleLeadWidth" value="#{visualizeSharedBacking.durationMilliSeconds}" styleClass="durationNav">
 						   	<f:selectItem itemValue="1200" itemLabel="1.2 Sec" />
 						   	<f:selectItem itemValue="2500" itemLabel="2.5 Sec" />
 						   	<f:selectItem itemValue="5000" itemLabel="5.0 Sec" />
@@ -144,7 +143,7 @@
 							<f:selectItem itemValue="30000" itemLabel="30 Sec"/>
 						</h:selectOneMenu>
 						<p:commandButton id="changeFramesize" 
-							style="font-size: 8pt;"
+						    styleClass="durationNav"
 							value="change" 
 							title="Change display width, in milliseconds." 
 							alt="Change display width, in milliseconds."
@@ -152,6 +151,7 @@
 							oncomplete="renderData();"
 							actionListener="#{visualizeSharedBacking.reloadData}" />						
 					</h:form>
+<!-- 					</p:panel> -->
 				</p:layoutUnit>
 			</p:layout>
 		</h:panelGroup>

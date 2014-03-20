@@ -426,7 +426,7 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
     	return String.valueOf(getSharedStudyEntry().getSamplingRate()) + "Hz";
     }
     public String getDurationSec(){
-    	return (getSharedStudyEntry().getDurationSec() + " seconds");
+    	return (getSharedStudyEntry().getDurationSec() + " Seconds");
     }
 	public int getCurrentVisualizationOffset() {
 		return currentVisualizationOffset;
