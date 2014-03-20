@@ -13,15 +13,6 @@
 			update=":#{p:component('ecgDataHidden')}" 
 			oncomplete="renderData();"
 			actionListener="#{visualizeSharedBacking.panZeroSec}" />
-		<p:commandButton id="moveToLast" 
-		    styleClass="graphNav"
-			icon="ui-icon-seek-end" 
-			value="Last" 
-			title="Move to End" 
-			alt="Move to End"
-			update=":#{p:component('ecgDataHidden')}" 
-			oncomplete="renderData();"
-			actionListener="#{visualizeSharedBacking.panEnd}" />
 		<p:commandButton id="moveBack"
 		    styleClass="graphNav"
 			icon="ui-icon-seek-prev" 
@@ -40,6 +31,15 @@
 			update=":#{p:component('ecgDataHidden')}" 
 			oncomplete="renderData();"
 			actionListener="#{visualizeSharedBacking.panRight}" />
+		<p:commandButton id="moveToLast" 
+		    styleClass="graphNav"
+			icon="ui-icon-seek-end" 
+			value="Last" 
+			title="Move to End" 
+			alt="Move to End"
+			update=":#{p:component('ecgDataHidden')}" 
+			oncomplete="renderData();"
+			actionListener="#{visualizeSharedBacking.panEnd}" />
 		<h:outputText value="" styleClass="navSpacerElement"/>
 		<p:inputText id="newMilliSec" 
 		    styleClass="graphNav"
