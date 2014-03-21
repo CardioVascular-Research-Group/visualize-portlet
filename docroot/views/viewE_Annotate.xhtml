@@ -13,11 +13,37 @@
 				font-weight: bold;
 				font-family: Calibri;
 			}
-			
 			.dataValue {
 				font-size: 12px;
 				font-weight: normal;
 				font-family: arial, sans-serif;
+			}
+			.fineTune_div{
+				border:0;
+				height:375px;
+				overflow-x:hidden;
+				overflow-y:scroll;
+			}
+			.fineTuningGraph{
+				position: relative;
+				background-color:#FBFDFE;
+				width:0%;
+				float: right;
+				height:99%;
+				overflow: auto;
+			}
+			.fineGraphInfo {
+				display:block;
+				position:relative;
+				padding:10px 0 10px;
+				background:none;
+			}
+			.fineGraphLayout {
+				position:relative;
+				background-color:#FBFDFE;
+				height:365px;
+				overflow-x:scroll;
+				overflow-y:hidden;
 			}
 		</style>
 		
@@ -58,47 +84,46 @@
 						</script>
 					</h:panelGroup>
 					<ui:remove> <!-- *****************  Left Panel Row 2, tree reseting buttons ************************* --> </ui:remove>
-					<h:panelGroup id="treeButtons" layout="block" style="align:center">
-						<p:commandButton value="ECG Ontology" title="Show the points and intervals branches of the ECG ontology." oncomplete="widget_tree.changeOntology('ECG');"/>
-						<p:commandButton value="ECG Intervals Ontology" title="Show only the intervals branch of the ECG ontology." oncomplete="widget_tree.changeOntology('ECGT');" />
-					</h:panelGroup>
+					<!-- <h:panelGroup id="treeButtons" layout="block" style="align:center">
+						<p:commandButton value="ECG Ontology" title= "Show the points and intervals branches of the ECG ontology." oncomplete="widget_tree.changeOntology('ECG');"/>
+						<p:commandButton value="ECG Intervals Ontology "title="Show only the intervals branch of the ECG ontology." oncomplete="widget_tree.changeOntology('ECGT');" />
+					</h:panelGroup> -->
 				</p:layoutUnit>
 				
 				<p:layoutUnit id="annotation" position="center" header="Annotation">
 					<ui:remove> <!-- *****************  Right Panel, Graph onclick data: ECG attributes & Selected points & Term Selection/manual comments ************************* --> </ui:remove>
-					<ui:remove> <!-- *****************  Alternate Right Panel, Fine tune Graph   graphContainer- height:350px;************************* --> </ui:remove>
-	
-					<p:panel id="panelRightAlternate" styleClass="fineTuningGraph" widgetVar="fineTuningGraph" visible="false" header="Fine tunig Graph" style="position: relative;width:0%; float: right; height:99%; overflow: auto;">				
-						<h:panelGroup  layout="block" style="top:0; padding:0;">
-							<h:panelGrid id="graphContainer" columns="1" border="0" style="background-color:#d0f6d0; top:0; padding:0 0;" rendered="#{visualizeSharedBacking.showFineGraph}">
-								<h:panelGroup id="fineTune_div" layout="block" class="graph" style="border:2; ">
-									GRAPH WILL GO HERE
-									<h:graphicImage value="/image/graph-loader.gif" title="graph loading indicator" alt="graph loading indicator" />
-								</h:panelGroup>
-			
-								<h:panelGroup id="status_div" layout="block" style="height:20px;">
-									Mouse over graph to see data details.
-								</h:panelGroup>
-			
-								<h:panelGroup id="editButton_div" layout="block" style="align:right">
-										<p:commandButton value="Update" 
-											title="Save the newly selected point." 
-											rendered="#{not visualizeSharedBacking.previousAnnotation}"
-											actionListener="#{annotationBacking.showNewAnnotationDetails}"
-											oncomplete="updateFineTuning();hideManualGraphPanel();"/>
-										<p:commandButton value="Discard"
-											title="Discard the newly selected point and restore the previous point."
-											rendered="#{not visualizeSharedBacking.previousAnnotation}"
-											actionListener="#{annotationBacking.showNewAnnotationDetails}"
-											oncomplete="discardFineTuning();hideManualGraphPanel();" />
-										<p:commandButton value="Close Graph"
-											title="Close the graph and show the numbers chart."
-											actionListener="#{annotationBacking.showNewAnnotationDetails}"
-											oncomplete="fineTuningPoint=-1;hideManualGraphPanel();" />
-								</h:panelGroup>
-							</h:panelGrid>				
+					<ui:remove> <!-- *****************  Alternate Right Panel, Fine tune Graph   graphContainer - height:350px;************************* --> </ui:remove>
+					
+					<p:panel id="panelRightAlternate" styleClass="fineTuningGraph" widgetVar="fineTuningGraph" visible="false" header="Fine Tuning Graph">				
+						<h:panelGroup styleClass="fineGraphLayout" layout="block"  columns="1" border="0" >
+							<h:panelGroup id="fineTune_div" layout="block" class="graph" rendered="#{visualizeSharedBacking.showFineGraph}">
+								GRAPH WILL GO HERE
+								<h:graphicImage value="/image/graph-loader.gif" title="graph loading indicator" alt="graph loading indicator" />
+							</h:panelGroup>
 						</h:panelGroup>
+						<h:panelGroup styleClass="fineGraphInfo" layout="block" columns="1" border="0" >
+							<h:panelGroup id="status_div" layout="block" style="height:20px;">
+								Mouse over graph to see data details.
+							</h:panelGroup>
+							<h:panelGroup>
+								<p:commandButton value="Update" 
+									title="Save the newly selected point." 
+									rendered="#{not visualizeSharedBacking.previousAnnotation}"
+									actionListener="#{annotationBacking.showNewAnnotationDetails}"
+									oncomplete="updateFineTuning();hideManualGraphPanel();"/>
+								<p:commandButton value="Discard"
+									title="Discard the newly selected point and restore the previous point."
+									rendered="#{not visualizeSharedBacking.previousAnnotation}"
+									actionListener="#{annotationBacking.showNewAnnotationDetails}"
+									oncomplete="discardFineTuning();hideManualGraphPanel();" />
+								<p:commandButton value="Close Graph"
+									title="Close the graph and show the numbers chart."
+									actionListener="#{annotationBacking.showNewAnnotationDetails}"
+									oncomplete="fineTuningPoint=-1;hideManualGraphPanel();" />
+							</h:panelGroup>	
+						</h:panelGroup>	
 					</p:panel>
+					
 					<p:panel id="panelRight" styleClass="annotationData" style="background-color:#d0e4f6; top:2px; padding:0px; height:99%; width:99.9%; position: absolute; overflow: auto;" >
 						<ui:remove> <!-- *****************  Right Panel, Upper section: ECG attributes ************************* --> </ui:remove>
 						<h:panelGrid id="GraphClickData" columns="2" frame="none" border="0" cellpadding="0" cellspacing="0" styleClass="title" style="vertical-align:text-top;width:100%;">
