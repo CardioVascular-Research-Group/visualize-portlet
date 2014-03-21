@@ -48,13 +48,7 @@
 						<p:button id="voltCenterButtonMultiMode" value="center mode" type="button"
 							icon="ui-icon-arrowthick-2-n-s" styleClass="navigationButton"
 							title="Center each graph on it's mode, while using the standard voltage scale (+/- 2000uV)."
-							onclick="centerVoltageMultiMode();return false;"></p:button>
-
-						<p:button id="voltCenterNScaleButtonMulti"
-							value="center and scale" type="button"
-							icon="ui-icon-arrowthick-2-n-s" styleClass="navigationButton"
-							title="Center each graph on it's median, stretching the voltage scale of each independently."
-							onclick="centerScaleVoltageMulti();return false;"></p:button> -->
+							onclick="centerVoltageMultiMode();return false;"></p:button> -->
 						
 					    <h:outputText value="" styleClass="navSpacerElement"/>
 						<p:button id="voltResetButtonMulti" value="reset" type="button"
@@ -67,6 +61,12 @@
 							styleClass="navigationButton"
 							title="Stretch the graphs to fill the content area."
 							onclick="stretchToContentMulti();return false;"></p:button>
+
+						<p:button id="voltCenterNScaleButtonMulti"
+							value="center and scale" type="button"
+							icon="ui-icon-arrowthick-2-n-s" styleClass="navigationButton"
+							title="Center each graph on it's median, stretching the voltage scale of each independently."
+							onclick="centerScaleVoltageMulti();return false;"></p:button> 
 
 						<ui:include src="include/includePanZoom.xhtml" />								
 					</h:form>
