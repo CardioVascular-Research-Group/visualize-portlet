@@ -121,7 +121,6 @@
    clear: both;
 }
 
-
 .dragPanelPhenotype{
     top: 20px;
     width: 200px; 
@@ -142,19 +141,26 @@
 }
 */
 .dragPanelPanZoom {
-  width: 93%; }
+  display: inline-block;
+  padding: 0px 3px;
+  margin: 0px 5px; }
 
-.dragPanelPanZoom > .ui-panel-content {
-  padding: 0.5em 0.1em !important; }
+.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only.durationNav,
+.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-icon-left.graphNav,
+.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-icon-left.navigationButton,
+.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only.navigationButton {
+  font-size: 11px;
+  padding: 0px;
+  margin: 1px; }
 
-/*
-.instruction12Lead{
-	position:absolute;   
-	top: 5px;
-	left:250px; 
-	z-index:1004;
-}
- */
+.navSpacerElement {
+  background: none;
+  display: inline-block;
+  width: 2px;
+  height: 5px;
+  padding: 2px;
+  margin: 3px; }
+
 .instruction12Lead td, .Container_1LeadOutside td {
   font-size: 11px;
   padding: 5px; }
@@ -173,9 +179,6 @@
 .hoverShadow:hover {
   border-radius: 5px;
   box-shadow: 0 5px 10px rgba(80, 0, 0, 0.3); }
-
-.navigationButton {
-  width: 120px; }
 
 .ui-tree {
   border: 0!important; }
@@ -241,4 +244,12 @@ div.wfdrop-highlight {
 a.dataTableCentered {
   margin: 0 auto;
   text-align: center; }
+
+.annotationLayout {
+  background-color: black; }
+
+div.wlAnnotationTable thead tr th:nth-child(2) {
+  width: 20px !important;
+  padding-left: 5px;
+  padding-right: 11px; }
 
