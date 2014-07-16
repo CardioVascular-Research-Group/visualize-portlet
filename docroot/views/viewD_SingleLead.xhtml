@@ -11,7 +11,11 @@
 			div.ui-widget-overlay{
 				background: #EEF0F2!important;
 				opacity: 1!important;
-				z-index: 3!important;
+				z-index: 11!important;
+			}
+			
+			div.ui-blockui-content{
+				z-index: 12!important;
 			}
 		</style>
 
@@ -148,7 +152,8 @@
 							title="Change display width, in milliseconds." 
 							alt="Change display width, in milliseconds."
 							update=":#{p:component('ecgDataHidden')}" 
-							oncomplete="renderData();"
+							onstart="PF('blockSinglePainel').show();"
+							oncomplete="renderData();PF('blockSinglePainel').hide();"
 							actionListener="#{visualizeSharedBacking.reloadData}" />						
 					</h:form>
 <!-- 					</p:panel> -->

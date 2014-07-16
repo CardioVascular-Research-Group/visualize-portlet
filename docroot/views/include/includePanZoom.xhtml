@@ -11,7 +11,8 @@
 			title="Move to Beginning" 
 			alt="Move to Beginning"
 			update=":#{p:component('ecgDataHidden')}" 
-			oncomplete="renderData();"
+			onstart="PF('blockSinglePainel').show();"
+			oncomplete="renderData();PF('blockSinglePainel').hide();"
 			actionListener="#{visualizeSharedBacking.panZeroSec}" />
 		<p:commandButton id="moveBack"
 		    styleClass="graphNav"
@@ -19,17 +20,19 @@
 			value="Back" 
 			title="Move Back" 
 			alt="Move Back"
-			update=":#{p:component('ecgDataHidden')}" 
-			oncomplete="renderData();"
+			update=":#{p:component('ecgDataHidden')}"
+			onstart="PF('blockSinglePainel').show();" 
+			oncomplete="renderData();PF('blockSinglePainel').hide();"
 			actionListener="#{visualizeSharedBacking.panLeft}" />
-		<p:commandButton  id="moveNext"
+		<p:commandButton id="moveNext"
 		    styleClass="graphNav"
 			icon="ui-icon-seek-next"
 			value="Next" 
 			title="Move Forward" 
 			alt="Move Forward"
 			update=":#{p:component('ecgDataHidden')}" 
-			oncomplete="renderData();"
+			onstart="PF('blockSinglePainel').show();"
+			oncomplete="renderData();PF('blockSinglePainel').hide();"
 			actionListener="#{visualizeSharedBacking.panRight}" />
 		<p:commandButton id="moveToLast" 
 		    styleClass="graphNav"
@@ -37,8 +40,9 @@
 			value="Last" 
 			title="Move to End" 
 			alt="Move to End"
-			update=":#{p:component('ecgDataHidden')}" 
-			oncomplete="renderData();"
+			update=":#{p:component('ecgDataHidden')}"
+			onstart="PF('blockSinglePainel').show();"
+			oncomplete="renderData();PF('blockSinglePainel').hide();"
 			actionListener="#{visualizeSharedBacking.panEnd}" />
 		<h:outputText value="" styleClass="navSpacerElement"/>
 		<p:inputText id="newMilliSec" 
@@ -52,8 +56,9 @@
 			value="Jump to time (Sec)" 
 			title="Jump directly to the time entered." 
 			alt="Jump directly to the time entered."
-			update=":#{p:component('ecgDataHidden')}" 
-			oncomplete="renderData();"
+			update=":#{p:component('ecgDataHidden')}"
+			onstart="PF('blockSinglePainel').show();" 
+			oncomplete="renderData();PF('blockSinglePainel').hide();"
 			actionListener="#{visualizeSharedBacking.panToMilliSec}" />	
 
 	<p:panel id="ecgDataHidden" visible="false">
