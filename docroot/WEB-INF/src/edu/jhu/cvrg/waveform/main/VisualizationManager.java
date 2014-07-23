@@ -11,6 +11,7 @@ import com.liferay.portal.kernel.repository.model.FileEntry;
 
 import edu.jhu.cvrg.waveform.model.VisualizationData;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
+import edu.jhu.cvrg.waveform.utility.ServerUtility;
 import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
 
 /** Contains functions which support the graphing of ECGs.
@@ -128,7 +129,7 @@ public class VisualizationManager {
 						if(leadNum==0){
 							saChannelName[0]="millisecond";
 						}else{
-							saChannelName[leadNum] = WebServiceUtility.guessLeadName(leadNum-1, siLeadCount);
+							saChannelName[leadNum] = ServerUtility.guessLeadName(leadNum-1, siLeadCount);
 						}
 					}
 
