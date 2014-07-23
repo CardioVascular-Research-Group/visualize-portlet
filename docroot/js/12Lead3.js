@@ -312,7 +312,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 				rollPeriod: 0,
 				showRoller: false,
 				errorBars: false,
-				stepPlot: true,
+				stepPlot: false,
 				padding: {left: 0, right: 0, top: 0, bottom: 0},
 				axisLabelFontSize: 0,
 				gridLineColor: '#FF0000'

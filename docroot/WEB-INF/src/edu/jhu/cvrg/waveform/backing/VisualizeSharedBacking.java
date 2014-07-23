@@ -73,6 +73,12 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
      * */
 	public void reloadData() {
 		this.getLog().info("--Entering function reloadData()");
+		
+		int maxAllowableOffset = getSharedStudyEntry().getMsecDuration() - durationMilliSeconds + 1; // one graph width before the end of the data.
+		if(currentVisualizationOffset > maxAllowableOffset){
+			currentVisualizationOffset = maxAllowableOffset; 
+		}
+		
 		fetchDisplayData();
 		this.getLog().info("--Exiting function reloadData()");
 	}
