@@ -87,6 +87,10 @@ public class VisualizeBacking extends BackingBean implements Serializable {
     	String nextView= null;
     	this.getLog().info("+++ VisualizeBacking.java, graphSelectedECG() +++ ");
     	
+    	if(tableList != null && tableList.size() == 1){
+    		this.setSelectedStudyObject(tableList.get(0));
+		}
+    	
     	if(selectedStudyObject != null){
     		this.getLog().info("+ selected record:" + selectedStudyObject.getDocumentRecord().getRecordName() + " lead count:" + selectedStudyObject.getDocumentRecord().getLeadCount());
 	   		nextView = "viewB_DisplayMultiLeads";
@@ -127,7 +131,7 @@ public class VisualizeBacking extends BackingBean implements Serializable {
         	
         	DocumentDragVO vo = null;
         	
-        	if("leaf".equals(type)){
+        	if("leaf".equals(type) || "document".equals(type)){
         		FileTreeNode node = fileTree.getNodeByReference(property);
             	if(node != null){
             		vo = new DocumentDragVO(node, con.getDocumentRecordById(node.getDocumentRecordId()));
@@ -135,7 +139,7 @@ public class VisualizeBacking extends BackingBean implements Serializable {
             			tableList.add(vo);	
             		}
             	}	
-        	}else if("parent".equals(type)){
+        	}else if("parent".equals(type) || "default".equals(type)){
         		List<FileTreeNode> nodes = fileTree.getNodesByReference(property);
             	if(nodes!=null){
             		for (FileTreeNode node : nodes) {

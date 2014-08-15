@@ -805,6 +805,16 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	           scope: 'treetotable',
 	           zIndex: ++PrimeFaces.zindex
 	        });
+    		
+    		$(this).children().first().dblclick(function(){
+    			var label = $(this).find('.ui-treenode-label');
+    			var treeId = label.closest('li').attr('data-rowkey');
+    			var type = label.closest('li').attr('data-nodetype');
+    			
+                treeToTable([
+                     {name: 'property', value:  treeId}, {name: 'type', value: type}
+                ]);
+    		});
     	});
 	
 		var parents = $('.ui-treenode-parent');
@@ -835,6 +845,16 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		           scope: 'treetotable',
 		           zIndex: ++PrimeFaces.zindex
 		        });
+		    
+		    $(this).children().first().dblclick(function(){
+    			var label = $(this).find('.ui-treenode-label');
+    			var treeId = label.closest('li').attr('data-rowkey');
+    			var type = label.closest('li').attr('data-nodetype');
+    			
+                treeToTable([
+                     {name: 'property', value:  treeId}, {name: 'type', value: type}
+                ]);
+    		});
 		});
 	
 		$('div.ui-layout-center div.ui-layout-unit-content').droppable({

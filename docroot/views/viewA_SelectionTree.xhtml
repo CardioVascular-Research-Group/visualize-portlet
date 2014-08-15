@@ -12,7 +12,7 @@
 			<h:form id="formVisualize">
 				<h:panelGroup rendered="#{visualizeBacking.user != null}">
 				
-					<p:remoteCommand name="treeToTable" actionListener="#{visualizeBacking.treeToTable}" update="availableStudy" oncomplete="initDragDrop()"/>
+					<p:remoteCommand name="treeToTable" actionListener="#{visualizeBacking.treeToTable}" update="availableStudy"/>
 				
 					<p:layout id="layoutVisualizeInclude" style="width:100%; height:550px">
 						<p:layoutUnit styleClass="westpanel" position="west" header="Drag and drop folders or files to select" 
