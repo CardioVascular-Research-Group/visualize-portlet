@@ -118,10 +118,14 @@
 							action="#{visualizeSharedBacking.viewMultiLeadGraph}" ajax="true"
 							styleClass="navigationButton" title="View all lead graphs for this ECG."/>
 
-<!-- 						<p:button id="voltCenterButton" value="center" type="button"
+							<!--  
 							icon="ui-icon-document"
+							icon="ui-icon-arrowthick-2-n-s"
 							icon="ui-icon-arrowreturnthick-1-w"
-							styleClass="navigationButton" icon="ui-icon-arrowthick-2-n-s"
+							-->
+ 						<p:button id="voltCenterButton" value="center" type="button"
+							icon="ui-icon-document"
+							styleClass="navigationButton" 
 							title="Center the graph, while using the standard voltage scale (+/- 2000uV)."
 							onclick="centerVoltage();return false;" />
 
@@ -129,13 +133,14 @@
 							type="button" styleClass="navigationButton"
 							icon="ui-icon-arrowthick-2-n-s"
 							title="Center the graph, stretching the voltage scale."
-							onclick="centerScaleVoltage();return false;" /> -->
+							onclick="centerScaleVoltage();return false;" /> 
 							
 						<h:outputText value="" styleClass="navSpacerElement"/>
 						<p:button id="voltResetButton" value="reset" type="button"
 							icon="ui-icon-circle-plus" styleClass="navigationButton"
 							title="Reset the graph to zero volts at the center, using the standard voltage scale (+/- 2000uV)"
 							onclick="setVoltageZoom(-2000,2000);return false;" />
+						<BR></BR>
 						<ui:include src="include/includePanZoom.xhtml" />
 					    <h:outputText value="" styleClass="navSpacerElement"/>
 						<h:selectOneMenu id="singleLeadWidth" value="#{visualizeSharedBacking.durationMilliSeconds}" styleClass="durationNav">
@@ -149,8 +154,8 @@
 						<p:commandButton id="changeFramesize" 
 						    styleClass="durationNav"
 							value="change" 
-							title="Change display width, in milliseconds." 
-							alt="Change display width, in milliseconds."
+							title="Change display width, in Seconds." 
+							alt="Change display width, in Seconds."
 							update=":#{p:component('ecgDataHidden')}" 
 							onstart="PF('blockSinglePainel').show();"
 							oncomplete="renderData();PF('blockSinglePainel').hide();"
