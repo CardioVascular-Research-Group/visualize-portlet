@@ -6,8 +6,9 @@ revision 0.1 : 9/7/2012 - initial version Michael Shipway
 
 var ylinesLeft = [];
 var ylinesRight = [];
-var yPadding = 32;
-var xPadding = 28;
+var yPadding = 40; //32;
+var xPadding = 39; //28;
+var lineThickness = "2px";
 var xlineTop, xlineBottom;
 
 
@@ -18,7 +19,7 @@ var CVRG_InitHorizontalLines = function(iLeadCount, divID, namespace){
 		var lineL = document.createElement("div");
 		lineL.style.display = "none";
 		lineL.style.width = "20px";
-		lineL.style.height = "1px";
+		lineL.style.height = lineThickness;
 		lineL.style.left = (yPadding + 25) + "px";
 		lineL.style.backgroundColor = "black";// red
 		lineL.style.position = "absolute";
@@ -29,7 +30,7 @@ var CVRG_InitHorizontalLines = function(iLeadCount, divID, namespace){
 		var lineR = document.createElement("div");
 		lineR.style.display = "none";
 		lineR.style.width = "20px";
-		lineR.style.height = "1px";
+		lineR.style.height = lineThickness;
 		lineR.style.right = "0px";
 		lineR.style.backgroundColor = "black";//magenta
 		lineR.style.position = "absolute";
@@ -43,7 +44,7 @@ var CVRG_InitVerticalLines = function(divID, namespace){
 	var divFullID = namespace + ":" + divID;
 	xlineTop = document.createElement("div");
 	xlineTop.style.display = "none";
-	xlineTop.style.width = "1px";
+	xlineTop.style.width = lineThickness;
 	xlineTop.style.height = "50%";
 	xlineTop.style.top = yPadding + "px";
 	xlineTop.style.backgroundColor = "black"; // blue
@@ -52,7 +53,7 @@ var CVRG_InitVerticalLines = function(divID, namespace){
 
 	xlineBottom = document.createElement("div");
 	xlineBottom.style.display = "none";
-	xlineBottom.style.width = "1px";
+	xlineBottom.style.width = lineThickness;
 	xlineBottom.style.height = "10px";
 	xlineBottom.style.backgroundColor = "black"; // green
 	xlineBottom.style.position = "absolute";
@@ -82,7 +83,7 @@ var WAVEFORM3_highlightCrosshairs = function(e, pts, bJustFirst) {
 		//red
 		ylinesLeft[i].style.display = "";
 		ylinesLeft[i].style.top = y + "px";
-		ylinesLeft[i].style.width = (x-lineGap-60) + "px";
+		ylinesLeft[i].style.width = (x-lineGap-70) + "px";
 		
 
 		//magenta
@@ -90,7 +91,7 @@ var WAVEFORM3_highlightCrosshairs = function(e, pts, bJustFirst) {
 		ylinesRight[i].style.top = y + "px";
 		ylinesRight[i].style.left = (x+lineGap+10) + "px";
 		
-		ylinesRight[i].style.width = (canvasWidth-x) + "px";
+		ylinesRight[i].style.width = (canvasWidth-x+10) + "px";
 
 		if (i == 0){
 			xlineTop.style.left = x + "px";
