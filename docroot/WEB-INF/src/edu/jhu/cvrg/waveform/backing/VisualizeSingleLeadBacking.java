@@ -242,7 +242,7 @@ public class VisualizeSingleLeadBacking extends BackingBean implements Serializa
 	}
 	
 	public String getLeadDescription() {
-		String leadDescription = "Subject: " + visualizeSharedBacking.getSharedStudyEntry().getRecordName() + " / Lead: " + getLeadName() + " / Sampling-rate: " + this.getStudyEntry().getSamplingRate()
+		String leadDescription = "Subject: " + visualizeSharedBacking.getSharedStudyEntry().getSubjectId() + " / Lead: " + getLeadName() + " / Sampling-rate: " + this.getStudyEntry().getSamplingRate()
 				+ "Hz / ECG duration: " + this.getStudyEntry().getDurationSec() + " Seconds / " + annotationCount + " annotations." ;
 		return leadDescription;
 	}
