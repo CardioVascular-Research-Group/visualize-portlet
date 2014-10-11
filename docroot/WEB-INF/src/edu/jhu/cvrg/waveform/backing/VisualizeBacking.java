@@ -38,8 +38,9 @@ import org.primefaces.model.TreeNode;
 
 import com.liferay.portal.model.User;
 
-import edu.jhu.cvrg.dbapi.factory.Connection;
-import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
+import edu.jhu.cvrg.data.factory.Connection;
+import edu.jhu.cvrg.data.factory.ConnectionFactory;
+import edu.jhu.cvrg.data.util.DataStorageException;
 import edu.jhu.cvrg.waveform.model.DocumentDragVO;
 import edu.jhu.cvrg.waveform.model.FileTreeNode;
 import edu.jhu.cvrg.waveform.model.LocalFileTree;
@@ -123,34 +124,38 @@ public class VisualizeBacking extends BackingBean implements Serializable {
         String type = params.get("type");
         
         if(property!=null && !property.isEmpty()){
-        	Connection con = ConnectionFactory.createConnection();
-        	
-        	if(tableList == null){
-        		tableList = new ArrayList<DocumentDragVO>();
-        	}
-        	
-        	DocumentDragVO vo = null;
-        	
-        	if("leaf".equals(type) || "document".equals(type)){
-        		FileTreeNode node = fileTree.getNodeByReference(property);
-            	if(node != null){
-            		vo = new DocumentDragVO(node, con.getDocumentRecordById(node.getDocumentRecordId()));
-            		if(!tableList.contains(vo)){
-            			tableList.add(vo);	
-            		}
-            	}	
-        	}else if("parent".equals(type) || "default".equals(type)){
-        		List<FileTreeNode> nodes = fileTree.getNodesByReference(property);
-            	if(nodes!=null){
-            		for (FileTreeNode node : nodes) {
-            			
-            			vo = new DocumentDragVO(node, con.getDocumentRecordById(node.getDocumentRecordId()));
-            			if(!tableList.contains(vo)){
-                    		tableList.add(vo);	
-                    	}			
+        	try {
+				Connection con = ConnectionFactory.createConnection();
+				
+				if(tableList == null){
+					tableList = new ArrayList<DocumentDragVO>();
+				}
+				
+				DocumentDragVO vo = null;
+				
+				if("leaf".equals(type) || "document".equals(type)){
+					FileTreeNode node = fileTree.getNodeByReference(property);
+					if(node != null){
+						vo = new DocumentDragVO(node, con.getDocumentRecordById(node.getDocumentRecordId()));
+						if(!tableList.contains(vo)){
+							tableList.add(vo);	
+						}
+					}	
+				}else if("parent".equals(type) || "default".equals(type)){
+					List<FileTreeNode> nodes = fileTree.getNodesByReference(property);
+					if(nodes!=null){
+						for (FileTreeNode node : nodes) {
+							
+							vo = new DocumentDragVO(node, con.getDocumentRecordById(node.getDocumentRecordId()));
+							if(!tableList.contains(vo)){
+				        		tableList.add(vo);	
+				        	}			
+						}
 					}
-            	}
-            }
+				}
+			} catch (DataStorageException e) {
+				this.getLog().error("Error on node2dto conversion. " + e.getMessage());
+			}
         }else{
         	System.err.println("DRAGDROP = ERROR");
         }

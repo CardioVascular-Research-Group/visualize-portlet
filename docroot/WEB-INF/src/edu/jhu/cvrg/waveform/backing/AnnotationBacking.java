@@ -41,9 +41,10 @@ import javax.faces.event.ActionEvent;
 
 import org.primefaces.context.RequestContext;
 
-import edu.jhu.cvrg.dbapi.dto.AnnotationDTO;
-import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
-import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
+import edu.jhu.cvrg.data.dto.AnnotationDTO;
+import edu.jhu.cvrg.data.dto.DocumentRecordDTO;
+import edu.jhu.cvrg.data.factory.ConnectionFactory;
+import edu.jhu.cvrg.data.util.DataStorageException;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
 
@@ -245,10 +246,9 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 //				 * Note:  If this is an interval, then an offset label, y-coordinate, and t-coordinate are required for that as well.
 		
 					
-		AnnotationDTO ann = new AnnotationDTO(ResourceUtility.getCurrentUserId(), ResourceUtility.getCurrentGroupId(), ResourceUtility.getCurrentCompanyId(),
+		AnnotationDTO ann = new AnnotationDTO(ResourceUtility.getCurrentUserId(),
 				 							   visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), "manual", "ANNOTATION", this.getAnnotation().getName(), this.getAnnotation().getBioportalOntology(), this.getAnnotation().getBioportalClassId(), null,
-				 							   getLeadnum(), "", this.getAnnotation().getDescription(), this.getAnnotation().getValue(), Calendar.getInstance(),null, null, null, null, 
-				 							   null, visualizeSharedBacking.getSharedStudyEntry().getRecordName(), visualizeSharedBacking.getSharedStudyEntry().getSubjectId());
+				 							   getLeadnum(), "", this.getAnnotation().getDescription(), this.getAnnotation().getValue(), Calendar.getInstance(),null, null, null, null);
 		 
 		 if(this.getAnnotation().isSinglePoint()){
 			 ann.setStartXcoord(this.getAnnotation().getStartXcoord());
@@ -263,7 +263,13 @@ public class AnnotationBacking extends BackingBean implements Serializable {
 		 }
 		 
 		 
-		 Long annotationId = ConnectionFactory.createConnection().storeAnnotation(ann);
+		 Long annotationId = null;
+		 
+		 try {
+			annotationId = ConnectionFactory.createConnection().storeAnnotation(ann);
+		} catch (DataStorageException e) {
+			this.getLog().error("Error on save annotation. "+e.getMessage());
+		}
 		 
 		 if(annotationId == null) {
 			 //add facesmessage

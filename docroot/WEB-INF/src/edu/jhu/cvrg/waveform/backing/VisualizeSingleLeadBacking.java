@@ -32,9 +32,10 @@ import org.primefaces.context.RequestContext;
 
 import com.liferay.portal.model.User;
 
-import edu.jhu.cvrg.dbapi.dto.AnnotationDTO;
-import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
-import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
+import edu.jhu.cvrg.data.dto.AnnotationDTO;
+import edu.jhu.cvrg.data.dto.DocumentRecordDTO;
+import edu.jhu.cvrg.data.factory.ConnectionFactory;
+import edu.jhu.cvrg.data.util.DataStorageException;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 
 /**
@@ -90,7 +91,14 @@ public class VisualizeSingleLeadBacking extends BackingBean implements Serializa
 		if(sErrorMess.length() > 0){
 			this.getLog().error("AnnotationBacking.java, showAnnotations() failed: " + sErrorMess);
 		}else{
-			List<AnnotationDTO> retrievedAnnotationList = ConnectionFactory.createConnection().getLeadAnnotationNode(userLifeRayModel.getUserId(), visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), leadIndex);
+			
+			List<AnnotationDTO> retrievedAnnotationList = null;
+			
+			try {
+				retrievedAnnotationList = ConnectionFactory.createConnection().getLeadAnnotationNode(userLifeRayModel.getUserId(), visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), leadIndex);
+			} catch (DataStorageException e) {
+				this.getLog().error("Error on load the lead's annotations. "+e.getMessage());
+			}
 
 			if(retrievedAnnotationList != null){
 				annotationCount = retrievedAnnotationList.size();

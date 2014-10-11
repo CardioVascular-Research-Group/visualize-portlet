@@ -31,9 +31,10 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 
-import edu.jhu.cvrg.dbapi.dto.AnnotationDTO;
-import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
-import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
+import edu.jhu.cvrg.data.dto.AnnotationDTO;
+import edu.jhu.cvrg.data.dto.DocumentRecordDTO;
+import edu.jhu.cvrg.data.factory.ConnectionFactory;
+import edu.jhu.cvrg.data.util.DataStorageException;
 import edu.jhu.cvrg.waveform.model.MultiLeadLayout;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 
@@ -158,8 +159,10 @@ public class VisualizeGraphBacking extends BackingBean implements Serializable {
 
 	private ArrayList<MultiLeadLayout> getMultiLeadLayout(int leadCount){
 		
-		if(leadCount > 0 && leadCount < 4){
+		if(leadCount < 4){
 			setMultiLeadColumnCount(leadCount+1);
+		}else if(leadCount < 10){
+			setMultiLeadColumnCount(4);
 		}else{
 			setMultiLeadColumnCount(5);
 		}
@@ -209,7 +212,14 @@ public class VisualizeGraphBacking extends BackingBean implements Serializable {
 	
 	private void populateWholeECGAnnotations(){
 		
-		List<AnnotationDTO> retrievedAnnotationList = ConnectionFactory.createConnection().getLeadAnnotationNode(ResourceUtility.getCurrentUserId(), visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), null);
+		List<AnnotationDTO> retrievedAnnotationList = null;
+		
+		try {
+			retrievedAnnotationList = ConnectionFactory.createConnection().getLeadAnnotationNode(ResourceUtility.getCurrentUserId(), visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), null);
+		} catch (DataStorageException e) {
+			this.getLog().error("Error on populate the whole lead annotations. " + e.getMessage());
+		}
+		
 		visualizeSharedBacking.setWholeEcgAnnotations(retrievedAnnotationList);
 		
 	}

@@ -19,10 +19,11 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
 
-import edu.jhu.cvrg.dbapi.dto.AnnotationDTO;
-import edu.jhu.cvrg.dbapi.dto.DocumentRecordDTO;
-import edu.jhu.cvrg.dbapi.dto.FileInfoDTO;
-import edu.jhu.cvrg.dbapi.factory.ConnectionFactory;
+import edu.jhu.cvrg.data.dto.AnnotationDTO;
+import edu.jhu.cvrg.data.dto.DocumentRecordDTO;
+import edu.jhu.cvrg.data.dto.FileInfoDTO;
+import edu.jhu.cvrg.data.factory.ConnectionFactory;
+import edu.jhu.cvrg.data.util.DataStorageException;
 import edu.jhu.cvrg.waveform.main.VisualizationManager;
 import edu.jhu.cvrg.waveform.model.VisualizationData;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
@@ -239,7 +240,13 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 		
 		Map<String, FileEntry> ret = null;
 		
-		List<FileInfoDTO> fileInfoList = ConnectionFactory.createConnection().getFileListByDocumentRecordId(documentRecordId);
+		List<FileInfoDTO> fileInfoList = null; 
+				
+		try {
+			fileInfoList = ConnectionFactory.createConnection().getFileListByDocumentRecordId(documentRecordId);
+		} catch (DataStorageException e1) {
+			this.getLog().error("Error on retrive the file entries. " + e1.getMessage());
+		}
 		
 		if(fileInfoList!=null){
 			ret = new HashMap<String, FileEntry>();
@@ -324,7 +331,13 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 		
 		String passedAnnotationID = (String) map.get("annotationID");
 		
-		sessionAnn = ConnectionFactory.createConnection().getAnnotationById(ResourceUtility.getCurrentUserId(), Long.valueOf(passedAnnotationID));
+		try {
+			sessionAnn = ConnectionFactory.createConnection().getAnnotationById(ResourceUtility.getCurrentUserId(), Long.valueOf(passedAnnotationID));
+		} catch (NumberFormatException e) {
+			this.getLog().error("Error, Annotation ID is invalid or is not a number. " + e.getMessage());
+		} catch (DataStorageException e) {
+			this.getLog().error("Error on load current Annotaion. " + e.getMessage());
+		}
 		
 		setShowFineGraph(false);
 		setPreviousAnnotation(true);// this is an existing annotation, do not allow editing.
