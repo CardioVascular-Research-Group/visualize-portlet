@@ -243,7 +243,7 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 		List<FileInfoDTO> fileInfoList = null; 
 				
 		try {
-			fileInfoList = ConnectionFactory.createConnection().getFileListByDocumentRecordId(documentRecordId);
+			fileInfoList = ConnectionFactory.createConnection().getECGFilesByDocumentRecordId(documentRecordId);
 		} catch (DataStorageException e1) {
 			this.getLog().error("Error on retrive the file entries. " + e1.getMessage());
 		}
