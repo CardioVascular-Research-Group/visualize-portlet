@@ -70,7 +70,7 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 			visualizeSharedBacking.reset();
 			if(fileTree == null){
 				this.getLog().info("*** creating new FileTree for user:" + userModel.getScreenName());
-				fileTree = new LocalFileTree(userModel.getUserId(), "hea");
+				fileTree = new LocalFileTree(userModel.getUserId());
 				this.getLog().info("*** fileTree == null :" + (fileTree == null));
 			}else{
 				this.getLog().info("*** fileTree already exists *** ");

@@ -7,8 +7,7 @@ import java.util.Set;
 import org.apache.axiom.om.OMElement;
 import org.apache.log4j.Logger;
 
-import com.liferay.portal.kernel.repository.model.FileEntry;
-
+import edu.jhu.cvrg.filestore.model.FSFile;
 import edu.jhu.cvrg.waveform.model.VisualizationData;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
 import edu.jhu.cvrg.waveform.utility.ServerUtility;
@@ -48,7 +47,7 @@ public class VisualizationManager {
 	 * 
 	 * @see org.cvrgrid.ecgrid.client.BrokerService#fetchSubjectVisualization(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, long, int, int)
 	 */
-	public static VisualizationData fetchSubjectVisualizationData(Long userID, String subjectID, Map<String, FileEntry> fileMap, int offsetMilliSeconds, int durationMilliSeconds, 
+	public static VisualizationData fetchSubjectVisualizationData(Long userID, String subjectID, Map<String, FSFile> fileMap, int offsetMilliSeconds, int durationMilliSeconds, 
 														   int graphWidthPixels, boolean bTestPattern, double samplingRate, int leadCount, int samplesPerChannel) {
 		
 		Set<String> fileNames = fileMap.keySet();

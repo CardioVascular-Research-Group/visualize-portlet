@@ -14,16 +14,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.exception.SystemException;
-import com.liferay.portal.kernel.repository.model.FileEntry;
-import com.liferay.portlet.documentlibrary.service.DLAppLocalServiceUtil;
-
 import edu.jhu.cvrg.data.dto.AnnotationDTO;
 import edu.jhu.cvrg.data.dto.DocumentRecordDTO;
 import edu.jhu.cvrg.data.dto.FileInfoDTO;
 import edu.jhu.cvrg.data.factory.ConnectionFactory;
 import edu.jhu.cvrg.data.util.DataStorageException;
+import edu.jhu.cvrg.filestore.exception.FSException;
+import edu.jhu.cvrg.filestore.main.FileStoreFactory;
+import edu.jhu.cvrg.filestore.main.FileStorer;
+import edu.jhu.cvrg.filestore.model.FSFile;
 import edu.jhu.cvrg.waveform.main.VisualizationManager;
 import edu.jhu.cvrg.waveform.model.VisualizationData;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
@@ -206,7 +205,7 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 		//fetch data and print elapsed time.
 		long startTime = System.currentTimeMillis();
 		
-		Map<String, FileEntry> files = this.getFileEntriesDocId(getSharedStudyEntry().getDocumentRecordId());
+		Map<String, FSFile> files = this.getFileEntriesDocId(getSharedStudyEntry().getDocumentRecordId());
 		
 		VisualizationData visData = VisualizationManager.fetchSubjectVisualizationData(userID, subjectID, files, currentVisualizationOffset, durationMilliSeconds, graphWidthPixels, bTestPattern, samplingRate, leadCount, samplesPerChannel);
 		
@@ -236,9 +235,9 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 		return visData.getECGDataLeads();
 	}
 
-	private Map<String, FileEntry> getFileEntriesDocId(Long documentRecordId) {
+	private Map<String, FSFile> getFileEntriesDocId(Long documentRecordId) {
 		
-		Map<String, FileEntry> ret = null;
+		Map<String, FSFile> ret = null;
 		
 		List<FileInfoDTO> fileInfoList = null; 
 				
@@ -249,19 +248,20 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 		}
 		
 		if(fileInfoList!=null){
-			ret = new HashMap<String, FileEntry>();
+			ret = new HashMap<String, FSFile>();
+			
+			String[] args = {String.valueOf(ResourceUtility.getCurrentGroupId()), String.valueOf(ResourceUtility.getCurrentUserId()), String.valueOf(ResourceUtility.getCurrentCompanyId())};
+			FileStorer fileStorer = FileStoreFactory.returnFileStore(ResourceUtility.getFileStorageType(), args);
+			
 			for (FileInfoDTO fileDTO : fileInfoList) {
 				try {
-					FileEntry liferayFile = DLAppLocalServiceUtil.getFileEntry(fileDTO.getFileEntryId());
-					if(".hea.dat".contains(liferayFile.getExtension())){
-						ret.put(liferayFile.getTitle(), liferayFile);	
+					FSFile file = fileStorer.getFile(fileDTO.getFileEntryId(), false);
+					if(".hea.dat".contains(file.getExtension())){
+						ret.put(file.getName(), file);	
 					}
-					
-				} catch (PortalException e) {
+				} catch (FSException e) {
 					e.printStackTrace();
-				} catch (SystemException e) {
-					e.printStackTrace();
-				}
+				} 
 			}
 		}
 		
