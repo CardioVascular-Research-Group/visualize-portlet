@@ -256,7 +256,7 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 			for (FileInfoDTO fileDTO : fileInfoList) {
 				try {
 					FSFile file = fileStorer.getFile(fileDTO.getFileEntryId(), false);
-					if(".hea.dat".contains(file.getExtension())){
+					if(".hea.dat.xyz".contains(file.getExtension())){
 						ret.put(file.getName(), file);	
 					}
 				} catch (FSException e) {
