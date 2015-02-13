@@ -41,6 +41,7 @@ public class VisualizationManager {
 	 * @param samplesPerChannel 
 	 * @param leadCount 
 	 * @param samplingRate 
+	 * @param leadNames 
 	 * @param callback - call back handler class.
 	 * 	 
 	 * @return a populated VisualizationData object or <B>null</B> on any web service failure
@@ -48,7 +49,7 @@ public class VisualizationManager {
 	 * @see org.cvrgrid.ecgrid.client.BrokerService#fetchSubjectVisualization(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, long, int, int)
 	 */
 	public static VisualizationData fetchSubjectVisualizationData(Long userID, String subjectID, Map<String, FSFile> fileMap, int offsetMilliSeconds, int durationMilliSeconds, 
-														   int graphWidthPixels, boolean bTestPattern, double samplingRate, int leadCount, int samplesPerChannel) {
+														   int graphWidthPixels, boolean bTestPattern, double samplingRate, int leadCount, int samplesPerChannel, String leadNames) {
 		
 		Set<String> fileNames = fileMap.keySet();
 		
@@ -122,13 +123,23 @@ public class VisualizationManager {
 						saChannelName = new String[siLeadCount+1]; // array of names of each channel(lead) e.g. I, II, III, V1, V2...
 					}
 					
+					String[] lNames = null;
+					if(leadNames != null){
+						lNames = leadNames.split(",");
+					}
+					
 					for(int leadNum=0;leadNum < siLeadCount+1;leadNum++){
 						String key = "lead_"+leadNum;
 						saTempDataIn[leadNum] = (String)paramMap.get(key); 
 						if(leadNum==0){
 							saChannelName[0]="millisecond";
 						}else{
-							saChannelName[leadNum] = ServerUtility.guessLeadName(leadNum-1, siLeadCount);
+							if(lNames != null){
+								saChannelName[leadNum] = lNames[leadNum-1];
+							}else{
+								saChannelName[leadNum] = ServerUtility.guessLeadName(leadNum-1, siLeadCount);	
+							}
+							
 						}
 					}
 

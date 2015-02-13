@@ -207,7 +207,7 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 		
 		Map<String, FSFile> files = this.getFileEntriesDocId(getSharedStudyEntry().getDocumentRecordId());
 		
-		VisualizationData visData = VisualizationManager.fetchSubjectVisualizationData(userID, subjectID, files, currentVisualizationOffset, durationMilliSeconds, graphWidthPixels, bTestPattern, samplingRate, leadCount, samplesPerChannel);
+		VisualizationData visData = VisualizationManager.fetchSubjectVisualizationData(userID, subjectID, files, currentVisualizationOffset, durationMilliSeconds, graphWidthPixels, bTestPattern, samplingRate, leadCount, samplesPerChannel, getSharedStudyEntry().getLeadNames());
 		
 		long estimatedTime = System.currentTimeMillis() - startTime;
 		this.getLog().info("--- - fetchSubjectVisualizationData() took " + estimatedTime +  " milliSeconds total. Sample Count:" + visData.getECGDataLength() + " Lead Count:" + visData.getECGDataLeads() );
@@ -379,9 +379,19 @@ public class VisualizeSharedBacking extends BackingBean implements Serializable 
 		this.getLog().info("--- Entering function setGraphTitle()");
 		ServerUtility util = new ServerUtility(false);
 
+		String[] leadNames = null;
+		if(getSharedStudyEntry().getLeadNames() != null){
+			leadNames = this.getSharedStudyEntry().getLeadNames().split(",");
+		}
+		
 		saGraphTitle = new String[iLeadCount+1];
 		for(int[] iaACnt: iaAnnCount){
-			String sName = util.guessLeadName(iaACnt[0]-1, iLeadCount);
+			String sName = null;
+			if(leadNames != null){
+				sName = leadNames[iaACnt[0]-1];
+			}else{
+				sName = util.guessLeadName(iaACnt[0]-1, iLeadCount);
+			}
 			if(iaACnt[1] == 0){
 				saGraphTitle[iaACnt[0]-1] = sName; // don't mention count when there are zero annotations
 			}else{
