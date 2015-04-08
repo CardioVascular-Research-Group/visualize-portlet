@@ -25,162 +25,212 @@ limitations under the License.
 * 
 */
 import java.io.Serializable;
-import java.util.Arrays;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-//import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
-//import org.omnifaces.util.Ajax;
 import org.primefaces.context.RequestContext;
 
-import com.liferay.portal.model.User;
-
-import edu.jhu.cvrg.waveform.utility.AnnotationUtility;
+import edu.jhu.cvrg.data.dto.AnnotationDTO;
+import edu.jhu.cvrg.data.dto.DocumentRecordDTO;
+import edu.jhu.cvrg.data.factory.ConnectionFactory;
+import edu.jhu.cvrg.data.util.DataStorageException;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
-import edu.jhu.cvrg.waveform.model.AnnotationData;
-import edu.jhu.cvrg.waveform.model.StudyEntry;
-//import edu.jhu.cvrg.waveform.model.UserModel;
 import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
-
 
 @ViewScoped
 @ManagedBean(name="annotationBacking")
-public class AnnotationBacking implements Serializable {
+public class AnnotationBacking extends BackingBean implements Serializable {
 
 	private static final long serialVersionUID = -6719393176698520013L;
 
-		public String nodeID;	
-    	public String dataSXstring; 
-    	public String dataSYstring;
-		public double dataSXDuration;
-		public double dataSYDuration;
-		public double dataSX;
-		public double dataSY;
-		public double valueofSX;
-		public double valueofSY;
-		public String fullAnnotation;
-		private String leadName;
-		public int leadnum;
-		public String firstname;
-        public String lastname;
-        public int lastnum;
-        public String portalDefinitionName;
-        public String termName;
-        public Integer age;
-        private String street;
-        private String city;
-        private String postalCode;
-        private String info;
-        private String email;
-        private String phone;
-        private User userLifeRayModel;
-//        @ManagedProperty("#{userModel}")
-//        private UserModel userModel;
-        
-//    	@ManagedProperty("#{visualizeBacking.selectedStudyObject}")
-//    	private StudyEntry studyEntry;
-    	@ManagedProperty("#{visualizeSharedBacking}")
-    	private VisualizeSharedBacking visualizeSharedBacking;   
-
-//   public void populateRythStrip(){
-//	   Ajax.oncomplete("calledOnLoadData()");
-//	   Ajax.oncomplete("alert('leadOnloadCallback: Hello from the Backing Bean')");
-//
-//	}   	
-
-    public String getLeadnameFromRender(){
-    		
-    		// Ajax.oncomplete("alert('leadOnloadCallback: Hello from the Backing Bean')");
-			   String value = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("leadNamesend");
-			   System.out.println("getLeadnameFromRender(), Onload Callback LeadName: " + getLeadName());
-			   System.out.println("getLeadnameFromRender(), Onload Callback lastnum: " + getLastnum());
-			   System.out.println(value);  
-			   return value;
+	public int leadnum;
+    private String leadName;
+    
+    private int annotationCount=0;
+	private int flagCount = 0;
+	private char cIntervalLabel = 'A';
+	
+	private AnnotationDTO annotation;
+	
+	@ManagedProperty("#{visualizeSharedBacking}")
+	private VisualizeSharedBacking visualizeSharedBacking;   
+	
+	
+	/** 
+	 * sets up and calls showAnnotations() which retrieves annotations for the given lead, and executes the JavaScript functions which clear and then set the annotations on the Dygraph.<BR/>
+	 * The executed JavaScript includes:  CVRG_resetAnnotations(), CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval().
+	 **/
+	@PostConstruct
+	public void init(){
+		this.getLog().info("***  New instance ****");
+		setLeadName(visualizeSharedBacking.getSelectedLeadName());
+		setLeadnum(Integer.parseInt(visualizeSharedBacking.getSelectedLeadNumber()));
+		
+		//create a copy of the selected annotation to permit changes with security. 
+		annotation = this.getVisualizeSharedBacking().getSessionAnn().clone();
+		
+		showNewAnnotationForLead();
 	}
+	
+	public void updateAnnotationInterval(){
 
-//  RSA 04/26/13 this is called using a remoteCommand in  gerhythmstrip.xhtml - to initilaize the leadname and Leadnum in the Backing bean.
-   
-	public void leadOnloadCallbackTemp() {
-        System.out.println("AnnotationBacking.leadOnloadCallbackTemp() LeadName: " + getLeadName());
-        System.out.println("AnnotationBacking.leadOnloadCallbackTemp() LeadNumber: " + getLeadnum());
-//        RequestContext context = RequestContext.getCurrentInstance();
-//       // showAnnotations(context, RetrieveECGDatabase);  
+    	FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
+		
+		String passedDataOnsetX = (String) map.get("DataOnsetX");
+		String passedDataOnsetY = (String) map.get("DataOnsetY");
+		String passedDataOffsetX = (String) map.get("DataOffsetX");
+		String passedDataOffsetY = (String) map.get("DataOffsetY");
+		
+		this.getAnnotation().setStartXcoord(Double.parseDouble(passedDataOnsetX));
+		this.getAnnotation().setStartYcoord(Double.parseDouble(passedDataOnsetY));
+		this.getAnnotation().setEndXcoord(Double.parseDouble(passedDataOffsetX));
+		this.getAnnotation().setEndYcoord(Double.parseDouble(passedDataOffsetY));
+		
+		this.getLog().info("+++ AnnotationBacking.java, viewAnnotationInterval() passedDataOnsetX:  " + passedDataOnsetX + "   passedDataOnsetY: " + passedDataOnsetY + " +++ ");
+		this.getLog().info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ passedDataOffsetX: " + passedDataOffsetX + " passedDataOffsetY: " + passedDataOffsetY + " +++ ");
+		this.getLog().info("+++ ++++++++++++++++++++++++++++++++++++++++++++++++ dataSXDuration:    " + this.getAnnotation().getDataXChange() + "  dataSYDuration: " + this.getAnnotation().getDataYChange() + " +++ ");
+		
+		showNewAnnotationForLead();
+    }
+	
+	public void updateSelectedPoint(){
+		FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
+		
+		Integer fineTuningPonit = Integer.valueOf((String) map.get("fineTuningPoint"));
+		String x = (String) map.get("X");
+		String y = (String) map.get("Y");
+		
+		if(fineTuningPonit != null && fineTuningPonit >= 0){
+			if(fineTuningPonit == 0){
+				
+				this.getAnnotation().setStartXcoord(Double.parseDouble(x));
+				this.getAnnotation().setStartYcoord(Double.parseDouble(y));
+				
+				if(this.getVisualizeSharedBacking().getSessionAnn().isSinglePoint()){
+					this.getAnnotation().setEndXcoord(Double.parseDouble(x));
+					this.getAnnotation().setEndYcoord(Double.parseDouble(y));
+				}
+				
+			}else if(fineTuningPonit == 1){ 
+				this.getAnnotation().setEndXcoord(Double.parseDouble(x));
+				this.getAnnotation().setEndYcoord(Double.parseDouble(y));
+			}
+		}
+		showNewAnnotationForLead();
+	}
+	
+	public void discardSelectedPoint(){
+		FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
+		
+		Integer fineTuningPonit = Integer.valueOf((String) map.get("fineTuningPoint"));
+		
+		if(fineTuningPonit != null && fineTuningPonit >= 0){
+			if(fineTuningPonit == 0){
+				this.getAnnotation().setStartXcoord(this.getVisualizeSharedBacking().getSessionAnn().getStartXcoord());
+				this.getAnnotation().setStartYcoord(this.getVisualizeSharedBacking().getSessionAnn().getStartYcoord());
+				
+				if(this.getVisualizeSharedBacking().getSessionAnn().isSinglePoint()){
+					this.getAnnotation().setEndXcoord(this.getVisualizeSharedBacking().getSessionAnn().getEndXcoord());
+					this.getAnnotation().setEndYcoord(this.getVisualizeSharedBacking().getSessionAnn().getEndYcoord());
+				}
+				
+			}else if(fineTuningPonit == 1){ 
+				this.getAnnotation().setEndXcoord(this.getVisualizeSharedBacking().getSessionAnn().getEndXcoord());
+				this.getAnnotation().setEndYcoord(this.getVisualizeSharedBacking().getSessionAnn().getEndYcoord());
+			}
+		}
+		showNewAnnotationForLead();
+	}
+    
+    /** Switches to the selection tree and list view.
+     * Handles onclick event for the button "btnView12LeadECG" in the viewA_SelectionTree.xhtml view.
+     * 
+     */
+    public String viewSingleGraph(){
+    	this.getLog().info("*** AnnotationBack.java, viewSingleGraph() ***");
+		return "viewD_SingleLead";
     }
 
 
-	public void leadOnloadCallback() {
-		System.out.println("AnnotationBacking.leadOnloadCallback()");
-//		Ajax.oncomplete("alert('AnnotationBacking.leadOnloadCallback: called by singleLead.xhtml line 41')");
-	}
-	
-	/** sets up and calls showAnnotations() which retrieves annotations for the given lead, and executes the JavaScript functions which clear and then set the annotations on the Dygraph.<BR/>
-	 * The executed JavaScript includes:  CVRG_resetAnnotations(), CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval(), CVRG_showAnnotations().
-	 **/
-	public void showAnnotationForLead(){
-		// Ajax.oncomplete("alert('AnnotationBacking.showAnnotationForLead: ')");
-		RequestContext context = RequestContext.getCurrentInstance();
-		//AnnotationUtility RetrieveECGDatabase = new AnnotationUtility();
-		AnnotationUtility RetrieveECGDatabase = new AnnotationUtility(com.liferay.util.portlet.PortletProps.get("dbUser"),
-                com.liferay.util.portlet.PortletProps.get("dbPassword"),
-                com.liferay.util.portlet.PortletProps.get("dbURI"),     
-                com.liferay.util.portlet.PortletProps.get("dbDriver"),
-                com.liferay.util.portlet.PortletProps.get("dbMainDatabase"));
-		
-        System.out.println("AnnotationBacking.showAnnotationForLead LeadName: " + getLeadName());
-        System.out.println("AnnotationBacking.showAnnotationForLead Leadnum: " + getLeadnum());
-        showAnnotations(context, RetrieveECGDatabase);  
-	}
-	
 	public void showNodeID(){
-		String[] saOntDetail =  WebServiceUtility.lookupOntologyDefinition(this.getNodeID()); // ECGTermsv1:ECG_000000103 
-		String sDefinition= saOntDetail[1];
-		// String sDefinition=lookupOntologyDefinition("ECGTermsv1:ECG_000000103");
 		
-		setFullAnnotation(sDefinition);
-		System.out.println("*** showNodeID(), nodeID: \"" + getNodeID() + "\"");
-		System.out.println("*** showNodeID(), FullAnnotation: \"" + getFullAnnotation()  + "\"");
+		String key = "definition";
+		
+		Map<String, String> saOntDetail =  WebServiceUtility.lookupOntology(this.getAnnotation().getBioportalOntology(), this.getAnnotation().getBioportalClassId(), key); // ECGTermsv1:ECG_000000103 
+		
+		this.getAnnotation().setValue(saOntDetail.get(key));
+		
+		this.getLog().info("*** showNodeID(), nodeID: \"" + this.getAnnotation().getBioportalClassId() + "\"");
+		this.getLog().info("*** showNodeID(), FullAnnotation: \"" + this.getAnnotation().getValue() + "\"");
 	     
-	     	Map<String, Object> data = new HashMap<String, Object>();
-	     	String dataFullAnnotation = getFullAnnotation();
-	        
-	     	data.put("*", dataFullAnnotation);
-//	        Ajax.data(data);
-//	        Ajax.oncomplete("showData()");
-//	    //  Ajax.oncomplete("showDataVal()");
-	        
+     	Map<String, Object> data = new HashMap<String, Object>();
+     	String dataFullAnnotation = this.getAnnotation().getValue();
+        
+     	data.put("*", dataFullAnnotation);
+	}
+	
+	public void lookupDefinition(){
+		this.getLog().info("*** AnnotationBackup.lookupDefinition() ***");
+    	FacesContext context = FacesContext.getCurrentInstance();
+		Map<String, String> map = context.getExternalContext().getRequestParameterMap();
+		
+		String ontologyID = (String) map.get("ontologyID");
+		String passedNodeID = (String) map.get("nodeID");
+		
+		this.getAnnotation().setBioportalOntology(ontologyID); // e.g. "48037"
+		try {
+			this.getAnnotation().setBioportalClassId(URLDecoder.decode(passedNodeID, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			this.getAnnotation().setBioportalClassId(passedNodeID);
+		}
+		
+		Map<String, String> saOntDetail =  WebServiceUtility.lookupOntology(ontologyID, passedNodeID,  "definition", "prefLabel"); // http://data.bioontology.org/ontologies/ECGT/classes/http%3A%2F%2Fwww.cvrgrid.org%2Ffiles%2FECGTermsv1.owl%23ECG_000000477
+		this.getAnnotation().setValue(saOntDetail.get("definition")); // e.g. "The peak of the R Wave."
+		this.getAnnotation().setName(saOntDetail.get("prefLabel"));
+		
+		this.getLog().info("*** -- nodeID: \"" + this.getAnnotation().getBioportalClassId() + "\"");
+		this.getLog().info("*** -- FullAnnotation: \"" + this.getAnnotation().getValue() + "\"");
+	     
 	}
 	
 	
-	
-	/**Sets the dygraphs flag inplace carrys the x and y info and fills these values with the user input data for each lead annotation.
+	/** 
+	 * Sets the dygraphs flag inplace carrys the x and y info and fills these values with the user input data for each lead annotation.
 	 *   termName, getLeadName, dataSY, dataSX, getFullAnnotation
 	 */
-		public void saveAnnotationSetFlag(ActionEvent actionEvent) {
-			RequestContext context = RequestContext.getCurrentInstance();
-			userLifeRayModel = ResourceUtility.getCurrentUser();
-			context.addCallbackParam("saved", true);    //basic parameter
-	   //   context.addCallbackParam("annotationBackingBean", annotationBacking);    //pojo as json
-			
+	public void saveAnnotationSetFlag(ActionEvent actionEvent) {
+		RequestContext context = RequestContext.getCurrentInstance();
+		context.addCallbackParam("saved", true);    //basic parameter
+		
 		//  callBack working
-			System.out.println("saveAnnotationSetFlag(), LeadName: " + getLeadName());
-			System.out.println("saveAnnotationSetFlag(), leadnum: " + getLeadnum());
-			System.out.println("saveAnnotationSetFlag(), dataSY: " + getDataSY());
-			System.out.println("saveAnnotationSetFlag(), dataSX: " + getDataSX());
-			System.out.println("saveAnnotationSetFlag(), dataSYDuration : " + getDataSYDuration());
-			System.out.println("saveAnnotationSetFlag(), dataSXDuration : " + getDataSXDuration());
-			System.out.println("saveAnnotationSetFlag(), termName: " + getTermName());
-			System.out.println("saveAnnotationSetFlag(), FullAnnotation: " + getFullAnnotation());
-			System.out.println("saveAnnotationSetFlag(), nodeID: " + getNodeID());
+		this.getLog().debug("saveAnnotationSetFlag(), SinglePoint: " + this.getAnnotation().isSinglePoint());
+		this.getLog().debug("saveAnnotationSetFlag(), LeadName: " + getLeadName());
+		this.getLog().debug("saveAnnotationSetFlag(), leadnum: " + getLeadnum());
+		this.getLog().debug("saveAnnotationSetFlag(), getStartYcoord: " + this.getAnnotation().getStartYcoord());
+		this.getLog().debug("saveAnnotationSetFlag(), getStartXcoord: " + this.getAnnotation().getStartXcoord());
+		this.getLog().debug("saveAnnotationSetFlag(), getEndXcoord: " + this.getAnnotation().getEndXcoord());
+		this.getLog().debug("saveAnnotationSetFlag(), getEndYcoord: " + this.getAnnotation().getEndYcoord());			
+		this.getLog().debug("saveAnnotationSetFlag(), getDataYChange : " + this.getAnnotation().getDataYChange());
+		this.getLog().debug("saveAnnotationSetFlag(), getDataXChange : " + this.getAnnotation().getDataXChange());
+		this.getLog().debug("saveAnnotationSetFlag(), getName: " + this.getAnnotation().getName());
+		this.getLog().debug("saveAnnotationSetFlag(), getValue: " + this.getAnnotation().getValue());
+		this.getLog().debug("saveAnnotationSetFlag(), getBioportalConceptID: " + this.getAnnotation().getBioportalClassId());
+		this.getLog().debug("saveAnnotationSetFlag(), getBioportalOntologyID: " + this.getAnnotation().getBioportalOntology());
 
-		    AnnotationUtility RetrieveECGDatabase = new AnnotationUtility();
-			
 //			 * Required values that need to be filled in are:
 //				 * 
 //				 * created by (x) - the source of this annotation (whether it came from an algorithm or was entered manually)
@@ -194,420 +244,296 @@ public class AnnotationBacking implements Serializable {
 //		    	 * Full text description - This is the "value" so to speak, and contains the full definition of the annotation type being used
 //				 * 
 //				 * Note:  If this is an interval, then an offset label, y-coordinate, and t-coordinate are required for that as well.
-			
-			AnnotationData annotationToInsert = new AnnotationData();
-
-			String ms = String.valueOf(java.lang.System.currentTimeMillis());  // used for GUID
-	/*		String series = "6"; // lead name
-			double x = 996; // "t-coodinate"
-			double y = 95; // y-coordinate
-			String flagLabel = "flagLabel"; // onset label???
-			String ontologyId = "QRS Offset";
-			String fullAnnotation = "This is only a test";	*/
-			
-			annotationToInsert.setUserID(userLifeRayModel.getScreenName());
-			
-			annotationToInsert.setSubjectID(visualizeSharedBacking.getSharedStudyEntry().getSubjectID());
-			annotationToInsert.setLeadName(getLeadName());
-			annotationToInsert.setLeadIndex(getLeadnum());
-			annotationToInsert.setDatasetName(visualizeSharedBacking.getSharedStudyEntry().getRecordName());
-			annotationToInsert.setStudyID(visualizeSharedBacking.getSharedStudyEntry().getStudy());
-			
-			 annotationToInsert.setCreator("manual");
-			 annotationToInsert.setConceptLabel(getTermName());
-			 annotationToInsert.setConceptRestURL("");
-			 annotationToInsert.setUniqueID(ms);
-			 annotationToInsert.setOnsetLabel("Onset");
-			 annotationToInsert.setOnsetRestURL("");
-			 annotationToInsert.setMicroVoltStart(getDataSY());
-			 annotationToInsert.setMilliSecondStart(getDataSX());
-			 
-			 annotationToInsert.setMicroVoltEnd(getDataSYDuration());
-			 annotationToInsert.setMilliSecondEnd(getDataSXDuration());
-			 
-//Check to make sure that there is no case where the duration/offset values can be legitimately 0 
-			 
-			 if (getDataSYDuration() == 0 && getDataSXDuration() == 0) {
-				 annotationToInsert.setIsSinglePoint(true);
-			 }
-			 else {
-				 annotationToInsert.setIsSinglePoint(false);
-			 }
-			 annotationToInsert.setOffsetLabel("Offset");
-			 annotationToInsert.setOffsetRestURL("");
-			 annotationToInsert.setAnnotation(getFullAnnotation());
-			 annotationToInsert.setUnit("");
-			
-//Inserting save to XML database
-			 
-			 boolean insertionSuccess = RetrieveECGDatabase.storeLeadAnnotationNode(annotationToInsert);
-			 
-			 if(!insertionSuccess) {
-
-//add facesmessage
-				 
+		
+					
+		AnnotationDTO ann = new AnnotationDTO(ResourceUtility.getCurrentUserId(),
+				 							   visualizeSharedBacking.getSharedStudyEntry().getDocumentRecordId(), "manual", "ANNOTATION", this.getAnnotation().getName(), this.getAnnotation().getBioportalOntology(), this.getAnnotation().getBioportalClassId(), null,
+				 							   getLeadnum(), "", this.getAnnotation().getDescription(), this.getAnnotation().getValue(), Calendar.getInstance(),null, null, null, null);
+		 
+		 if(this.getAnnotation().isSinglePoint()){
+			 ann.setStartXcoord(this.getAnnotation().getStartXcoord());
+			 ann.setStartYcoord(this.getAnnotation().getStartYcoord());
+			 ann.setEndXcoord(this.getAnnotation().getStartXcoord());
+			 ann.setEndYcoord(this.getAnnotation().getStartYcoord());
+		 }else{
+			 ann.setStartXcoord(this.getAnnotation().getStartXcoord());
+			 ann.setStartYcoord(this.getAnnotation().getStartYcoord());
+			 ann.setEndXcoord(this.getAnnotation().getEndXcoord());
+			 ann.setEndYcoord(this.getAnnotation().getEndYcoord());
+		 }
+		 
+		 
+		 Long annotationId = null;
+		 
+		 try {
+			annotationId = ConnectionFactory.createConnection().storeAnnotation(ann);
+		} catch (DataStorageException e) {
+			this.getLog().error("Error on save annotation. "+e.getMessage());
+		}
+		 
+		 if(annotationId == null) {
+			 //add facesmessage
 			 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Failure", "Annotation did not save properly"));
-			        
-			 }
+		 }
 
-			System.out.println("saveAnnotationSetFlag(), LeadName: " + getLeadName());
-			System.out.println("saveAnnotationSetFlag(), dataSY: " + getDataSY());
-			System.out.println("saveAnnotationSetFlag(), dataSX: " + getDataSX());
-			System.out.println("saveAnnotationSetFlag(), termName: " + getTermName());
-			System.out.println("saveAnnotationSetFlag(), FullAnnotation: " + getFullAnnotation());
-			System.out.println("saveAnnotationSetFlag(), nodeID: " + getNodeID());
-			
-			showAnnotations(context, RetrieveECGDatabase);
-		}
-	
+		 this.getLog().info("saveAnnotationSetFlag(), Complete.");
+		
+	}
 
-		/** Retrieves annotations for the given lead, and executes the JavaScript functions which clear and then set the annotations on the Dygraph.<BR/>
-		 * The executed JavaScript includes:  CVRG_resetAnnotations(), CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval(), CVRG_showAnnotations().
-		 * @param context
-		 * @param RetrieveECGDatabase
-		 */
-		private void showAnnotations(RequestContext context, AnnotationUtility RetrieveECGDatabase) {
-			userLifeRayModel = ResourceUtility.getCurrentUser();
-			String sErrorMess = "";
-			//    		int leadIndex = AnnotationData.getLeadIndexStatic(getLeadName());
-			int leadIndex = getLeadnum();
-			if(leadIndex == -1) sErrorMess += "lead index is invalid | ";
-			if(userLifeRayModel ==  null) sErrorMess += "userLifeRayModel is invalid | ";
-			if(visualizeSharedBacking.getSharedStudyEntry() ==  null) sErrorMess += "visualizeSharedBacking.getSharedStudyEntry() is invalid | ";
 
-			if(sErrorMess.length() > 0){
-				System.err.println ("AnnotationBacking.java, showAnnotations() failed: " + sErrorMess);
+	/** 
+	 * Retrieves annotations for the given lead, and executes the JavaScript functions which clear and then set the annotations on the Dygraph.<BR/>
+	 * The executed JavaScript includes:  CVRG_resetAnnotations(), CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval().
+	 * @param context
+	 * @param RetrieveECGDatabase
+	 */
+	public void showNewAnnotationForLead(){
+		this.getLog().info("### showNewAnnotationForLead ###");
+		RequestContext context = RequestContext.getCurrentInstance();
+		String sErrorMess = "";
+
+		int leadIndex = getLeadnum();
+		if(leadIndex == -1) sErrorMess += "lead index is invalid | ";
+		if(this.getVisualizeSharedBacking().getSharedStudyEntry() ==  null) sErrorMess += "visualizeSharedBacking.getSharedStudyEntry() is invalid | ";
+
+		if(sErrorMess.length() > 0){
+			this.getLog().error("AnnotationBacking.java, showNewAnnotation() failed: " + sErrorMess);
+		}else{
+			AnnotationDTO newAnnotation = new AnnotationDTO();
+			newAnnotation.setStartXcoord(this.getAnnotation().getStartXcoord());
+			newAnnotation.setStartYcoord(this.getAnnotation().getStartYcoord());
+			newAnnotation.setValue(this.getAnnotation().getValue());
+			newAnnotation.setName(this.getLeadName());
+
+			if(!this.getAnnotation().isSinglePoint()){
+				newAnnotation.setEndXcoord(this.getAnnotation().getEndXcoord());
+				newAnnotation.setEndYcoord(this.getAnnotation().getEndYcoord());
 			}else{
-				AnnotationData[] RetrievedAnnotations = RetrieveECGDatabase.getLeadAnnotationNode(userLifeRayModel.getScreenName(), visualizeSharedBacking.getSharedStudyEntry().getStudy(), visualizeSharedBacking.getSharedStudyEntry().getSubjectID(), String.valueOf(leadIndex), leadIndex, visualizeSharedBacking.getSharedStudyEntry().getRecordName());
-
-				context.execute("CVRG_resetAnnotations()");
-
-				Arrays.sort(RetrievedAnnotations);
-
-				String series = getLeadName();
-				double x = 928;
-				double y = 653;
-				String flagLabel = "1";
-				String ontologyId = "Amplitude";
-				String fullAnnotation = "getFullAnnotation";
-
-
-				HashMap<Double, Integer> duplicates = new HashMap<Double, Integer>();
-
-				for( int i = 0; i < RetrievedAnnotations.length; i++ ){
-					//Test JAVA data for CVRG_addAnnotation RSA 0117		
-					// series = RetrievedAnnotations[i].getLeadName(1);
-					x = RetrievedAnnotations[i].getMilliSecondStart();     // t or x cordinate 
-					y = RetrievedAnnotations[i].getMicroVoltStart();       // y cordinate 
-					flagLabel = String.valueOf(i+1);   // label of Annotation
-					ontologyId = RetrievedAnnotations[i].getConceptLabel();
-					fullAnnotation = "fullAnnotation needs to be setup in UserControloler and RetrieveAnnotation";
-					System.out.println("RetrieveAnnotation loop x:" + x + " y:" + y + " flagLabel: " + flagLabel);
-
-					Double xPosition = Double.valueOf(x);
-					Integer numOccurances = Integer.valueOf(1);
-
-					boolean duplicateCheck = duplicates.containsKey(xPosition);
-					int heightMultiplier = 1;
-
-					if(duplicateCheck) {
-						numOccurances = duplicates.get(xPosition);
-						heightMultiplier = (numOccurances.intValue()) + 1;
-						duplicates.put(xPosition, Integer.valueOf(heightMultiplier));
-					}
-					else {
-						duplicates.put(xPosition, Integer.valueOf(heightMultiplier));
-					}
-
-					if(RetrievedAnnotations[i].getIsSinglePoint()) {
-						int finalHeight = heightMultiplier * 15;
-						System.out.println("-- Add single point, finalHeight:" + x);
-						// add annotaion from JAVA to JavaScript Dygraph 
-						context.execute("CVRG_addAnnotationHeight('" + series + "' , '" +  x + "', '" +  y + "','" +   flagLabel + "','" + ontologyId + "','" + fullAnnotation + "',' " + finalHeight + "')");
-					}
-					else {
-						int finalHeight = heightMultiplier * -50;
-						String flagLabelFirst = flagLabel + " >";
-						String flagLabelLast = "< " + flagLabel;
-						String flagLabelCenter  = flagLabel + " Interval";
-						int width = 30;
-						int widthInterval = 66;
-						double secondX = RetrievedAnnotations[i].getMilliSecondEnd();
-						double secondY = RetrievedAnnotations[i].getMicroVoltEnd();
-
-						//TODO: corrected for Display at low resolution. RSA 04/15 works for 1000 samples per second.
-
-						int centerX = (int) (( x + secondX ) / 2); 
-						centerX = centerX / 10;
-						centerX = centerX * 10;
-
-
-						int YcenterY = (int) (( x + secondX ) / 2); 
-						double centerArea = ( secondX - x );
-
-						double toCenterWithArea = ( centerArea + x );
-
-						System.out.println("x " + x);
-
-						// START add annotaion from JAVA to JavaScript Dygraph 
-						context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  x + "', '" +  y + "','" +   flagLabelFirst + "','" + ontologyId + "','" + fullAnnotation + "',' " + finalHeight + "','" + width + "')");
-
-
-						System.out.println( "centerX" +  centerX);
-
-						//  Sets the center flag
-
-						context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  centerX + "', '" +  YcenterY + "','" +  flagLabelCenter  + "','" + ontologyId + "','" + fullAnnotation + "',' " + finalHeight + "','" + widthInterval + "')");
-
-						System.out.println( "secondX" + secondX);
-
-						// END X
-						context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  secondX + "', '" +  secondY + "','" +   flagLabelLast + "','" + ontologyId + "','" + fullAnnotation + "',' " + finalHeight + "','" + width + "')");
-
-
-						// sets the highlight
-						context.execute("CVRG_setHightLightLocation('" +  x + "','" +  toCenterWithArea + "', '" +  secondX + "')");
-
-
-					}
-
-					//add facesmessage
-					FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Success", "Success"));
-				}
-
-				context.execute("CVRG_showAnnotations()");
+				newAnnotation.setEndXcoord(this.getAnnotation().getStartXcoord());
+				newAnnotation.setEndYcoord(this.getAnnotation().getStartYcoord());
 			}
-		}
-
+			this.getLog().debug("### ### isSinglePoint: " + newAnnotation.isComment() 
+						+ " getDataOffsetX(): " + newAnnotation.getEndXcoord()
+						+ " getDataOffsetY(): " + newAnnotation.getEndYcoord());
 			
-//    	public UserModel getUserModel() {
-//			return userModel;
-//		}
-//
-//		public void setUserModel(UserModel userModel) {
-//			this.userModel = userModel;
-//		}
 
-		public User getUserLifeRayModel() {
-			return userLifeRayModel;
+			context.execute("CVRG_resetAnnotations()");
+			context.execute("WAVEFORM_clearHighLightQueue()");
+
+			String series = getLeadName();
+
+
+			HashMap<Double, Integer> duplicates = new HashMap<Double, Integer>();
+			flagCount = 0;
+			cIntervalLabel = 'A';
+
+			duplicates = addAnnotation(context, series, newAnnotation, duplicates);
 		}
+	}
 
-		public void setUserLifeRayModel(User userLifeRayModel) {
-			this.userLifeRayModel = userLifeRayModel;
-		}
+	public void showNewAnnotationGraph(){
+		this.getLog().info("*** showNewAnnotationGraph()");
+		visualizeSharedBacking.setShowFineGraph(true);
+	}
+	public void showNewAnnotationDetails(){
+		this.getLog().info("*** showNewAnnotationDetails()");
+		visualizeSharedBacking.setShowFineGraph(false);
+	}
 
-		public StudyEntry getStudyEntry() {
-			return visualizeSharedBacking.getSharedStudyEntry();
-		}
+	/** Adds a single annotation to the javascript array "tempAnnotations", to be added to the single lead graph after the view page finishes loading.
+	 *  The executed JavaScript functions include: CVRG_addAnnotationHeight(), CVRG_addAnnotationInterval().
 
-		public void setStudyEntry(StudyEntry studyEntry) {
-			this.visualizeSharedBacking.setSharedStudyEntry(studyEntry);
-		}
+	 * @param context
+	 * @param series
+	 * @param singleAnnotation
+	 * @param duplicates
+	 * @return
+	 */
+	private HashMap<Double, Integer>  addAnnotation(RequestContext context, String series, AnnotationDTO singleAnnotation, 
+													HashMap<Double, Integer> duplicates){
+		long firstX;
+		long firstY = -999;
+		String flagLabel; //e.g. = "1";
+		String ontologyId = ""; //e.g. = "Amplitude";
+		String fullAnnotation = "";//
+		Long annotationID;
+		this.getLog().debug("### ### addAnnotation() -- isSinglePoint: " + singleAnnotation.isSinglePoint() 
+				+ " isComment: " + singleAnnotation.isComment()
+				+ " getDataOffsetX(): " + singleAnnotation.getEndXcoord()
+				+ " getDataOffsetY(): " + singleAnnotation.getEndYcoord());
 
-        public VisualizeSharedBacking getVisualizeSharedBacking() {
-			return visualizeSharedBacking;
-		}
+		firstX = (long) singleAnnotation.getStartXcoord().longValue();	// time or "X" coordinate 
+		firstY = (long) singleAnnotation.getStartYcoord().longValue();	//voltage or "Y" coordinate, not needed for dygraph annotation flag, but might be used by our code later.
 
-		public void setVisualizeSharedBacking(
-				VisualizeSharedBacking visualizeSharedBacking) {
-			this.visualizeSharedBacking = visualizeSharedBacking;
-		}
-
-		public String getFirstname() {
-                return firstname;
-        }
-
-        public void setFirstname(String firstname) {
-                this.firstname = firstname;
-        }
-
-        public String getLastname() {
-                return lastname;
-        }
-
-        public void setLastname(String lastname) {
-                this.lastname = lastname;
-        }
-
-        public Integer getAge() {
-                return age;
-        }
-
-        public void setAge(Integer age) {
-                this.age = age;
-        }
-
-        public String getStreet() {
-                return street;
-        }
-
-        public void setStreet(String street) {
-                this.street = street;
-        }
-
-        public String getCity() {
-                return city;
-        }
-
-        public void setCity(String city) {
-                this.city = city;
-        }
-
-        public String getPostalCode() {
-                return postalCode;
-        }
-
-        public void setPostalCode(String postalCode) {
-                this.postalCode = postalCode;
-        }
-
-        public String getInfo() {
-                return info;
-        }
-
-        public void setInfo(String info) {
-                this.info = info;
-        }
-        
-        public String getEmail() {
-                return email;
-        }
-
-        public void setEmail(String email) {
-                this.email = email;
-        }
-
-        public String getPhone() {
-                return phone;
-        }
-
-        public void setPhone(String phone) {
-                this.phone = phone;
-        }
-
-		public String getPortalDefinitionName() {
-			return portalDefinitionName;
-		}
-
-		public void setPortalDefinitionName(String portalDefinitionName) {
-			this.portalDefinitionName = portalDefinitionName;
-		}
-
-		public String getTermName() {
-			return termName;
-		}
-
-		public void setTermName(String termName) {
-			this.termName = termName;
-		}
-
-		public void setFullAnnotation(String fullAnnotation) {
-			this.fullAnnotation = fullAnnotation;
-		}
-
-		public String getFullAnnotation() {
-			return fullAnnotation;
-		}
-
-		public void setLeadName(String leadName) {
-			System.out.println( "AnnotationBacking.setLeadName() called with:" + leadName);
-			this.leadName = leadName;
-		}
-
-		public String getLeadName() {
-			//System.out.println( "AnnotationBacking.getLeadName() called with:" + leadName);
-			return leadName;
-		}
-
-		public double getValueofSX() {
-			return valueofSX;
-		}
-
-		public void setValueofSX(double valueofSX) {
-			this.valueofSX = valueofSX;
-		}
-
-		public double getValueofSY() {
-			return valueofSY;
-		}
-
-		public void setValueofSY(double valueofSY) {
-			this.valueofSY = valueofSY;
-		}
-
-		public double getDataSX() {
-			return dataSX;
-		}
-
-		public void setDataSX(double dataSX) {
-			this.dataSX = dataSX;
-		}
-
-		public double getDataSY() {
-			return dataSY;
-		}
-
-		public void setDataSY(double dataSY) {
-			this.dataSY = dataSY;
-		}
-
-		public String getDataSXstring() {
-			return dataSXstring;
-		}
-
-		public void setDataSXstring(String dataSXstring) {
-			this.dataSXstring = dataSXstring;
-		}
-
-		public String getDataSYstring() {
-			return dataSYstring;
-		}
-
-		public void setDataSYstring(String dataSYstring) {
-			this.dataSYstring = dataSYstring;
-		}
-
-		public String getNodeID() {
-			return nodeID;
-		}
-
-		public void setNodeID(String nodeID) {
-			this.nodeID = nodeID;
-//			this.fullAnnotation = this.termName + " | " + this.nodeID + " DUMMY Definition";
-		}
-
-		private int getLastnum() {
-			return lastnum;
-		}
-
-		private void setLastnum(int lastnum) {
-			this.lastnum = lastnum;
-		}
-
-		public int getLeadnum() {
-			//System.out.println( "AnnotationBacking.getLeadnum() called with:" + leadnum);
-			return leadnum;
-		}
-
-		public void setLeadnum(int leadnum) {
-			System.out.println( "AnnotationBacking.setLeadnum() called with:" + leadnum);
-			this.leadnum = leadnum;
-		}
-
-		public void setDataSXDuration(double dataSXDuration) {
-			this.dataSXDuration = dataSXDuration;
-		}
-
-		public void setDataSYDuration(double dataSYDuration) {
-			this.dataSYDuration = dataSYDuration;
-		}
-
-		public double getDataSXDuration() {
-			return dataSXDuration;
-		}
-
-		public double getDataSYDuration() {
-			return dataSYDuration;
+		if(singleAnnotation.getName() != null){
+			ontologyId = singleAnnotation.getName();	
 		}
 		
+		if(singleAnnotation.getValue() != null){
+			fullAnnotation = singleAnnotation.getValue();
+		}
+		
+		annotationID = singleAnnotation.getAnnotationId();
+
+		Double xPosition = Double.valueOf(firstX);
+		Integer numOccurances = Integer.valueOf(1);
+
+		boolean duplicateCheck = duplicates.containsKey(xPosition);
+		int heightMultiplier = 1;
+
+		if(duplicateCheck) {
+			numOccurances = duplicates.get(xPosition);
+			heightMultiplier = (numOccurances.intValue()) + 1;
+			duplicates.put(xPosition, Integer.valueOf(heightMultiplier));
+		}
+		else {
+			duplicates.put(xPosition, Integer.valueOf(heightMultiplier));
+		}
+
+		if (fullAnnotation.length()>50){
+			String truncatedFull = fullAnnotation.substring(0, 50);
+			truncatedFull += "...";
+			ontologyId += " - " + truncatedFull;
+		}else{
+			ontologyId += " - " + fullAnnotation;
+		}
+	
+		if(singleAnnotation.isSinglePoint()) {
+			if(firstX != (-999999999)){
+				flagLabel = String.valueOf(flagCount+1);   // label of Annotation
+
+				this.getLog().debug("Single point: " + flagLabel + " x: " + firstX);
+				int finalHeight = heightMultiplier * 15;
+				
+				if(singleAnnotation.getDescription() != null){
+					fullAnnotation +=( "/" + singleAnnotation.getDescription());
+				}
+				
+				// 	add annotaion from JAVA to JavaScript Dygraph 
+				context.execute("CVRG_addAnnotationHeight('" + series + "' , '" +  firstX + "', '" +  firstY + "','" 
+					+ flagLabel + "','" + ontologyId + "','" + fullAnnotation  + "',' " 
+					+ finalHeight + "','" + annotationID + "')");
+				flagCount++;
+			}
+		} else {
+			// get Alphabetic flag label, then increment letter.
+			String sIntervallabel = String.valueOf(cIntervalLabel);
+			cIntervalLabel =  (char) (cIntervalLabel+1);
+
+			int finalHeight = heightMultiplier * -50;
+			String flagLabelFirst = sIntervallabel + ">";
+			String flagLabelLast = "<" + sIntervallabel;
+			
+			int width = 30;
+			
+			long secondX = (long) singleAnnotation.getEndXcoord().longValue();
+			long secondY = (long) singleAnnotation.getEndYcoord().longValue();
+
+			long centerX = (long) (( firstX + secondX ) / 2);
+			long msSample = (long)(1000/visualizeSharedBacking.getSharedStudyEntry().getSamplingRate()); // milliseconds per sample
+			long remainder = centerX % msSample;
+			centerX = centerX - remainder;
+
+			// START add annotaion from JAVA to JavaScript Dygraph 
+			context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  firstX + "', '" +  firstY + "','" 
+					+ flagLabelFirst + "','" + ontologyId + "','" + fullAnnotation + "',' " 
+					+ finalHeight + "','" + width + "','" + annotationID + "')");
+
+			// END X
+			context.execute("CVRG_addAnnotationInterval('" + series + "' , '" +  secondX + "', '" +  secondY + "','" 
+					+ flagLabelLast + "','" + ontologyId + "','" + fullAnnotation + "',' " 
+					+ finalHeight + "','" + width + "','" + annotationID + "')");
+
+			// sets the highlight
+			context.execute("WAVEFORM_queueHighLightLocation('" +  firstX + "','" +  firstY + "','" +  finalHeight + "','" +  centerX + "', '" +  secondX + "')");
+		}
+
+		//add facesmessage
+		FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Success", "Success"));
+		
+		return duplicates;
+	}
+	
+	
+	public Double getOnSet(){
+		return convertToExpValue(this.getAnnotation().getStartXcoord());
+	}
+
+	public Double getOffSet(){
+		return convertToExpValue(this.getAnnotation().getEndXcoord());
+	}
+	
+	private Double convertToExpValue(Double x) {
+		if(x != null){
+			int expSec = this.getAnnotation().getExpTimeInSec();
+			if(expSec > 0){
+				return (x/1000)/Math.pow(10, expSec);
+			}else{
+				return (x/1000);
+			}
+		}
+		return null;
+	}
+	
+	
+	public DocumentRecordDTO getStudyEntry(){
+		return visualizeSharedBacking.getSharedStudyEntry();
+	}
+	
+    public VisualizeSharedBacking getVisualizeSharedBacking() {
+		return visualizeSharedBacking;
+	}
+
+	public void setVisualizeSharedBacking(VisualizeSharedBacking visualizeSharedBacking) {
+		this.visualizeSharedBacking = visualizeSharedBacking;
+	}
+
+	public void setLeadName(String leadName) {
+		this.leadName = leadName;
+	}
+
+	public String getLeadName() {
+		return leadName;
+	}
+
+	public int getLeadnum() {
+		return leadnum;
+	}
+
+	public void setLeadnum(int leadnum) {
+		this.leadnum = leadnum;
+	}
+
+	public int getAnnotationCount() {
+		return annotationCount;
+	}
+
+	public AnnotationDTO getAnnotation() {
+		return annotation;
+	}
+	
+	public String getBioportalExternalLink(){
+		return AnnotationDTO.generateURL(this.getAnnotation().getBioportalOntology(), this.getAnnotation().getBioportalClassId());
+	}
+
+	public String getBioportalClassId(){
+		return this.getAnnotation().getBioportalClassId() != null ? '\''+this.getAnnotation().getBioportalClassId()+'\'' : "null";
+	}
+	
+	public String getBioportalOntology(){
+		return this.getAnnotation().getBioportalOntology() != null ? this.getAnnotation().getBioportalOntology() : AnnotationDTO.ECG_TERMS_ONTOLOGY;
+	}
+	
+	public String getBioportalAPIUrl(){
+		return ResourceUtility.getBioportalAPIServerURL();
+	}
+	
+	public String getBioportalUIUrl(){
+		return ResourceUtility.getBioportalUIServerURL();
+	}
+	
+	public String getBioportalApikey(){
+		return ResourceUtility.getBioportalApikey();
+	}
+	
 }

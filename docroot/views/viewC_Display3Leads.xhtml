@@ -1,24 +1,24 @@
 <?xml version="1.0"?>
 
-<f:view
-	xmlns="http://www.w3.org/1999/xhtml"
+<f:view xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 	<h:head />
 	<h:body>
-		<f:event type="preRenderView" listener="#{visualizeGraphBacking.initialize}" />
+		<f:event type="preRenderView"
+			listener="#{visualizeGraphBacking.initialize}" />
 		<!-- START OF TOP include_viewContentLeads -->
 		<!-- MOVE TO CSS -->
 		<style>
-			.hoverShadow:hover {
-				border-radius: 5px;
-				box-shadow: 0 5px 10px rgba(80, 0, 0, .3);
-			}
-		</style>
+.hoverShadow:hover {
+	border-radius: 5px;
+	box-shadow: 0 5px 10px rgba(80, 0, 0, .3);
+}
+</style>
 		<!-- MOVE TO CSS -->
-		
+
 		<f:verbatim>
 			<script>
 				//var OmniFaces=OmniFaces;
@@ -42,7 +42,7 @@
 		
 				// This function is kept on the .xhtml page, because it contains code specific to this layout. 
 	             var WAVEFORM_showGraphs = function(namespace){
-	                 //alert("running WAVEFORM_showGraphs() in panelDisplayLeads.xhtml data.length:" + dataFull.length);
+	                 //alert("running WAVEFORM_showGraphs() in viewC_Display3Leads.xhtml data.length:" + dataFull.length);
 	                 var graphDurationMS = 2500;
 	                 var graphWidthPx = 250;
 	                 var graphHeightPx = 150;
@@ -51,19 +51,18 @@
 	             }
 	         </script>
 		</f:verbatim>
-	
+
 		<h:panelGroup layout="block" styleClass="backgroundofContent">
 			<p:layout id="graphView"
 				style=" min-height:710px; height:720px; top:20px">
-				<p:layoutUnit id="ecgGraphLayout" 
-								position="center"
-								style="min-width:400px; 
+				<p:layoutUnit id="ecgGraphLayout" position="center"
+					style="min-width:400px; 
 									min-height:700px; 
 									width:90%; 
 									background-color:#fdf6e3; 
 									margin:1px auto;">
-	
-					<h:panelGroup id="panelMultipleGraph" autoUpdate="true" >
+
+					<h:panelGroup id="panelMultipleGraph" autoUpdate="true">
 						<script>
 							var data = '#{visualizeGraphBacking.data}';
 							var dataJsonParse = JSON.parse(data);
@@ -71,27 +70,22 @@
 						</script>
 
 						<!-- <h:outputText value="namespace=#{facesContext.externalContext.encodeNamespace('')}" /> -->
-						<ui:include src="3Lead_DIV.xhtml" />	
+						<ui:include src="include/3Lead_DIV.xhtml" />
 					</h:panelGroup>
-					
+
 				</p:layoutUnit>
-	
- 				<p:layoutUnit id="viewChangeButtons" position="east" resizable="true" size="150"
-					minSize="50" maxSize="550">
-					<h:form>					
-						<p:commandButton id="returnToList" 
-												value="View ECG List"
-												action="#{visualizeGraphBacking.viewSelectionTree}"
-												ajax="true"
-												icon="ui-icon-seek-first"
-												title="View the ECG selection tree."/>
-												
-						<p:commandButton id="singleLead" 
-												value="View Single"
-												action="#{visualizeGraphBacking.viewSingleGraph}"
-												icon="ui-icon-seek-end"
-												title="View Single Lead"/>
-					</h:form>						
+
+				<p:layoutUnit id="viewChangeButtons" position="east"
+					resizable="true" size="150" minSize="50" maxSize="550">
+					<h:form>
+						<p:commandButton id="returnToList" value="Back to List"
+							action="#{visualizeGraphBacking.viewSelectionTree}" ajax="true"
+							icon="ui-icon-seek-first" title="View ECG file selection tree." />
+
+						<p:commandButton id="singleLead" value="View Single"
+							action="#{visualizeGraphBacking.viewSingleGraph}"
+							icon="ui-icon-seek-end" title="View Single Lead" />
+					</h:form>
 				</p:layoutUnit>
 			</p:layout>
 		</h:panelGroup>

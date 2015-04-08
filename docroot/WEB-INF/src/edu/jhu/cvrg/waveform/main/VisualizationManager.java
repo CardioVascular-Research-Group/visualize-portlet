@@ -2,12 +2,15 @@ package edu.jhu.cvrg.waveform.main;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.log4j.Logger;
 
-import edu.jhu.cvrg.waveform.callbacks.SvcAxisCallback;
+import edu.jhu.cvrg.filestore.model.FSFile;
 import edu.jhu.cvrg.waveform.model.VisualizationData;
 import edu.jhu.cvrg.waveform.utility.ResourceUtility;
+import edu.jhu.cvrg.waveform.utility.ServerUtility;
 import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
 
 /** Contains functions which support the graphing of ECGs.
@@ -16,13 +19,12 @@ import edu.jhu.cvrg.waveform.utility.WebServiceUtility;
  */
 public class VisualizationManager {
 
-	private boolean verbose = false;
-//	private AnalysisInProgress aIP;
-//	private AnalysisUtility anUtil = new AnalysisUtility();
-	public boolean make12LeadTestPattern=false;
-	public VisualizationManager(boolean verbose){		 
-		this.verbose = verbose;
-//		aIP = new AnalysisInProgress();
+	public static boolean make12LeadTestPattern=false;
+	
+	private static final Logger log = Logger.getLogger(VisualizationManager.class);
+	
+	private VisualizationManager(){		 
+		
 	}
 
 
@@ -36,70 +38,66 @@ public class VisualizationManager {
 	 * @param offsetMilliSeconds - number of milliseconds from the beginning of the ECG at which to start the graph.
 	 * @param durationMilliSeconds - The requested length of the returned data subset, in milliseconds.
 	 * @param graphWidthPixels - Width of the zoomed graph in pixels(zoom factor*unzoomed width), hence the maximum points needed in the returned VisualizationData.
+	 * @param samplesPerChannel 
+	 * @param leadCount 
+	 * @param samplingRate 
+	 * @param leadNames 
 	 * @param callback - call back handler class.
 	 * 	 
 	 * @return a populated VisualizationData object or <B>null</B> on any web service failure
 	 * 
 	 * @see org.cvrgrid.ecgrid.client.BrokerService#fetchSubjectVisualization(java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, long, int, int)
 	 */
-	public VisualizationData fetchSubjectVisualizationData(String userID, String subjectID, 
-			String[] saFileNameList, long fileSize, 
-			int offsetMilliSeconds, int durationMilliSeconds, 
-			int graphWidthPixels, boolean bTestPattern) {
-
-		String ftpURL = ResourceUtility.getFtpHost(); // web address of the data file repository 
-		String fUser = ResourceUtility.getFtpUser(); // ftp userID
-		String fPassword = ResourceUtility.getFtpPassword(); // ftp password
-//		String mySqlURL; 
-//		String fileNameList = "";
-		int iFileCount = saFileNameList.length;
+	public static VisualizationData fetchSubjectVisualizationData(Long userID, String subjectID, Map<String, FSFile> fileMap, int offsetMilliSeconds, int durationMilliSeconds, 
+														   int graphWidthPixels, boolean bTestPattern, double samplingRate, int leadCount, int samplesPerChannel, String leadNames) {
+		
+		Set<String> fileNames = fileMap.keySet();
+		
+		log.info("--- -- fetchSubjectVisualizationData() saFileNameList[0]: " + fileNames.iterator().next() +  " offsetMilliSeconds: " + offsetMilliSeconds + " durationMilliSeconds: " + durationMilliSeconds );
+		long startTimeFetch = System.currentTimeMillis();
+		
+		int iFileCount = fileMap.size();
 		VisualizationData visualizationData = null;
 		
 		//**** create the file subnodes of the fileNameList node. ************
-		LinkedHashMap<String, String> fileMap = new LinkedHashMap<String, String>();
+		LinkedHashMap<String, String> fileNameMap = new LinkedHashMap<String, String>();
 		int f=0;
-		for(String fn:saFileNameList){
-//			fileNameList += "\t\t<filename>" + fn + "</filename>\n";
-			fileMap.put("fileName_" + f, fn);
+		for(String fn: fileNames){
+			fileNameMap.put("fileName_" + f, fn);
 			f++;
 		}
 		//************************************
 		
 		LinkedHashMap<String, Object> parameterMap = new LinkedHashMap<String, Object>();
 
-//		String serviceMethod = "collectWFDBdataSegment";		
-//		String serviceName = "nodeDataService"; 
-		
 		String serviceMethod = "fetchWFDBdataSegmentType2";
 		String serviceName = "waveformDataService"; 
 
-		parameterMap.put("service", serviceMethod); 
-		
-//		parameterMap.put("brokerURL", ftpURL); // 
-		parameterMap.put("ftpHost", ftpURL);
-		parameterMap.put("ftpUser", fUser); // 
-		parameterMap.put("ftpPassword", fPassword);
-//		parameterMap.put("fileName", fileName);
-		parameterMap.put("fileNameList", fileMap);
+		parameterMap.put("fileNameList", fileNameMap);
 		parameterMap.put("fileCount", String.valueOf(iFileCount));
-		parameterMap.put("parameterCount", "0");
 		
-		parameterMap.put("fileSize", String.valueOf(fileSize));
+		parameterMap.put("parameterCount", "0");
 		parameterMap.put("offsetMilliSeconds", String.valueOf(offsetMilliSeconds));
 		parameterMap.put("durationMilliSeconds", String.valueOf(durationMilliSeconds));
 		parameterMap.put("graphWidthPixels", String.valueOf(graphWidthPixels));
+		parameterMap.put("userId", String.valueOf(userID));
+		
+		parameterMap.put("sampleFrequency", String.valueOf(samplingRate));
+		parameterMap.put("signalCount", String.valueOf(leadCount));
+		parameterMap.put("samplesPerSignal", String.valueOf(samplesPerChannel));
+		
 		parameterMap.put("testPattern", String.valueOf(bTestPattern));
-		parameterMap.put("verbose", String.valueOf(verbose));
-
+		
 		String serviceURL = ResourceUtility.getAnalysisServiceURL();
-		SvcAxisCallback callback = null; // forces callWebService to return webservice results directly.
 		
 		OMElement omeWSReturn = WebServiceUtility.callWebServiceComplexParam(parameterMap, 
 				serviceMethod, // Method of the service which implements the copy. e.g. "copyDataFilesToAnalysis"
 				serviceName, // Name of the web service. e.g. "dataTransferService"
 				serviceURL, // URL of the Analysis Web Service to send data files to. e.g. "http://icmv058.icm.jhu.edu:8080/axis2/services/";
-				callback);
+				null, fileMap);
 		
+		long webServiceTime = System.currentTimeMillis();
+
 		//***************************************************
 		try{
 			if(omeWSReturn != null){
@@ -125,16 +123,28 @@ public class VisualizationManager {
 						saChannelName = new String[siLeadCount+1]; // array of names of each channel(lead) e.g. I, II, III, V1, V2...
 					}
 					
+					String[] lNames = null;
+					if(leadNames != null){
+						lNames = leadNames.split(",");
+					}
+					
 					for(int leadNum=0;leadNum < siLeadCount+1;leadNum++){
 						String key = "lead_"+leadNum;
 						saTempDataIn[leadNum] = (String)paramMap.get(key); 
 						if(leadNum==0){
 							saChannelName[0]="millisecond";
 						}else{
-							saChannelName[leadNum] = WebServiceUtility.guessLeadName(leadNum-1, siLeadCount);
+							if(lNames != null){
+								saChannelName[leadNum] = lNames[leadNum-1];
+							}else{
+								saChannelName[leadNum] = ServerUtility.guessLeadName(leadNum-1, siLeadCount);	
+							}
+							
 						}
 					}
-		
+
+					long parseMetaTime = System.currentTimeMillis();
+
 					// Parse the data from the CSV strings, rotating the array in the process.
 					int channelCount;
 					double[][] tempData = new double[iSampleCount][siLeadCount+1];
@@ -157,9 +167,11 @@ public class VisualizationManager {
 								}
 							}
 						}else{
-							System.err.println("ERROR VisualizationData.fetchSubjectVisualizationData() missing data for lead " + ch + " of " + siLeadCount);
+							log.error("ERROR VisualizationData.fetchSubjectVisualizationData() missing data for lead " + ch + " of " + siLeadCount);
 						}
 					}
+					long parsePrimaryDataTime = System.currentTimeMillis();
+
 					// populate the result object to be returned.   
 					visualizationData = new VisualizationData();
 					visualizationData.setECGDataLength(iSampleCount);
@@ -171,6 +183,12 @@ public class VisualizationManager {
 					visualizationData.setECGData(tempData);
 					visualizationData.setSubjectID(subjectID);
 					visualizationData.setMsDuration(iSegmentDuration);
+
+					long createResultObjectTime = System.currentTimeMillis();
+					log.info("--- -- web service waveformDataService.fetchWFDBdataSegmentType2() took " + (webServiceTime - startTimeFetch) +  " milliSeconds.");
+					log.info("--- -- parsing meta-data returned by web service took " + (parseMetaTime - webServiceTime) +  " milliSeconds.");
+					log.info("--- -- parsing primary ECG data returned by web service took " + (parsePrimaryDataTime - parseMetaTime) +  " milliSeconds.");
+					log.info("--- -- creating/populating result object took " + (createResultObjectTime - parsePrimaryDataTime) +  " milliSeconds.");
 				}
 			}
 		} catch(Exception ex) {

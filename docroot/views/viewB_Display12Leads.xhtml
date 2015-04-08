@@ -1,106 +1,91 @@
 <?xml version="1.0"?>
 
-<f:view
-	xmlns="http://www.w3.org/1999/xhtml"
+<f:view xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 	<h:head />
 	<h:body>
-		<f:event type="preRenderView" listener="#{visualizeGraphBacking.initialize}" />
+	
+		<f:event type="preRenderView"
+			listener="#{visualizeGraphBacking.initialize}" />
 		<!-- START OF TOP include_viewContentLeads -->
-		<!-- MOVE TO CSS -->
-		<style>
-			.hoverShadow:hover {
-				border-radius: 5px;
-				box-shadow: 0 5px 10px rgba(80, 0, 0, .3);
-			}
-		</style>
-		<!-- MOVE TO CSS -->
-		
-		<f:verbatim>
-			<script>
-				//var OmniFaces=OmniFaces;
-				//var dataFull;
-				//var isSingleLead=false; // determines which graph refresh function to call after a pan or zoom.
-				var WF_minTime = 1, WF_maxTime = 5000;
-				function show12LeadData(minTime, maxTime, ECG) {
-					var namespace = '#{facesContext.externalContext.encodeNamespace('')}';
-					WF_minTime = minTime;
-					WF_maxTime = maxTime;
-					//dataFull = ""; // clear data variable.
-					//var $show12LeadDataVar = $("#show12LeadData"); // A) Used to Show the data arrive on the screen 
-					dataFull = WAVEFORM_parseCSV(ECG, namespace);
-					
-					// Turning on the Dygrahs Display
-					WAVEFORM_showGraphs(namespace);
-					WAVEFORM_zoomGraphX(minTime, maxTime); // Changes the dataWindow on all 12 leads.
-					// WAVEFORM_backfillDataArray(dataFull);
-					WAVEFORM_replaceDataArray(dataFull);
-				}
-		
-				// This function is kept on the .xhtml page, because it contains code specific to this layout. 
-	             var WAVEFORM_showGraphs = function(namespace){
-	                 //alert("running WAVEFORM_showGraphs() in panelDisplayLeads.xhtml data.length:" + dataFull.length);
-	                 var graphDurationMS = 2500;
-	                 var graphWidthPx = 250;
-	                 var graphHeightPx = 150;
-	                 var calibrationCount = 3;
-	                 populateGraphsCalibrations(graphDurationMS, graphWidthPx, graphHeightPx, dataFull, namespace, calibrationCount)
-	             }
-	         </script>
-		</f:verbatim>
-	
-		<h:panelGroup layout="block" styleClass="backgroundofContent">
-			<p:layout id="graphView"
-				style=" min-height:710px; height:720px; top:20px">
-				<p:layoutUnit id="ecgGraphLayout" 
-								position="center"
-								style="min-width:400px; 
-									min-height:700px; 
-									width:90%; 
-									background-color:#fdf6e3; 
-									margin:1px auto;">
-	
-					<h:panelGroup id="panelMultipleGraph" autoUpdate="true" >
-						<script>
-							var data = '#{visualizeGraphBacking.data}';
-							var dataJsonParse = JSON.parse(data);
-							show12LeadData(dataJsonParse.minTime, dataJsonParse.maxTime, dataJsonParse.ECG);
-						</script>
 
-						<!-- <h:outputText value="namespace=#{facesContext.externalContext.encodeNamespace('')}" /> -->
-						<ui:include src="12Lead_DIV.xhtml" />	
-					</h:panelGroup>
+		<h:panelGroup layout="block" styleClass="backgroundofContent">
+				<p:layout id="graphView" 
+					style=" min-height:710px; height:720px; top:20px">
+					<p:layoutUnit id="ecgGraphLayout" 
+						position="center"
+						style="min-width:400px; 
+								min-height:700px; 
+								width:90%; 
+								background-color:#fdf6e3; 
+								margin:1px auto;">
+						<h:panelGroup id="panelMultipleGraph" autoUpdate="true">
+							<script>
+								namespaceGlobal ='#{facesContext.externalContext.encodeNamespace('')}';								
+							</script>
+  						<ui:include src="include/12Lead_DIV.xhtml" /> 	
+<!--							<ui:include src="include/multiLead_DIV.xhtml" />-->
+						</h:panelGroup>
+						<h:panelGroup id="testSuite_div" layout="block"></h:panelGroup>
+					</p:layoutUnit>
+
+					<p:layoutUnit id="viewChangeButtons" 
+						position="east"
+						resizable="true" 
+						size="130" 
+						minSize="50" 
+						maxSize="550">
+						<h:form id="multiLeadForm">
+							<p:remoteCommand name="calledOnLoad"
+								oncomplete="isMultigraph=true;renderData();"
+								autoRun="true">
+							</p:remoteCommand>
 					
-				</p:layoutUnit>
+							<p:remoteCommand name="viewSingleGraph2Param"
+								action="#{visualizeGraphBacking.viewSingleGraph2}" />
+
 	
- 				<p:layoutUnit id="viewChangeButtons" position="east" resizable="true" size="150"
-					minSize="50" maxSize="550">
-					<h:form>
-						<p:commandButton id="returnToList" 
-										value="View ECG List"
-										action="#{visualizeGraphBacking.viewSelectionTree}"
-										ajax="true"
-										icon="ui-icon-seek-first"
-										title="View the ECG selection tree."/>
-												
-						<p:commandButton id="singleLead" 
-										value="View Single"
-										action="#{visualizeGraphBacking.viewSingleGraph}"
-										icon="ui-icon-seek-end"
-										title="View Single Lead"/>
-					</h:form>				
-					<h:form id="hiddenForm" style="display: none;">
-						<p:commandButton id="singleLeadFrom12" 
-										value="View Single"
-										action="#{visualizeGraphBacking.viewSingleGraph}"
-										icon="ui-icon-seek-end"
-										title="View Single Lead"/>
-					</h:form> 
-				</p:layoutUnit>
-			</p:layout>
+							<p:commandButton id="returnToList" value="Back to List"
+								action="#{visualizeGraphBacking.viewSelectionTree}" ajax="true"
+								icon="ui-icon-document" styleClass="navigationButton"
+								title="View ECG file selection tree." />
+	
+<!-- 							<p:button id="voltCenterButtonMulti" value="center" type="button"
+								icon="ui-icon-arrowthick-2-n-s" styleClass="navigationButton"
+								title="Center each graph on it's median, while using the standard voltage scale (+/- 2000uV)."
+								onclick="centerVoltageMulti();return false;"></p:button>
+	
+							<p:button id="voltCenterNScaleButtonMulti"
+								value="center and scale" type="button"
+								icon="ui-icon-arrowthick-2-n-s" styleClass="navigationButton"
+								title="Center each graph on it's median, stretching the voltage scale of each independently."
+								onclick="centerScaleVoltageMulti();return false;"></p:button> -->
+<!-- 							
+							<h:outputText value="" styleClass="navSpacerElement"/>
+							<p:button id="voltResetButtonMulti" value="reset" type="button"
+								icon="ui-icon-circle-plus" styleClass="navigationButton"
+								title="Reset all graphs to zero volts at the center, using the standard voltage scale (+/- 2000uV) and reset graph size."
+								onclick="resetMultiGraphDimensions();return false;"></p:button>
+ -->	
+<!-- 							<p:button id="runTests" value="Run Test Suite" type="button"
+								styleClass="navigationButton"
+								title="Run a suite of tests, timing various ways of loading the 12 graphs."
+								onclick="runTestSuite();return false;"></p:button> -->
+<!--  	
+							<p:button id="fillScreenTestButtonMulti" value="Fill Screen"
+								type="button" icon="ui-icon-circle-plus"
+								styleClass="navigationButton"
+								title="Stretch the graphs to fill the content area."
+								onclick="stretchToContentMulti();return false;"></p:button>
+ -->	
+
+							<ui:include src="include/includePanZoom.xhtml" />								
+						</h:form>
+					</p:layoutUnit>	
+				</p:layout>
 		</h:panelGroup>
 	</h:body>
 </f:view>

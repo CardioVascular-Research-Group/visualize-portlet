@@ -49,48 +49,67 @@
 	 * @return "tick list" {Array.<Object>} Array of {label, value} tuples.
 	 * @public
 	 */
-	var CVRG_xTicker = function(minTms, maxTms, pixels, axis_props, self, forced_vals) {
+	var CVRG_xTickerMultiLead = function(minTms, maxTms, pixels, axis_props, self, forced_vals) {
 		var pixelsPerTick = 6; 
 		var msecLargeTime = 200; 
 		var msecSmallTime = 40;
 
-		return CVRG_TickerCommon(minTms, maxTms, pixels, axis_props, self, forced_vals, 
+		return CVRG_TickerCommonFormatting(minTms, maxTms, pixels, axis_props, self, forced_vals, 
 				pixelsPerTick, msecLargeTime, msecSmallTime);
 	};
 	
-	var CVRG_yTicker = function(minV, maxV, pixels, axis_props, self, forced_vals) {
+	var CVRG_yTickerMultiLead = function(minV, maxV, pixels, axis_props, self, forced_vals) {
 		var pixelsPerTick = 3;
 		var msecLargeTime = 500; 
 		var msecSmallTime = 100;
-		return CVRG_TickerCommon(minV, maxV, pixels, axis_props, self, forced_vals, 
+		return CVRG_TickerCommonFormatting(minV, maxV, pixels, axis_props, self, forced_vals, 
 				pixelsPerTick, msecLargeTime, msecSmallTime);
 	};	
 
+	var CVRG_xTickerSingle = function(minTms, maxTms, pixels, axis_props, self, forced_vals) {
+		var pixelsPerTick = 30; 
+		var msecLargeTime = 200; 
+		var msecSmallTime = 40;
 
+		return CVRG_TickerCommonFormatting(minTms, maxTms, pixels, axis_props, self, forced_vals, 
+				pixelsPerTick, msecLargeTime, msecSmallTime);
+	};
+	
+	var CVRG_yTickerSingle = function(minV, maxV, pixels, axis_props, self, forced_vals) {
+		var pixelsPerTick = 20;
+		var msecLargeTime = 500; 
+		var msecSmallTime = 100;
+		return CVRG_TickerCommonFormatting(minV, maxV, pixels, axis_props, self, forced_vals, 
+				pixelsPerTick, msecLargeTime, msecSmallTime);
+	};	
+
+	var CVRG_highlightCallbackSingle = function(e, x, pts) {
+		WAVEFORM3_highlightCrosshairs(e, pts, true);
+	};
 	/**
 	 * Add ticks when the x axis has numbers on it (instead of dates)
 	 * @param minV - minimum value of the window on this axis
 	 * @param maxV - maximum value of the window on this axis
+	 * @param pixels - the length of the axis in pixels.
+	 * @param axis_props - properties array of this axis, if any. 
+	 *             Provides access to chart- and axis-specific options. 
+	 *             It can be used to access number/date formatting code/options, check for a log scale, etc.
 	 * @param self - the Dygraph object for which an axis is being constructed.
-	 * @param axis_props - properties array of this axis, if any.
 	 * @param vals - Array of {label, value} tuples.
-	 * @param pixelsPerLabelAttribute - either "pixelsPerXLabel" or "pixelsPerYLabel"
+	 * @param pixelsPerTick - either "pixelsPerXLabel" or "pixelsPerYLabel"
 	 * @param msecLargeTime=500; // time span between the dark grid lines 1/5 second (5 millimeter)on paper ECG, equal to 5 small time blocks
 	 * @param var msecSmallTime=100;  // time span between the light grid lines 1/25 second (1 mm) on paper ECG
 	 * 
 	 * @return - Array of {label, value} tuples.
 	 * @public
 	 */
-	var CVRG_TickerCommon = function(minV, maxV, pixels, axis_props, self, forced_vals, pixelsPerTick, msecLargeTime, msecSmallTime) {
+	var CVRG_TickerCommonFormatting = function(minV, maxV, pixels, axis_props, self, forced_vals, pixelsPerTick, msecLargeTime, msecSmallTime) {
 		var msecWidth = maxV-minV; // values spanned by the graph area (voltage or time).
-//		var msecLargeTime=200; // time span between the dark grid lines 1/5 second (5 millimeter)on paper ECG, equal to 5 small time blocks
-//		var msecSmallTime=40;  // time span between the light grid lines 1/25 second (1 mm) on paper ECG
 		var pixLargeTime = (pixels*msecLargeTime)/msecWidth; // pixels spanned by the dark grid lines (1/5 second)
 		var msPerPixel = msecWidth/pixels; // milliseconds between one pixel and then next
 		var pixSmallTime = (pixels*msecSmallTime)/msecWidth; // pixels spanned by the light grid lines (1/25 second)
 		var pixMinSmallTime = 1;  // small time blocks must be at least this many pixels wide.
 		
-//		var bLabelsKMB = attr("labelsKMB");
 		var ticks = [];
 		
 		CVRG_setTimeExponent(minV,self);
@@ -158,11 +177,6 @@
 							if(msSubSec%msecLargeTime > 1){// light grid lines on 25ths of a second, if between 5ths of a second lines.
 								if (pixSmallTime > pixelsPerTick){
 									ticks.push( {v: tickV} ); // use default label on fractional seconds
-//									if(tickV > 0){
-//										ticks.push( {label: msSubSec/1000.0, v: tickV} ); // only show the milliseconds
-//									}else{
-//										ticks.push( {label: (msSubSec-1000)/1000.0, v: tickV} ); // only show the milliseconds					
-//									}
 								}else{
 									ticks.push( {label: "", v: tickV} ); // don't label small squares, overrides default label.
 								}
@@ -211,15 +225,31 @@
 	// parameter:
 	//     ms - time in milliseconds.
 	var CVRG_xAxisLabelFormatter = function(ms) {
-		var shift = Math.pow(10, 5);
-		var intMS = Math.round(ms * shift) / shift;
-		var dSec = intMS/1000;
-		var label = CVRG_formatExponential(dSec,CVRG_TimeExponent,3);
-		
+		var label = "";
+		if(ms < WF_minTime){
+			ms = (ms + 400.0) - (WF_minTime/1);// so the calibration pulse will have it's own zero time reference.
+		}else{
+			var shift = Math.pow(10, 5);
+			var intMS = Math.round(ms * shift) / shift;
+			var dSec = intMS/1000;
+			label = CVRG_formatExponential(dSec,CVRG_TimeExponent,3);
+		}
 		return label;
 	};
 
-
+	/** Controls the display of numbers in the legend, formatted for the limited space under the calibration marks.
+	 * (i.e. the text that appears when you hover on the chart).
+	 * 
+	 * @param val = the value
+	 * @param opts = a function which maps options to their values
+	 * @param series_name = the name of the relevant series
+	 * @param dygraph = the dygraph object
+	 */ 
+	var CVRG_xValueFormatterCalibration = function(val, opts, series_name, dygraph){
+		var result = "";		
+		result = formatMsecToExponent(val);
+		return result;
+	};
 			
 
 	/** Controls the display of numbers in the legend 
@@ -232,7 +262,7 @@
 	 */ 
 	var CVRG_xValueFormatter2 = function(val, opts, series_name, dygraph){
 		if(val < WF_minTime){
-			var calTime = (val + 400.0) + (WF_minTime/1);// so the calibration pulse will have it's own zero time reference.
+			var calTime = (val + 400.0) - (WF_minTime/1);// so the calibration pulse will have it's own zero time reference.
 			var temp = "Calibration Pulse " + calTime + "mSec"; 
 			return temp;
 		}else{
@@ -250,7 +280,8 @@
 //		return x;
 		var result = "";		
 		result = formatMsecToExponent(x);
-		return "Time (seconds):" + result + " ";
+//		return "Time (seconds):" + result + " ";
+		return result + " Sec";
 	};
 	
 	/** controls the display of numbers on the axes (i.e. tick marks).
@@ -323,7 +354,7 @@
 	 * @param digitsAfterDecimal - number of digits to preserve after the decimal point, the last digit being rounded.
 	 */ 
 	var CVRG_formatExponential = function(num, exponent, digitsAfterDecimal){
-		var label = "foo";
+		var label = -99999;//unlikely to be a real time value
 		var coefficient = num/Math.pow(10, exponent);
 		
 		// Round up to the requested number of decimal places.

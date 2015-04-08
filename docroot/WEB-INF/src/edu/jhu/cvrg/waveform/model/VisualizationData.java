@@ -108,7 +108,6 @@ public class VisualizationData implements Serializable {
 		
 		for(int row=0;row<dRow;row++){
 			if(row==0){
-//				saECGData[row][0] = "millisecond";
 				for(int col=0;col<dCol;col++){
 					saECGData[row][col] = saLeadName[col];
 				}
@@ -129,26 +128,26 @@ public class VisualizationData implements Serializable {
 		int dRow = ecgData.length+1;
 		int dCol = ecgData[0].length; // ecgDataLeads
 
-		String sECGData="";
-		String sRow="";
-		if(dCol>13) dCol = 13;
+		StringBuilder sECGData = new StringBuilder();
+		StringBuilder sRow;
+		
 		for(int row=0;row<dRow;row++){
-			sRow="";
+			sRow =  new StringBuilder();
 			if(row==0){
 				for(int col=0;col<dCol;col++){
-					sRow += saLeadName[col] + ",";
+					sRow.append(saLeadName[col]).append(',');
 				}
 			}else{
 				for(int col=0;col<dCol;col++){
-					sRow += Double.toString(ecgData[row-1][col]) + ","; // row-1 because ecgData does not have header row.
+					sRow.append(Double.toString(ecgData[row-1][col])).append(','); // row-1 because ecgData does not have header row.
 				}
 			}
-			sRow = sRow.substring(0, sRow.lastIndexOf(","));
-			sRow += "\n";
-			sECGData += sRow;
+			sRow.deleteCharAt(sRow.length()-1);
+			sRow.append('\n');
+			sECGData.append(sRow);
 		}
 
-		return sECGData;
+		return sECGData.toString();
 	}
 
 }
