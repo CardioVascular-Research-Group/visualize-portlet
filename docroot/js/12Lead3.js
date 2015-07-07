@@ -2,12 +2,15 @@
 Functions used by 12Lead_D.html and 12Lead_GE.html
 revision 0.1 : April 6, 2011 - initial version Michael Shipway
 Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
+Revision 1.0 : February 20, 2015 - Included the label box.
 *************************/
 	var namespaceGlobal = "";
 	var isMultigraph=true;
 	var graphSet = [];
 	var graphCalSet = [];
 	var xLineSet = [];
+	var labelBoxSet = [];
+	
 	var blockRedraw = false; // prevents WAVEFORM_drawCallback from looping on events from other graphs.
 	var initialized = false;
 	var leadDurationMS = 1200;
@@ -21,6 +24,7 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	var graphDivPrefix 		= "graphDiv";
 	var labelDivPrefix 		= "labelDiv";
 	var verticalXHairPrefix = "lineDiv";
+	var labelBoxPrefix 		= "labelBoxDiv";
 	
 	var WF_minTime = 1, WF_maxTime = 5000;
 	var dataJsonParse=[];
@@ -33,6 +37,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 	var graphHeight = 150;
 	var graphWidth = 120;
 	var callGraphWidth = 40;
+	
+	var labelBoxWidth = 130;
 	
 	function calculateGraphSizes() {
 	
@@ -140,22 +146,46 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		for (var i = 0; i < points.length; i++) {
 			ptsName = points[i].name;
 			var x=Math.floor(points[i].canvasx) + "px";
+			var y=Math.floor(points[i].canvasy);
+			
+			var xval = points[i].xval;
+			var yval = points[i].yval;
+			
+			
 			for(var xL=0;xL < xLineSet.length;xL++){	
 				var xLineTemp = xLineSet[xL];
+				var labelBoxTemp = labelBoxSet[xL];
+				
+				
 				var xLineID = xLineTemp.id; // should be the same as array index "xL"
 				
 				xLineTemp.style.left = x;
+				
+				var boxLeft = (Math.floor(points[i].canvasx) + 5);
+				
+				if((boxLeft + labelBoxWidth) > graphWidth){
+					boxLeft = graphWidth - labelBoxWidth;
+				}
+					
+				labelBoxTemp.style.left = boxLeft + "px";
+				
+				labelBoxTemp.style.top = ((graphHeight + graphHeight - y)*-1 + 5) + "px";
+				
 				for(var lab=0;lab<labelFull.length;lab++){
 					if(ptsName == labelFull[lab]){
 						lineID = verticalXHairPrefix +  (lab-1);
+						break;
 					};
 				}
 
 				// don't show the line on the graph the mouse is over.
 				if(xLineID == lineID){
 					xLineTemp.style.width = "0px";
+					labelBoxTemp.style.visibility = "visible";
+					labelBoxTemp.innerHTML = (xval/1000.0) + " sec x " + yval + " uV";
 				}else{  
 					xLineTemp.style.width = "3px";
+					labelBoxTemp.style.visibility = "hidden";
 				};
 			};
 		};
@@ -223,6 +253,23 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 
 		return xlineX;
 	};
+	
+	var createLabelBox = function(boxIdName, graphHeightPx){
+		var labelBox = document.createElement("div");
+		labelBox.id = boxIdName;
+		labelBox.className="labelBox";
+		labelBox.style.display = ""; // "none";
+		labelBox.style.width = labelBoxWidth + "px";
+		labelBox.style.height = "20px";
+		labelBox.style.top = "-"+graphHeightPx+"px";
+		labelBox.style.left = "0px";
+		labelBox.style.backgroundColor = "white";
+		labelBox.style.position = "relative";
+		labelBox.style.border = "solid 1px";
+		labelBox.style.textAlign = "center";
+
+		return labelBox;
+	};
 
 	
 	/** Creates and populates all the data graphs(one lead per) and all the calibration graphs.
@@ -246,6 +293,8 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 		graphSet = [];
 		xLineSet = null;
 		xLineSet = [];
+		labelBoxSet = null;
+		labelBoxSet = [];
 		
 		// labelFull.length is one greater than the number of data columns 
 		// because it includes the Timestamp column label "msec"
@@ -262,9 +311,12 @@ Revision 1.0 : August 19, 2013 - Updated for use in Waveform 3. .
 										graphWidthPx, graphHeightPx));
 
 
-			var xLine = createXLine(lineIdName, graphHeightPx); // document.getElementById(lineIdName); // 
+			var xLine = createXLine(lineIdName, graphHeightPx); // document.getElementById(lineIdName); //
+			var labelBox = createLabelBox((labelBoxPrefix + col), graphHeightPx);
 			WAVEFORM_getElementByIdEndsWith("div", graphDivName).appendChild(xLine);
+			WAVEFORM_getElementByIdEndsWith("div", graphDivName).appendChild(labelBox);
 			xLineSet[col] = xLine;
+			labelBoxSet[col] = labelBox;
 		}
 	};
 
