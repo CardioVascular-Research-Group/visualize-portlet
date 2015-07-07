@@ -106,7 +106,7 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 
     public void folderSelect(NodeSelectEvent event){
 		TreeNode node = event.getTreeNode();
-		if(!node.getType().equals(FileTreeNode.DEFAULT_TYPE)){
+		if(!node.getType().equals(FileTreeNode.FOLDER_TYPE)){
 			fileTree.selectAllChildNodes(node);
 		}
 	}
@@ -114,7 +114,7 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 	public void folderUnSelect(NodeUnselectEvent event){
 		TreeNode node = event.getTreeNode();
 		node.setSelected(false);
-		if(!node.getType().equals(FileTreeNode.DEFAULT_TYPE)){
+		if(!node.getType().equals(FileTreeNode.FOLDER_TYPE)){
 			fileTree.unSelectAllChildNodes(node);
 		}
 	}
@@ -134,7 +134,7 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 				
 				DocumentDragVO vo = null;
 				
-				if("leaf".equals(type) || "document".equals(type)){
+				if("leaf".equals(type) || FileTreeNode.FILE_TYPE.equals(type) || FileTreeNode.FILE_ANALYSIS_TYPE.equals(type)){
 					FileTreeNode node = fileTree.getNodeByReference(property);
 					if(node != null){
 						vo = new DocumentDragVO(node, con.getDocumentRecordById(node.getDocumentRecordId()));
@@ -142,7 +142,7 @@ public class VisualizeBacking extends BackingBean implements Serializable {
 							tableList.add(vo);	
 						}
 					}	
-				}else if("parent".equals(type) || "default".equals(type)){
+				}else if("parent".equals(type) || FileTreeNode.FOLDER_TYPE.equals(type)){
 					List<FileTreeNode> nodes = fileTree.getNodesByReference(property);
 					if(nodes!=null){
 						for (FileTreeNode node : nodes) {
